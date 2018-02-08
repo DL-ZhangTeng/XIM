@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">XIM</string>
+
+    <string name="hello_base_fragment">hello_base_fragment</string>
+</resources>

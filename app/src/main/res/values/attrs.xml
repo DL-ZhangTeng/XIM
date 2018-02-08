@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyTitleBar">
+        <attr name="leftButtonText" format="string" />
+        <attr name="leftButtonBg" format="reference" />
+        <attr name="leftButtonSrc" format="reference" />
+        <attr name="leftButtonShow" format="boolean" />
+        <attr name="leftButtonWidth" format="dimension" />
+        <attr name="leftButtonHeight" format="dimension" />
+        <attr name="titleText" format="string" />
+        <attr name="rightButtonText" format="string" />
+        <attr name="rightButtonBg" format="reference" />
+        <attr name="rightButtonSrc" format="reference" />
+        <attr name="rightButtonShow" format="boolean" />
+        <attr name="rightButtonWidth" format="dimension" />
+        <attr name="rightButtonHeight" format="dimension" />
+        <attr name="titledrawableSrc" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="NoDataView">
+        <attr name="nodatatext" format="string" />
+        <attr name="nodataimage" format="reference" />
+        <attr name="nodatavisibility" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <!-- {@deprecated Use civ_circlebackground_color instead.} -->
+        <attr name="civ_fill_color" format="color" />
+        <attr name="civ_circle_background_color" format="color" />
+    </declare-styleable>
+</resources>
