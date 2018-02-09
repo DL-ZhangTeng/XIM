@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "com.zhangteng.xim"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,6 +27,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'commons-codec:commons-codec:1.9'
     implementation 'org.greenrobot:greendao:3.2.0'
+    implementation 'com.jakewharton:disklrucache:2.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

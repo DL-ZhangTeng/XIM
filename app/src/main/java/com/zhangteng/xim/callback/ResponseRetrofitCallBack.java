@@ -7,10 +7,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.common.config.NetConfig;
-import com.zhangteng.xim.common.tools.NetUtil;
 import com.zhangteng.xim.common.tools.Encryption;
+import com.zhangteng.xim.common.tools.NetUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;

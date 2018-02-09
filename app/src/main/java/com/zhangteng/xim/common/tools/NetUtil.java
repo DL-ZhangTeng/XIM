@@ -1,4 +1,4 @@
-package com.zhangteng.xim.utils;
+package com.zhangteng.xim.common.tools;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
