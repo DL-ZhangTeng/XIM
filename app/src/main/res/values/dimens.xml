@@ -16,4 +16,5 @@
     <dimen name="common_title_bar_height">48dp</dimen>
     <dimen name="common_title_bar_padding_left">12dp</dimen>
     <dimen name="common_title_bar_font_size">18sp</dimen>
+    <dimen name="common_leftorright_padding">16dp</dimen>
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/navigation_item_collection"
+            android:icon="@mipmap/ic_launcher"
+            android:title="我的收藏" />
+        <item
+            android:id="@+id/navigation_item_album"
+            android:icon="@mipmap/ic_launcher"
+            android:title="我的相册" />
+        <item
+            android:id="@+id/navigation_item_file"
+            android:icon="@mipmap/ic_launcher"
+            android:title="我的文件" />
+        <item
+            android:id="@+id/navigation_item_setting"
+            android:icon="@mipmap/ic_launcher"
+            android:title="设置" />
+    </group>
+
+</menu>

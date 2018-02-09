@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="@dimen/statusbar_height"
         android:background="@color/theme"

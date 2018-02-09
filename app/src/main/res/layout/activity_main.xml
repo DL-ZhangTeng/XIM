@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dl_drawerlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.zhangteng.xim.activity.MainActivity">
 
-    <com.zhangteng.xim.widget.TitleBar
-        android:id="@+id/title_bar"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/tabbar_height" />
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/layout_navigation_header"
+        app:itemIconTint="@null"
+        app:menu="@menu/menu_navigation" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <com.zhangteng.xim.widget.TitleBar
+            android:id="@+id/title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tabbar_height" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hello World!" />
+    </LinearLayout>
+
+</android.support.v4.widget.SlidingPaneLayout>
