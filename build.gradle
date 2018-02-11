@@ -19,6 +19,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        //TODO 集成：1.1、配置Bmob的maven仓库地址
+        maven { url "https://raw.github.com/bmob/bmob-android-sdk/master" }
     }
 }
 
