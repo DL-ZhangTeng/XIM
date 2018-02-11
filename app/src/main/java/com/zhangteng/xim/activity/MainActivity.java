@@ -14,7 +14,7 @@ import com.zhangteng.xim.base.BaseActivity;
 
 public class MainActivity extends BaseActivity {
 
-    private SlidingPaneLayout dlDrawerLayout;
+    private SlidingPaneLayout slidingPaneLayout;
     private LinearLayout llContent;
     private NavigationView navigationView;
 
@@ -25,11 +25,11 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        dlDrawerLayout = (SlidingPaneLayout) findViewById(R.id.dl_drawerlayout);
+        slidingPaneLayout = (SlidingPaneLayout) findViewById(R.id.dl_drawerlayout);
         llContent = (LinearLayout) findViewById(R.id.ll_content);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setItemIconTintList(null);
-        dlDrawerLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
+        slidingPaneLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
                 int width = panel.getWidth();

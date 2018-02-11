@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00E9C4</color>
-    <color name="colorPrimaryDark">#00E9C4</color>
-    <color name="colorAccent">#00E9C4</color>
-    <color name="theme">#00E9C4</color>
+    <color name="colorPrimary">#47bafd</color>
+    <color name="colorPrimaryDark">#47bafd</color>
+    <color name="colorAccent">#47bafd</color>
+    <color name="theme">#47bafd</color>
     <color name="default_text_grey_color">#747474</color>
     <color name="default_text_green_color">#00C7B5</color>
     <color name="white">#ffffff</color>
-    <color name="title_start_color">#00E9C4</color>
-    <color name="title_end_color">#3DBDB6</color>
+    <color name="title_start_color">#47bafd</color>
+    <color name="title_end_color">#59CAFD</color>
     <!-- dialog bg -->
     <color name="dialog_nav_bg">#99000000</color>
     <color name="background">#ffffff</color>
