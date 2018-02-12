@@ -16,6 +16,15 @@ public class UpdateUserParams extends UserParams {
     private Integer areaId;
     private Integer provinceId;
     private Integer classId;
+    private String code;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public Integer getSex() {
         return sex;

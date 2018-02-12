@@ -15,6 +15,8 @@ import java.io.FileReader;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.v3.Bmob;
 
+import static com.zhangteng.xim.bmob.config.Config.APPLICATIONID;
+
 /**
  * Created by swing on 2018/2/9.
  */
@@ -71,7 +73,7 @@ public class MyApplication extends Application {
         //提供以下两种方式进行初始化操作：
 
         //第一：默认初始化
-        Bmob.initialize(this, "b825256dd3394f712f3226b8c750f69b");
+        Bmob.initialize(this, APPLICATIONID);
         // 注:自v3.5.2开始，数据sdk内部缝合了统计sdk，开发者无需额外集成，传渠道参数即可，不传默认没开启数据统计功能
         //Bmob.initialize(this, "Your Application ID","bmob");
 
@@ -88,7 +90,7 @@ public class MyApplication extends Application {
         //.build();
         //Bmob.initialize(config);
         //TODO 集成：1.8、初始化IM SDK，并注册消息接收器
-        if (getApplicationInfo().packageName.equals(getMyProcessName())){
+        if (getApplicationInfo().packageName.equals(getMyProcessName())) {
             BmobIM.init(this);
             BmobIM.registerDefaultMessageHandler(new DemoMessageHandler());
         }
@@ -145,6 +147,7 @@ public class MyApplication extends Application {
 
     /**
      * 获取当前运行的进程名
+     *
      * @return
      */
     public static String getMyProcessName() {

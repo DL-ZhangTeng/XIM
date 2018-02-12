@@ -2,18 +2,16 @@ package com.zhangteng.xim.bmob.callback;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
-import com.zhangteng.xim.common.tools.NetUtil;
+import com.zhangteng.xim.bmob.tools.NetUtil;
 
-import java.util.List;
 
-import cn.bmob.v3.BmobObject;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 
 /**
@@ -71,7 +69,7 @@ public abstract class BmobCallBack<T> {
         }
     }
 
-    public void onResponse(T bmobObject, BmobException bmobException) {
+    public void onResponse(@Nullable T bmobObject, BmobException bmobException) {
         if (bmobException == null) {
             onSuccess(bmobObject);
             dismissProgressDialog();
@@ -84,7 +82,7 @@ public abstract class BmobCallBack<T> {
         dismissProgressDialog();
     }
 
-    public abstract void onSuccess(T bmobObject);
+    public abstract void onSuccess(@Nullable T bmobObject);
 
 
     private void showProgressDialog() {
