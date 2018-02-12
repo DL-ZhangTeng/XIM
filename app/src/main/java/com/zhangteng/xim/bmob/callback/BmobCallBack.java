@@ -10,14 +10,17 @@ import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.common.tools.NetUtil;
 
+import java.util.List;
+
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 
 /**
  * Created by swing on 2018/2/11.
  */
 
-public abstract class BmobCallBack {
+public abstract class BmobCallBack<T> {
     private static final String DEFAULT_LOADING_TEXT = "正在加载...";
     private static Dialog mProgressDialog;
     private final String NETWORK_REQUEST_FAIL_STR = "请求失败";
@@ -68,7 +71,7 @@ public abstract class BmobCallBack {
         }
     }
 
-    public void onResponse(BmobObject bmobObject, BmobException bmobException) {
+    public void onResponse(T bmobObject, BmobException bmobException) {
         if (bmobException == null) {
             onSuccess(bmobObject);
             dismissProgressDialog();
@@ -81,7 +84,7 @@ public abstract class BmobCallBack {
         dismissProgressDialog();
     }
 
-    public abstract void onSuccess(BmobObject bmobObject);
+    public abstract void onSuccess(T bmobObject);
 
 
     private void showProgressDialog() {
