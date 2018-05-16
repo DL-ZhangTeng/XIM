@@ -35,8 +35,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation 'com.android.support:design:26.1.0'
     //TODO 集成：1.2、配置IM SDK（bmob-im）版本和Data SDK（bmob-sdk）版本：特定版本的bmob-im依赖特定版本的bmob-sdk
-    compile 'cn.bmob.android:bmob-im:2.0.9@aar'
-    compile 'cn.bmob.android:bmob-sdk:3.5.7'
+    implementation 'cn.bmob.android:bmob-im:2.0.9@aar'
+    implementation 'cn.bmob.android:bmob-sdk:3.5.7'
     //bmob-push：Bmob的推送包
-    compile 'cn.bmob.android:bmob-push:0.8'
+    implementation 'cn.bmob.android:bmob-push:0.8'
 }

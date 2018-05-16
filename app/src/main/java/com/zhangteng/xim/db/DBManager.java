@@ -31,11 +31,19 @@ public class DBManager {
             synchronized (DBManager.class) {
                 if (dbManager == null) {
                     dbManager = new DBManager();
-                    dbManager.initDbHelp(context);//此处使用context
+                    if (context != null) {
+                        dbManager.initDbHelp();
+                    } else {
+                        throw new NullPointerException("context is null");
+                    }
                 }
             }
         }
         return dbManager;
+    }
+
+    public static void init(Context context) {
+        DBManager.context = context;
     }
 
     public void close() {
@@ -47,10 +55,9 @@ public class DBManager {
     }
 
 
-    public void initDbHelp(Context ctx) {
-        context = ctx;
+    public void initDbHelp() {
         close();
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(ctx, "GreenDaoModule.db", null);
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, "GreenDaoModule.db", null);
         this.openHelper = helper;
     }
 

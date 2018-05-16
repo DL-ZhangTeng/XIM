@@ -6,6 +6,7 @@ import android.os.Environment;
 
 import com.zhangteng.xim.bmob.DemoMessageHandler;
 import com.zhangteng.xim.common.tools.LogUtils;
+import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.utils.AppManager;
 
 import java.io.BufferedReader;
@@ -65,6 +66,7 @@ public class MyApplication extends Application {
         super.onCreate();
         instance = this;
         globalContext = this;
+        DBManager.init(this);
         //Fresco初始化
 //        frescoConfig();
         LogUtils.getInstance().setIsShow(true);

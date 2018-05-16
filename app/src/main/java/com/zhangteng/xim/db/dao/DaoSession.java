@@ -1,7 +1,7 @@
 package com.zhangteng.xim.db.dao;
 
+import com.zhangteng.xim.db.bean.NewFriend;
 import com.zhangteng.xim.db.bean.User;
-import com.zhangteng.xim.db.dao.UserDao;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.AbstractDaoSession;
@@ -21,8 +21,10 @@ import java.util.Map;
 public class DaoSession extends AbstractDaoSession {
 
     private final DaoConfig userDaoConfig;
-
     private final UserDao userDao;
+
+    private final DaoConfig newFriendDaoConfig;
+    private final NewFriendDao newFriendDao;
 
     public DaoSession(Database db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
             daoConfigMap) {
@@ -30,18 +32,25 @@ public class DaoSession extends AbstractDaoSession {
 
         userDaoConfig = daoConfigMap.get(UserDao.class).clone();
         userDaoConfig.initIdentityScope(type);
-
         userDao = new UserDao(userDaoConfig, this);
-
         registerDao(User.class, userDao);
+
+        newFriendDaoConfig = daoConfigMap.get(NewFriendDao.class).clone();
+        newFriendDaoConfig.initIdentityScope(type);
+        newFriendDao = new NewFriendDao(newFriendDaoConfig, this);
+        registerDao(NewFriend.class, newFriendDao);
     }
 
     public void clear() {
         userDaoConfig.clearIdentityScope();
+        newFriendDaoConfig.clearIdentityScope();
     }
 
     public UserDao getUserDao() {
         return userDao;
     }
 
+    public NewFriendDao getNewFriendDao() {
+        return newFriendDao;
+    }
 }
