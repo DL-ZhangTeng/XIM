@@ -4,9 +4,11 @@ import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.zhangteng.xim.db.bean.NewFriend;
 import com.zhangteng.xim.db.bean.User;
 import com.zhangteng.xim.db.dao.DaoMaster;
 import com.zhangteng.xim.db.dao.DaoSession;
+import com.zhangteng.xim.db.dao.NewFriendDao;
 import com.zhangteng.xim.db.dao.UserDao;
 
 import org.greenrobot.greendao.query.DeleteQuery;
@@ -46,7 +48,7 @@ public class DBManager {
         DBManager.context = context;
     }
 
-    public void close() {
+    private void close() {
         if (openHelper != null) {
             openHelper.close();
             openHelper = null;
@@ -55,7 +57,7 @@ public class DBManager {
     }
 
 
-    public void initDbHelp() {
+    private void initDbHelp() {
         close();
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, "GreenDaoModule.db", null);
         this.openHelper = helper;
@@ -106,6 +108,27 @@ public class DBManager {
     public List<User> queryUser(User user) {
         UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
         List<User> list = userDao.queryBuilder().where(UserDao.Properties.Name.eq(user.getName())).build().list();
+        return list;
+    }
+
+    public void insertNewFriend(NewFriend newFriend) {
+        DBManager.instance().openWritableDb().getNewFriendDao().insert(newFriend);
+    }
+
+    public void deleteNewFriend(NewFriend newFriend) {
+        DBManager.instance().openWritableDb().getNewFriendDao().delete(newFriend);
+    }
+
+    public void updateNewFriend(NewFriend newFriend) {
+        NewFriendDao newFriendDao = DBManager.instance().openWritableDb().getNewFriendDao();
+        DeleteQuery<NewFriend> deleteQuery = newFriendDao.queryBuilder().where(NewFriendDao.Properties.Uid.eq(newFriend.getUid())).buildDelete();
+        deleteQuery.executeDeleteWithoutDetachingEntities();
+        newFriendDao.insertOrReplace(newFriend);
+    }
+
+    public List<NewFriend> queryNewFriend(NewFriend newFriend) {
+        NewFriendDao newFriendDao = DBManager.instance().openReadableDb().getNewFriendDao();
+        List<NewFriend> list = newFriendDao.queryBuilder().where(NewFriendDao.Properties.Uid.eq(newFriend.getUid())).build().list();
         return list;
     }
 }

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zhangteng.xim">
-    <!--TODO 集成：1.3、配置Bmob平台的应用密钥-->
-    <meta-data
-        android:name="Bmob_APP_KEY"
-        android:value="b825256dd3394f712f3226b8c750f69b" />
+
     <!--TODO 1.4、配置IM SDK需要的权限-->
     <!--网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -69,7 +66,10 @@
             android:process=":bmobcore" />
         <service android:name="cn.bmob.newim.core.service.ReConnectService" />
         <service android:name="cn.bmob.newim.core.service.HeartBeatService" />
-
+        <!--TODO 集成：1.3、配置Bmob平台的应用密钥-->
+        <meta-data
+            android:name="Bmob_APP_KEY"
+            android:value="b825256dd3394f712f3226b8c750f69b" />
     </application>
 
 </manifest>

@@ -5,7 +5,7 @@ package com.zhangteng.xim.db.bean;
  * Created by swing on 2018/5/16.
  */
 
-public class NewFriend {
+public class NewFriend implements java.io.Serializable {
 
     private Long id;
     //用户uid
@@ -20,6 +20,9 @@ public class NewFriend {
     private Integer status;
     //请求时间
     private Long time;
+
+    public NewFriend() {
+    }
 
     public NewFriend(Long id, String uid, String msg, String name, String avatar, Integer status, Long time) {
         this.id = id;
