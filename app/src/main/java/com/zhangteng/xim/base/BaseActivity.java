@@ -17,6 +17,8 @@ import com.zhangteng.xim.R;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.AppManager;
 
+import butterknife.ButterKnife;
+
 
 /**
  * Created by swing on 2017/11/23.
@@ -36,14 +38,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         super.setContentView(R.layout.activity_base);
         AppManager.addActivity(this);
-        vitamioInit();
         setContentView(getResourceId());
+        ButterKnife.bind(this);
         initView();
         initData();
-    }
-
-    protected void vitamioInit() {
-
     }
 
     protected abstract int getResourceId();

@@ -11,5 +11,5 @@
     <color name="title_end_color">#59CAFD</color>
     <!-- dialog bg -->
     <color name="dialog_nav_bg">#99000000</color>
-    <color name="background">#ffffff</color>
+    <color name="background">#fcfcfc</color>
 </resources>

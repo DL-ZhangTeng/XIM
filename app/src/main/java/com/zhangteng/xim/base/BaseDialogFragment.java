@@ -12,6 +12,8 @@ import android.view.WindowManager;
 
 import com.zhangteng.xim.R;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by swing on 2017/11/30.
  */
@@ -34,7 +36,9 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return View.inflate(getActivity(), getResourceId(), null);
+        View v = View.inflate(getActivity(), getResourceId(), null);
+        ButterKnife.bind(v);
+        return v;
     }
 
     @Override

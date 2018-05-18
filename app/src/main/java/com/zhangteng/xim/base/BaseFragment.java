@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseFragment;
 
+import butterknife.ButterKnife;
+
 /**
  *
  */
@@ -38,6 +40,7 @@ public abstract class BaseFragment extends Fragment {
                 ((ViewGroup) parent).removeView(view);
             }
         }
+        ButterKnife.bind(view);
         return view;
     }
 

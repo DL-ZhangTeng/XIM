@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.zhangteng.xim"
-        minSdkVersion 15
-        targetSdkVersion 22
+        minSdkVersion 19
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -17,23 +17,30 @@ android {
         }
     }
     /**兼容Android6.0系统所需，如果这句话报错，可在dependencies标签下使用compile 'cn.bmob.android:http-legacy:1.0'**/
-    //useLibrary 'org.apache.http.legacy'
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.android.support:support-annotations:26.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:support-annotations:27.1.1'
     implementation 'org.greenrobot:greendao:3.2.0'
     implementation 'com.jakewharton:disklrucache:2.0.2'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.android.support:design:26.1.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.android.support:design:27.1.1'
     //TODO 集成：1.2、配置IM SDK（bmob-im）版本和Data SDK（bmob-sdk）版本：特定版本的bmob-im依赖特定版本的bmob-sdk
-    implementation 'cn.bmob.android:bmob-im:2.0.9@aar'
-    implementation 'cn.bmob.android:bmob-sdk:3.5.7'
+    implementation 'cn.bmob.android:bmob-im:2.1.0@aar'
+    implementation 'cn.bmob.android:bmob-sdk:3.6.1'
     //bmob-push：Bmob的推送包
     implementation 'cn.bmob.android:bmob-push:0.8'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    //6.0+权限申请
+    implementation 'com.github.duoluo9:androidpermission:1.0.0'
+    //版本更新
+    implementation 'com.github.duoluo9:updateversionlibrary:1.0.0'
+    implementation project(':swiperecyclerview')
 }

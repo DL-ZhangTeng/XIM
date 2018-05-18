@@ -26,14 +26,22 @@
         <com.zhangteng.xim.widget.TitleBar
             android:id="@+id/title_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/tabbar_height" />
+            android:layout_height="@dimen/tabbar_height"
+            app:leftButtonBg="@mipmap/ic_launcher"
+            app:leftButtonHeight="@dimen/tabbar_height"
+            app:leftButtonWidth="@dimen/tabbar_height"
+            app:rightButtonHeight="@dimen/tabbar_height"
+            app:rightButtonSrc="@mipmap/add"
+            app:rightButtonWidth="@dimen/tabbar_height" />
 
-        <android.support.v4.view.ViewPager
+        <com.zhangteng.xim.widget.NoScrollViewPager
+            android:id="@+id/main_viewpager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
         <RadioGroup
+            android:id="@+id/main_tab_rg"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tabbar_height"
             android:orientation="horizontal">
@@ -46,7 +54,7 @@
                 android:drawableTop="@drawable/selector_message"
                 android:gravity="center"
                 android:text="消息"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <RadioButton
                 android:layout_width="0dp"
@@ -56,7 +64,7 @@
                 android:drawableTop="@drawable/selector_friends"
                 android:gravity="center"
                 android:text="联系人"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <RadioButton
                 android:layout_width="0dp"
@@ -66,7 +74,7 @@
                 android:drawableTop="@drawable/selector_circle"
                 android:gravity="center"
                 android:text="朋友圈"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
         </RadioGroup>
     </LinearLayout>
 

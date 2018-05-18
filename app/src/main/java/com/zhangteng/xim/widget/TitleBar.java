@@ -113,9 +113,11 @@ public class TitleBar extends RelativeLayout {
                     break;
                 case R.styleable.MyTitleBar_leftButtonWidth:
                     leftBtnWidth = a.getDimensionPixelSize(attr, DEFAULT_BTN_LENGTH);
+                    leftBtn.getLayoutParams().width = leftBtnWidth;
                     break;
                 case R.styleable.MyTitleBar_leftButtonHeight:
                     leftBtnHeight = a.getDimensionPixelSize(attr, DEFAULT_BTN_LENGTH);
+                    leftBtn.getLayoutParams().height = leftBtnHeight;
                     break;
 
                 case R.styleable.MyTitleBar_titledrawableSrc:
@@ -132,12 +134,7 @@ public class TitleBar extends RelativeLayout {
         // TODO Auto-generated constructor stub
     }
 
-    private void initView() {
-        resetParams(leftBtn, leftBtnWidth, leftBtnHeight);
-        resetParams(rightSmall, rightBtnWidth, rightBtnHeight);
-    }
-
-    public void setrightShow(boolean rightShow) {
+    public void setRightShow(boolean rightShow) {
         if (rightShow) {
             rightSmall.setVisibility(VISIBLE);
         } else {
@@ -173,6 +170,9 @@ public class TitleBar extends RelativeLayout {
         }
     }
 
+    public void setRightText(String rightText) {
+        rightBtn.setText(rightText);
+    }
 
     public void setRightClickListener(OnClickListener onClickListener) {
         rightBtn.setOnClickListener(onClickListener);
