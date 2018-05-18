@@ -40,7 +40,7 @@ public abstract class BaseFragment extends Fragment {
                 ((ViewGroup) parent).removeView(view);
             }
         }
-        ButterKnife.bind(view);
+        ButterKnife.bind(this, view);
         return view;
     }
 

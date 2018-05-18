@@ -32,7 +32,7 @@ public class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return 0;
+        return data == null || data.isEmpty() ? 0 : data.size();
     }
 
     @Override

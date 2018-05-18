@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhangteng.xim.widget;
+package com.zhangteng.swiperecyclerview.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -43,7 +43,8 @@ import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 
-import com.zhangteng.xim.R;
+import com.zhangteng.swiperecyclerview.R;
+
 
 @SuppressLint("AppCompatCustomView")
 public class CircleImageView extends ImageView {

@@ -17,7 +17,7 @@
         android:layout_weight="2"
         android:gravity="bottom|left">
 
-        <com.zhangteng.xim.widget.CircleImageView
+        <com.zhangteng.swiperecyclerview.widget.CircleImageView
             android:id="@+id/iv_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -40,7 +40,7 @@ public class SlideMenuRecyclerViewItem extends HorizontalScrollView {
     }
 
     private void init() {
-        buttonWidth = dp2px(200);
+        buttonWidth = dp2px(160);
         setHorizontalScrollBarEnabled(false);
         RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(layoutParams);
