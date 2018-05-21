@@ -20,7 +20,7 @@ import com.zhangteng.swiperecyclerview.R;
  */
 public class SlideMenuRecyclerViewItem extends HorizontalScrollView {
     private int buttonWidth;
-    private boolean isLeft = true;
+    private boolean isNotShowMenu = true;
     private LinearLayout contentLayout;
     private LinearLayout menuLayout;
 
@@ -69,7 +69,7 @@ public class SlideMenuRecyclerViewItem extends HorizontalScrollView {
 
     //恢复状态
     public void reset() {
-        isLeft = true;
+        isNotShowMenu = true;
         scrollTo(0, 0);
     }
 
@@ -94,6 +94,14 @@ public class SlideMenuRecyclerViewItem extends HorizontalScrollView {
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN && ev.getX() <= 2) {
+            return false;
+        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             return true;
@@ -101,16 +109,16 @@ public class SlideMenuRecyclerViewItem extends HorizontalScrollView {
         if (ev.getAction() == MotionEvent.ACTION_CANCEL || ev.getAction() == MotionEvent.ACTION_UP) {
 
             int range = 70;
-            if (isLeft) {
+            if (isNotShowMenu) {
                 if (getScrollX() > range) {
-                    isLeft = false;
+                    isNotShowMenu = false;
                     smoothScrollTo(buttonWidth, 0);
                 } else {
                     smoothScrollTo(0, 0);
                 }
             } else {
                 if (getScrollX() < (buttonWidth - range)) {
-                    isLeft = true;
+                    isNotShowMenu = true;
                     smoothScrollTo(0, 0);
                 } else {
                     smoothScrollTo(buttonWidth, 0);
