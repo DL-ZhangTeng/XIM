@@ -72,7 +72,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 goBack();
                 break;
             default:
-                localButtonClick(v);
                 break;
         }
     }
@@ -84,10 +83,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showToast(int mesageId) {
         Toast.makeText(this, mesageId, Toast.LENGTH_SHORT).show();
-    }
-
-    public void localButtonClick(View v) {
-
     }
 
     @Override
@@ -121,6 +116,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void goBack() {
         ActivityHelper.setActivityAnimClose(this);
+        finish();
     }
 }
 

@@ -5,7 +5,7 @@
     <dimen name="tabbar_height">48dp</dimen>
     <dimen name="tabbar_text_size">14sp</dimen>
     <dimen name="tabbar_indicator_height">4dp</dimen>
-    <dimen name="title_height">45dp</dimen>
+    <dimen name="title_height">48dp</dimen>
     <dimen name="title_icon_width">12dp</dimen>
     <dimen name="title_btn_margin">16dp</dimen>
     <dimen name="chat_address_item_text_margin_v">5dp</dimen>
@@ -17,4 +17,6 @@
     <dimen name="common_title_bar_padding_left">12dp</dimen>
     <dimen name="common_title_bar_font_size">18sp</dimen>
     <dimen name="common_leftorright_padding">16dp</dimen>
+    <dimen name="sticky_text_size">16sp</dimen>
+    <dimen name="sticky_height">30dp</dimen>
 </resources>
