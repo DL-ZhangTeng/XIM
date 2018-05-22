@@ -12,4 +12,6 @@
     <!-- dialog bg -->
     <color name="dialog_nav_bg">#99000000</color>
     <color name="background">#fcfcfc</color>
+
+    <color name="circle_text">#8793ac</color>
 </resources>

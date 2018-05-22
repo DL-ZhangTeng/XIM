@@ -20,8 +20,8 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
     private static final int BASE_ITEM_TYPE_HEADER = 100000;
     private static final int BASE_ITEM_TYPE_FOOTER = 200000;
 
-    private SparseArrayCompat<View> mHeaderViews = new SparseArrayCompat<>();
-    private SparseArrayCompat<View> mFootViews = new SparseArrayCompat<>();
+    private SparseArrayCompat<Integer> mHeaderViews = new SparseArrayCompat<>();
+    private SparseArrayCompat<Integer> mFootViews = new SparseArrayCompat<>();
 
     private RecyclerView.Adapter mInnerAdapter;
 
@@ -35,11 +35,11 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (mHeaderViews.get(viewType) != null) {
 
-            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent.getContext(), mHeaderViews.get(viewType));
+            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent, mHeaderViews.get(viewType));
             return holder;
 
         } else if (mFootViews.get(viewType) != null) {
-            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent.getContext(), mFootViews.get(viewType));
+            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent, mFootViews.get(viewType));
             return holder;
         }
         return mInnerAdapter.onCreateViewHolder(parent, viewType);
@@ -128,25 +128,14 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
         return position >= getHeadersCount() + getRealItemCount();
     }
 
-
-    public void addHeaderView(View view) {
+    public void addHeaderView(@LayoutRes int view) {
         hasHeaderOrFooter = true;
         mHeaderViews.put(mHeaderViews.size() + BASE_ITEM_TYPE_HEADER, view);
     }
 
-    public void addFootView(View view) {
+    public void addFootView(@LayoutRes int view) {
         hasHeaderOrFooter = true;
         mFootViews.put(mFootViews.size() + BASE_ITEM_TYPE_FOOTER, view);
-    }
-
-    public void addHeaderView(Context context, @LayoutRes int view) {
-        hasHeaderOrFooter = true;
-        mHeaderViews.put(mHeaderViews.size() + BASE_ITEM_TYPE_HEADER, LayoutInflater.from(context).inflate(view, null, false));
-    }
-
-    public void addFootView(Context context, @LayoutRes int view) {
-        hasHeaderOrFooter = true;
-        mFootViews.put(mFootViews.size() + BASE_ITEM_TYPE_FOOTER, LayoutInflater.from(context).inflate(view, null, false));
     }
 
     public int getHeadersCount() {
@@ -161,7 +150,7 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
         return mInnerAdapter.getItemCount();
     }
 
-    public abstract RecyclerView.ViewHolder createHeaderOrFooterViewHolder(Context context, View view);
+    public abstract RecyclerView.ViewHolder createHeaderOrFooterViewHolder(ViewGroup parent, Integer viewInt);
 
     public abstract void onBindHeaderOrFooterViewHolder(@NonNull RecyclerView.ViewHolder holder, int viewType);
 

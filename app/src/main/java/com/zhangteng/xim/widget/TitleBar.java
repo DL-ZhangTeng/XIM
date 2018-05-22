@@ -1,8 +1,11 @@
 package com.zhangteng.xim.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -140,6 +143,10 @@ public class TitleBar extends RelativeLayout {
         } else {
             rightSmall.setVisibility(GONE);
         }
+    }
+
+    public void setRightIcon(@DrawableRes int rightSrc) {
+        rightSmall.setImageResource(rightSrc);
     }
 
     private void resetParams(View view, int width, int height) {

@@ -73,6 +73,7 @@ public class MainActivity extends BaseActivity {
                 switch (i - 1) {
                     case 0:
                         titleBar.setRightText("");
+                        titleBar.setRightIcon(R.mipmap.add);
                         titleBar.setRightShow(true);
                         break;
                     case 1:
@@ -80,8 +81,9 @@ public class MainActivity extends BaseActivity {
                         titleBar.setRightShow(false);
                         break;
                     case 2:
-                        titleBar.setRightText("更多");
-                        titleBar.setRightShow(false);
+                        titleBar.setRightText("");
+                        titleBar.setRightIcon(R.mipmap.takept);
+                        titleBar.setRightShow(true);
                         break;
                 }
 
