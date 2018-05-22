@@ -1,1 +1,1 @@
-include ':app','swiperecyclerview'
+include ':app','swiperecyclerview','imagepicker'

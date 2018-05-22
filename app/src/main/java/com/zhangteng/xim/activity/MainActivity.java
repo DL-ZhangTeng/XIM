@@ -1,7 +1,6 @@
 package com.zhangteng.xim.activity;
 
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.view.KeyEvent;
 import android.view.View;
@@ -10,11 +9,19 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.zhangteng.imagepicker.callback.HandlerCallBack;
+import com.zhangteng.imagepicker.callback.IHandlerCallBack;
+import com.zhangteng.imagepicker.config.ImagePickerConfig;
+import com.zhangteng.imagepicker.config.ImagePickerOpen;
+import com.zhangteng.imagepicker.imageloader.GlideImageLoader;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.widget.NoScrollViewPager;
 import com.zhangteng.xim.widget.TitleBar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -39,8 +46,20 @@ public class MainActivity extends BaseActivity {
         return R.layout.activity_main;
     }
 
+    private ImagePickerConfig imagePickerConfig;
+
+
+    @Override
+    protected void initData() {
+
+    }
+
+    private IHandlerCallBack iHandlerCallBack = new HandlerCallBack();
+    private List<String> path = new ArrayList<>();
+
     @Override
     protected void initView() {
+        initImagePicker();
         navigationView.setItemIconTintList(null);
         slidingPaneLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
             @Override
@@ -84,6 +103,12 @@ public class MainActivity extends BaseActivity {
                         titleBar.setRightText("");
                         titleBar.setRightIcon(R.mipmap.takept);
                         titleBar.setRightShow(true);
+                        titleBar.setRightClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
+                            }
+                        });
                         break;
                 }
 
@@ -91,10 +116,17 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-
-    @Override
-    protected void initData() {
-
+    private void initImagePicker() {
+        imagePickerConfig = new ImagePickerConfig.Builder()
+                .imageLoader(new GlideImageLoader())    // ImageLoader 加载框架（必填）,可以实现ImageLoader自定义（内置Glid实现）
+                .iHandlerCallBack(iHandlerCallBack)     // 监听接口，可以实现IHandlerCallBack自定义
+                .provider("com.zhangteng.xim.fileprovider")   // provider默认com.zhangteng.imagepicker.fileprovider
+                .pathList(path)                         // 记录已选的图片
+                .multiSelect(true, 9)                   // 配置是否多选的同时 配置多选数量   默认：false ， 9
+                .maxSize(9)                             // 配置多选时 的多选数量。    默认：9
+                .isShowCamera(true)                     // 是否现实相机按钮  默认：false
+                .filePath("/imagePicker/ImagePickerPictures")          // 图片存放路径
+                .build();
     }
 
     //记录用户首次点击返回键的时间
