@@ -2,12 +2,14 @@ package com.zhangteng.xim.activity;
 
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
@@ -71,19 +73,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             password.setText("");
         } else if (i == R.id.login) {
             LoginParams loginParams = new LoginParams();
-            loginParams.setName(username.getText().toString());
-            loginParams.setPassword(password.getText().toString());
-            UserApi.getInstance().login(loginParams, new BmobCallBack(this, false) {
-                @Override
-                public void onSuccess(@Nullable Object bmobObject) {
-                    LoginActivity.this.startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    LoginActivity.this.finish();
-                }
-            });
+            if (TextUtils.isEmpty(username.getText().toString()) || TextUtils.isEmpty(password.getText().toString())) {
+                Toast.makeText(this, "username or password is null", Toast.LENGTH_SHORT).show();
+            } else {
+                loginParams.setName(username.getText().toString());
+                loginParams.setPassword(password.getText().toString());
+                UserApi.getInstance().login(loginParams, new BmobCallBack(this, true) {
+                    @Override
+                    public void onSuccess(@Nullable Object bmobObject) {
+                        LoginActivity.this.startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        LoginActivity.this.finish();
+                    }
+                });
+            }
         } else if (i == R.id.register) {
-            LoginActivity.this.startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            LoginActivity.this.startActivityForResult(new Intent(LoginActivity.this, RegisterActivity.class), 1);
         } else if (i == R.id.login_error) {
-            LoginActivity.this.startActivity(new Intent(LoginActivity.this, ChangePasswordActivity.class));
+            LoginActivity.this.startActivityForResult(new Intent(LoginActivity.this, ChangePasswordActivity.class), 1);
         }
     }
 
@@ -122,12 +128,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         if (requestCode == 1) {
             if (resultCode == 1) {
                 //注册成功则返回用户名密码给登录界面的输入框
-                username.setText(data.getStringExtra("username"));
-                password.setText(data.getStringExtra("password"));
-            }
-        }
-        if (requestCode == 3) {
-            if (resultCode == 3) {
                 username.setText(data.getStringExtra("username"));
                 password.setText(data.getStringExtra("password"));
             }

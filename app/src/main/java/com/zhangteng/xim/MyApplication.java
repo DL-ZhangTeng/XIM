@@ -25,41 +25,6 @@ public class MyApplication extends Application {
     private static MyApplication instance;
     private static Context globalContext;
 
-//    // 最大可用内存
-//    Long maxHeapSize = Runtime.getRuntime().maxMemory();
-//    // 缓存Disk小图片文件夹名称
-//    String smallDiskCacheName = "smallDiskCacheConfig";
-//    // 缓存Disk普通图片文件夹名称
-//    String normalDiskCacheName = "normalDiskCacheConfig";
-//    // 缓存Disk文件夹大小
-//    int diskCacheSize = 500 * ByteConstants.MB;
-//    // 低硬盘空间下缓存Disk文件夹大小
-//    int lowDiskCacheSize = 10 * ByteConstants.MB;
-//    // 非常低硬盘空间下缓存Disk文件夹大小
-//    int veryLowDiskCacheSize = 50 * ByteConstants.MB;
-
-//    static {
-//        ClassicsHeader.REFRESH_HEADER_LASTTIME = "上次更新 yyyy-MM-dd HH:mm";
-//        //设置全局的Header构建器
-//        SmartRefreshLayout.setDefaultRefreshHeaderCreater(new DefaultRefreshHeaderCreater() {
-//            @Override
-//            public RefreshHeader createRefreshHeader(Context context, RefreshLayout layout) {
-//                layout.setHeaderHeight(50);
-//                ClassicsHeader header=new ClassicsHeader(context);
-//                return header.setSpinnerStyle(SpinnerStyle.Translate);//指定为经典Header，默认是 贝塞尔雷达Header
-//            }
-//        });
-//        //设置全局的Footer构建器
-//        SmartRefreshLayout.setDefaultRefreshFooterCreater(new DefaultRefreshFooterCreater() {
-//            @Override
-//            public RefreshFooter createRefreshFooter(Context context, RefreshLayout layout) {
-//                layout.setFooterHeight(50);
-//                //指定为经典Footer，默认是 BallPulseFooter
-//                return new ClassicsFooter(context).setSpinnerStyle(SpinnerStyle.Translate);
-//            }
-//        });
-//    }
-
     @Override
     public void onCreate() {
         super.onCreate();

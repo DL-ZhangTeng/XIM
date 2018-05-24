@@ -39,6 +39,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        UserApi.getInstance().Logout();
         User user = UserApi.getInstance().getUserInfo();
         if (user != null && user.getObjectId() != null) {
             handler.sendEmptyMessageDelayed(999, 1000);

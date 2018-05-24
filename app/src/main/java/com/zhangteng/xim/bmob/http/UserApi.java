@@ -1,5 +1,6 @@
 package com.zhangteng.xim.bmob.http;
 
+import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.params.LoginParams;
@@ -7,6 +8,7 @@ import com.zhangteng.xim.bmob.params.RegisterParams;
 import com.zhangteng.xim.bmob.params.UpdateUserParams;
 import com.zhangteng.xim.bmob.params.UserParams;
 import com.zhangteng.xim.bmob.tools.StringUtils;
+import com.zhangteng.xim.utils.SPUtils;
 
 import java.util.List;
 
@@ -28,6 +30,7 @@ import static com.zhangteng.xim.bmob.config.Config.SMSTEMPLATE;
  */
 
 public class UserApi {
+    private static String USERSPNAME = "userSpname";
     private static UserApi instance;
 
     private UserApi() {
@@ -218,14 +221,14 @@ public class UserApi {
     /**
      * 重设密码
      */
-    public void resetPassword(final BmobCallBack callBack) {
-        BmobUser.updateCurrentUserPassword("旧密码", "新密码", new UpdateListener() {
-
+    public void resetPassword(String oldPassword, String newPassword, final BmobCallBack callBack) {
+        User user = getUserInfo();
+        user.setPassword(newPassword);
+        user.update(new UpdateListener() {
             @Override
             public void done(BmobException e) {
                 callBack.onResponse(null, e);
             }
-
         });
     }
 
@@ -261,6 +264,7 @@ public class UserApi {
      */
     public void updateUser(UpdateUserParams params, final BmobCallBack callBack) {
         User userInfo = new User();
+        userInfo.setSessionToken((String) SPUtils.get(MyApplication.getGlobalContext(), USERSPNAME, "sessionToken", ""));
         if (null != params.getAge())
             userInfo.setAge(params.getAge());
         if (StringUtils.isNotEmpty(params.getPhone()))
