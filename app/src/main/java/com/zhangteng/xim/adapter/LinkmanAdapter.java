@@ -11,14 +11,14 @@ import android.widget.TextView;
 import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
-import com.zhangteng.xim.bmob.entity.FriendEntity;
+import com.zhangteng.xim.bmob.entity.Friend;
 
 import java.util.List;
 
 /**
  * Created by swing on 2018/5/21.
  */
-public class LinkmanAdapter extends BaseAdapter<FriendEntity> {
+public class LinkmanAdapter extends BaseAdapter<Friend> {
     private Context context;
 
     public LinkmanAdapter(List data, Context context) {

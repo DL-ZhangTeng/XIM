@@ -1,6 +1,5 @@
 package com.zhangteng.xim.fragment;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,9 +14,8 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 import com.zhangteng.swiperecyclerview.adapter.HeaderOrFooterAdapter;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.CircleAdapter;
-import com.zhangteng.xim.adapter.MessageAdapter;
 import com.zhangteng.xim.base.BaseFragment;
-import com.zhangteng.xim.bmob.entity.StoryEntity;
+import com.zhangteng.xim.bmob.entity.Story;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +53,9 @@ public class CircleFragment extends BaseFragment {
                 refreshLayout.finishRefresh(200);
             }
         });
-        List<StoryEntity> list = new ArrayList<>();
+        List<Story> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            list.add(new StoryEntity());
+            list.add(new Story());
         }
         adapter = new CircleAdapter(getContext(), list);
         headerOrFooterAdapter = new HeaderOrFooterAdapter(adapter) {

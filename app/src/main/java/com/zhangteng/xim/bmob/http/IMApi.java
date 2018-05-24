@@ -4,8 +4,8 @@ import android.text.TextUtils;
 
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.config.Config;
-import com.zhangteng.xim.bmob.entity.FriendEntity;
-import com.zhangteng.xim.bmob.entity.UserEntity;
+import com.zhangteng.xim.bmob.entity.Friend;
+import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.message.AddFriendMessage;
 import com.zhangteng.xim.bmob.message.AgreeAddFriendMessage;
 import com.zhangteng.xim.db.DBManager;
@@ -18,7 +18,6 @@ import java.util.Map;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMAudioMessage;
 import cn.bmob.newim.bean.BmobIMConversation;
-import cn.bmob.newim.bean.BmobIMExtraMessage;
 import cn.bmob.newim.bean.BmobIMFileMessage;
 import cn.bmob.newim.bean.BmobIMImageMessage;
 import cn.bmob.newim.bean.BmobIMLocationMessage;
@@ -111,7 +110,7 @@ public class IMApi {
          * 连接IM服务器
          */
         public void connectService(final BmobCallBack<String> bmobCallBack) {
-            UserEntity user = BmobUser.getCurrentUser(UserEntity.class);
+            User user = BmobUser.getCurrentUser(User.class);
             if (!TextUtils.isEmpty(user.getObjectId())) {
                 BmobIM.connect(user.getObjectId(), new ConnectListener() {
                     @Override
@@ -236,11 +235,11 @@ public class IMApi {
             String title = conversation.getConversationTitle();
             //SDK内部将新会话的会话标题用objectId表示，因此需要比对用户名和私聊会话标题，后续会根据会话类型进行判断
             if (!username.equals(title)) {
-                BmobQuery<UserEntity> query = new BmobQuery<UserEntity>();
-                query.getObject(info.getUserId(), new QueryListener<UserEntity>() {
+                BmobQuery<User> query = new BmobQuery<User>();
+                query.getObject(info.getUserId(), new QueryListener<User>() {
 
                     @Override
-                    public void done(UserEntity object, BmobException e) {
+                    public void done(User object, BmobException e) {
                         if (e == null) {
                             String name = object.getUsername();
                             String avatar = object.getIcoPath();
@@ -519,7 +518,7 @@ public class IMApi {
             //TODO 消息：5.1、根据会话入口获取消息管理，发送好友请求
             BmobIMConversation messageManager = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
             AddFriendMessage msg = new AddFriendMessage();
-            UserEntity currentUser = BmobUser.getCurrentUser(UserEntity.class);
+            User currentUser = BmobUser.getCurrentUser(User.class);
             msg.setContent("很高兴认识你，可以加个好友吗?");//给对方的一个留言信息
             //TODO 这里只是举个例子，其实可以不需要传发送者的信息过去
             Map<String, Object> map = new HashMap<>();
@@ -547,7 +546,7 @@ public class IMApi {
             BmobIMConversation messageManager = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
             //而AgreeAddFriendMessage的isTransient设置为false，表明我希望在对方的会话数据库中保存该类型的消息
             AgreeAddFriendMessage msg = new AgreeAddFriendMessage();
-            final UserEntity currentUser = BmobUser.getCurrentUser(UserEntity.class);
+            final User currentUser = BmobUser.getCurrentUser(User.class);
             msg.setContent("我通过了你的好友验证请求，我们可以开始 聊天了!");//这句话是直接存储到对方的消息表中的
             Map<String, Object> map = new HashMap<>();
             map.put("msg", currentUser.getUsername() + "同意添加你为好友");//显示在通知栏上面的内容
@@ -685,15 +684,15 @@ public class IMApi {
          *
          * @param bmobCallBack
          */
-        public void queryFriends(final BmobCallBack<List<FriendEntity>> bmobCallBack) {
-            BmobQuery<FriendEntity> query = new BmobQuery<>();
-            UserEntity user = BmobUser.getCurrentUser(UserEntity.class);
+        public void queryFriends(final BmobCallBack<List<Friend>> bmobCallBack) {
+            BmobQuery<Friend> query = new BmobQuery<>();
+            User user = UserApi.getInstance().getUserInfo();
             query.addWhereEqualTo("user", user);
             query.include("friendUser");
             query.order("-updatedAt");
-            query.findObjects(new FindListener<FriendEntity>() {
+            query.findObjects(new FindListener<Friend>() {
                 @Override
-                public void done(List<FriendEntity> list, BmobException e) {
+                public void done(List<Friend> list, BmobException e) {
                     bmobCallBack.onResponse(list, e);
                 }
             });
@@ -705,8 +704,8 @@ public class IMApi {
          * @param f
          * @param bmobCallBack
          */
-        public void deleteFriend(FriendEntity f, final BmobCallBack bmobCallBack) {
-            FriendEntity friend = new FriendEntity();
+        public void deleteFriend(Friend f, final BmobCallBack bmobCallBack) {
+            Friend friend = new Friend();
             friend.delete(f.getObjectId(), new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
@@ -721,9 +720,9 @@ public class IMApi {
          * @param friend
          * @param bmobCallBack
          */
-        public void addFriend(UserEntity friend, final BmobCallBack<String> bmobCallBack) {
-            FriendEntity f = new FriendEntity();
-            UserEntity user = BmobUser.getCurrentUser(UserEntity.class);
+        public void addFriend(User friend, final BmobCallBack<String> bmobCallBack) {
+            Friend f = new Friend();
+            User user = BmobUser.getCurrentUser(User.class);
             f.setUser(user);
             f.setFriendUser(friend);
             f.save(new SaveListener<String>() {

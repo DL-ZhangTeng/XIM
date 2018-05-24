@@ -6,7 +6,7 @@ import cn.bmob.v3.BmobUser;
  * Created by swing on 2018/2/11.
  */
 
-public class UserEntity extends BmobUser {
+public class User extends BmobUser {
     private int sex;
     private int age;
     private int schoolId;

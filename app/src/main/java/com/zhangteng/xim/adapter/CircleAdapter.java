@@ -13,7 +13,7 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
-import com.zhangteng.xim.bmob.entity.StoryEntity;
+import com.zhangteng.xim.bmob.entity.Story;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,10 @@ import java.util.List;
 /**
  * Created by swing on 2018/5/22.
  */
-public class CircleAdapter extends BaseAdapter<StoryEntity> {
+public class CircleAdapter extends BaseAdapter<Story> {
     private Context context;
 
-    public CircleAdapter(Context context, List<StoryEntity> data) {
+    public CircleAdapter(Context context, List<Story> data) {
         super(data);
         this.context = context;
     }

@@ -1,5 +1,6 @@
 package com.zhangteng.xim.activity;
 
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.view.KeyEvent;
@@ -17,6 +18,9 @@ import com.zhangteng.imagepicker.imageloader.GlideImageLoader;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
+import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.bmob.params.LoginParams;
 import com.zhangteng.xim.widget.NoScrollViewPager;
 import com.zhangteng.xim.widget.TitleBar;
 
@@ -51,7 +55,15 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-
+        LoginParams loginParams = new LoginParams();
+        loginParams.setName("duoluo9");
+        loginParams.setPassword("111111");
+        UserApi.getInstance().login(loginParams, new BmobCallBack(this, false) {
+            @Override
+            public void onSuccess(@Nullable Object bmobObject) {
+                Toast.makeText(MainActivity.this, "login_success", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private IHandlerCallBack iHandlerCallBack = new HandlerCallBack();

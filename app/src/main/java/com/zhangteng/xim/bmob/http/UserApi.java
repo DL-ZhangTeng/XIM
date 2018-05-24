@@ -1,7 +1,7 @@
 package com.zhangteng.xim.bmob.http;
 
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
-import com.zhangteng.xim.bmob.entity.UserEntity;
+import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.params.LoginParams;
 import com.zhangteng.xim.bmob.params.RegisterParams;
 import com.zhangteng.xim.bmob.params.UpdateUserParams;
@@ -49,7 +49,7 @@ public class UserApi {
      * @param callBack
      */
     public void register(RegisterParams params, final BmobCallBack callBack) {
-        UserEntity bu = new UserEntity();
+        User bu = new User();
         if (StringUtils.isNotEmpty(params.getName()))
             bu.setUsername(params.getName());
         if (StringUtils.isNotEmpty(params.getPassword()))
@@ -58,9 +58,9 @@ public class UserApi {
             bu.setEmail(params.getEmail());
         if (StringUtils.isNotEmpty(params.getPhone()))
             bu.setMobilePhoneNumber(params.getPhone());
-        bu.signUp(new SaveListener<UserEntity>() {
+        bu.signUp(new SaveListener<User>() {
             @Override
-            public void done(UserEntity s, BmobException e) {
+            public void done(User s, BmobException e) {
                 callBack.onResponse(s, e);
             }
         });
@@ -71,10 +71,10 @@ public class UserApi {
      */
     public void signOrLoginByMobilePhone(LoginParams params, final BmobCallBack callBack) {
         if (StringUtils.isNotEmpty(params.getPhone()) && StringUtils.isNotEmpty(params.getCode()))
-            BmobUser.signOrLoginByMobilePhone("11位手机号码", "验证码", new LogInListener<UserEntity>() {
+            BmobUser.signOrLoginByMobilePhone("11位手机号码", "验证码", new LogInListener<User>() {
 
                 @Override
-                public void done(UserEntity user, BmobException e) {
+                public void done(User user, BmobException e) {
                     callBack.onResponse(user, e);
                 }
             });
@@ -84,7 +84,7 @@ public class UserApi {
      * 手机+验证码注册并登录（可填写用户信息）
      */
     public void signOrLogin(UpdateUserParams params, final BmobCallBack callBack) {
-        UserEntity userInfo = new UserEntity();
+        User userInfo = new User();
         if (null != params.getAge())
             userInfo.setAge(params.getAge());
         if (StringUtils.isNotEmpty(params.getPhone()))
@@ -116,10 +116,10 @@ public class UserApi {
         if (StringUtils.isNotEmpty(params.getName()))
             userInfo.setUsername(params.getName());//设置用户名，如果没有传用户名，则默认为手机号码
         if (StringUtils.isNotEmpty(params.getCode()))
-            userInfo.signOrLogin(params.getCode(), new SaveListener<UserEntity>() {
+            userInfo.signOrLogin(params.getCode(), new SaveListener<User>() {
 
                 @Override
-                public void done(UserEntity user, BmobException e) {
+                public void done(User user, BmobException e) {
                     callBack.onResponse(user, e);
                 }
 
@@ -133,7 +133,7 @@ public class UserApi {
      * @param callBack
      */
     public void login(LoginParams params, BmobCallBack callBack) {
-        UserEntity bu = new UserEntity();
+        User bu = new User();
         if (StringUtils.isNotEmpty(params.getName()))
             bu.setUsername(params.getName());
         if (StringUtils.isNotEmpty(params.getPassword()))
@@ -150,10 +150,10 @@ public class UserApi {
             account = params.getEmail();
         if (StringUtils.isNotEmpty(params.getPhone()))
             account = params.getPhone();
-        BmobUser.loginByAccount(account, params.getPassword(), new LogInListener<UserEntity>() {
+        BmobUser.loginByAccount(account, params.getPassword(), new LogInListener<User>() {
 
             @Override
-            public void done(UserEntity user, BmobException e) {
+            public void done(User user, BmobException e) {
                 callBack.onResponse(user, e);
             }
         });
@@ -164,20 +164,20 @@ public class UserApi {
      */
     public void loginBySMSCode(LoginParams params, final BmobCallBack callBack) {
         if (StringUtils.isNotEmpty(params.getPhone()) && StringUtils.isNotEmpty(params.getCode()))
-            BmobUser.loginBySMSCode("11位手机号码", params.getCode(), new LogInListener<UserEntity>() {
+            BmobUser.loginBySMSCode("11位手机号码", params.getCode(), new LogInListener<User>() {
 
                 @Override
-                public void done(UserEntity user, BmobException e) {
+                public void done(User user, BmobException e) {
                     callBack.onResponse(user, e);
                 }
             });
     }
 
 
-    public void login(final UserEntity userEntity, final BmobCallBack callBack) {
-        userEntity.login(new SaveListener<UserEntity>() {
+    public void login(final User user, final BmobCallBack callBack) {
+        user.login(new SaveListener<User>() {
             @Override
-            public void done(UserEntity bmobUser, BmobException e) {
+            public void done(User bmobUser, BmobException e) {
                 callBack.onResponse(bmobUser, e);
             }
         });
@@ -195,8 +195,8 @@ public class UserApi {
     /**
      * 获取本地缓存用户信息
      */
-    public UserEntity getUserInfo() {
-        UserEntity user = BmobUser.getCurrentUser(UserEntity.class);
+    public User getUserInfo() {
+        User user = BmobUser.getCurrentUser(User.class);
         return user;
     }
 
@@ -260,7 +260,7 @@ public class UserApi {
      * 修改用户信息
      */
     public void updateUser(UpdateUserParams params, final BmobCallBack callBack) {
-        UserEntity userInfo = new UserEntity();
+        User userInfo = new User();
         if (null != params.getAge())
             userInfo.setAge(params.getAge());
         if (StringUtils.isNotEmpty(params.getPhone()))
@@ -289,7 +289,7 @@ public class UserApi {
             userInfo.setPassword(params.getPassword());
         if (StringUtils.isNotEmpty(params.getEmail()))
             userInfo.setEmail(params.getEmail());
-        UserEntity currentUser = getUserInfo();
+        User currentUser = getUserInfo();
         userInfo.update(currentUser.getObjectId(), new UpdateListener() {
             @Override
             public void done(BmobException e) {
@@ -302,16 +302,16 @@ public class UserApi {
      * 查询用户
      */
     public void queryUser(UserParams params, final BmobCallBack callBack) {
-        BmobQuery<UserEntity> query = new BmobQuery<UserEntity>();
+        BmobQuery<User> query = new BmobQuery<User>();
         if (StringUtils.isNotEmpty(params.getName()))
             query.addWhereEqualTo("username", params.getName());
         if (StringUtils.isNotEmpty(params.getEmail()))
             query.addWhereEqualTo("email", params.getEmail());
         if (StringUtils.isNotEmpty(params.getPhone()))
             query.addWhereEqualTo("mobilePhoneNumber", params.getPhone());
-        query.findObjects(new FindListener<UserEntity>() {
+        query.findObjects(new FindListener<User>() {
             @Override
-            public void done(List<UserEntity> object, BmobException e) {
+            public void done(List<User> object, BmobException e) {
                 callBack.onResponse(object, e);
             }
         });
@@ -362,10 +362,10 @@ public class UserApi {
      */
     public void bindPhone(UserParams params, final BmobCallBack callBack) {
         if (StringUtils.isNotEmpty(params.getPhone())) {
-            UserEntity user = new UserEntity();
+            User user = new User();
             user.setMobilePhoneNumber(params.getPhone());
             user.setMobilePhoneNumberVerified(true);
-            UserEntity cur = BmobUser.getCurrentUser(UserEntity.class);
+            User cur = BmobUser.getCurrentUser(User.class);
             user.update(cur.getObjectId(), new UpdateListener() {
 
                 @Override
