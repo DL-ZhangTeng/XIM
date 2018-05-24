@@ -41,14 +41,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.ChangePasswordActivity" />
+        <activity
+            android:name=".activity.SplashActivity"
+            android:theme="@style/Full">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <!--TODO 集成：1.5、配置IM SDK需要的广播和服务-->
         <receiver android:name="cn.bmob.newim.core.ConnectChangeReceiver">
             <intent-filter>
