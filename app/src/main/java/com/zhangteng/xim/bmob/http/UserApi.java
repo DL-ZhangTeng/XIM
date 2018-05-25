@@ -135,7 +135,7 @@ public class UserApi {
      * @param params
      * @param callBack
      */
-    public void login(LoginParams params, BmobCallBack callBack) {
+    public void login(LoginParams params, BmobCallBack<User> callBack) {
         User bu = new User();
         if (StringUtils.isNotEmpty(params.getName()))
             bu.setUsername(params.getName());
@@ -147,7 +147,7 @@ public class UserApi {
     /**
      * 邮箱+密码 手机号+密码 登录
      */
-    public void loginByAccount(LoginParams params, final BmobCallBack callBack) {
+    public void loginByAccount(LoginParams params, final BmobCallBack<User> callBack) {
         String account = null;
         if (StringUtils.isNotEmpty(params.getEmail()))
             account = params.getEmail();
@@ -177,7 +177,7 @@ public class UserApi {
     }
 
 
-    public void login(final User user, final BmobCallBack callBack) {
+    public void login(final User user, final BmobCallBack<User> callBack) {
         user.login(new SaveListener<User>() {
             @Override
             public void done(User bmobUser, BmobException e) {

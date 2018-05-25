@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.LoginParams;
 
@@ -78,11 +79,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             } else {
                 loginParams.setName(username.getText().toString());
                 loginParams.setPassword(password.getText().toString());
-                UserApi.getInstance().login(loginParams, new BmobCallBack(this, true) {
+                UserApi.getInstance().login(loginParams, new BmobCallBack<User>(this, true) {
                     @Override
-                    public void onSuccess(@Nullable Object bmobObject) {
+                    public void onSuccess(@Nullable User bmobObject) {
                         LoginActivity.this.startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         LoginActivity.this.finish();
+
                     }
                 });
             }

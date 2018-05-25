@@ -1,7 +1,9 @@
 package com.zhangteng.xim.activity;
 
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SlidingPaneLayout;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -21,7 +23,9 @@ import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
+import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
+import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.widget.NoScrollViewPager;
 import com.zhangteng.xim.widget.TitleBar;
@@ -30,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import cn.bmob.newim.core.ConnectionStatus;
+import cn.bmob.v3.exception.BmobException;
 
 public class MainActivity extends BaseActivity {
     @BindView(R.id.dl_drawerlayout)
@@ -87,6 +93,36 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
+        if (!TextUtils.isEmpty(UserApi.getInstance().getUserInfo().getObjectId()) &&
+                IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
+            IMApi.IMServiceManager.getInstance().connectService(new BmobCallBack<String>(MainActivity.this, false) {
+                @Override
+                public void onSuccess(@Nullable String bmobObject) {
+                    IMApi.LoacalUserManager.getInstance()
+                            .updateUserInfo(
+                                    UserApi.getInstance().getUserInfo().getObjectId()
+                                    , TextUtils.isEmpty(
+                                            UserApi.getInstance().getUserInfo().getRealName())
+                                            ? UserApi.getInstance().getUserInfo().getUsername()
+                                            : UserApi.getInstance().getUserInfo().getRealName()
+                                    , UserApi.getInstance().getUserInfo().getIcoPath()
+                            );
+                }
+
+                @Override
+                public void onFailure(BmobException bmobException) {
+                    super.onFailure(bmobException);
+                    Toast.makeText(MainActivity.this, bmobException.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        IMApi.ConversationManager.getInstance()
+                .startPrivateConversation(
+                        IMApi.LoacalUserManager.getInstance().getUserInfo(
+                                UserApi.getInstance().getUserInfo().getObjectId()
+                        ), true
+                );
         initImagePicker();
         navigationView.setItemIconTintList(null);
         slidingPaneLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {

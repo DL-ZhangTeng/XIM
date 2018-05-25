@@ -1,11 +1,9 @@
 package com.zhangteng.xim.db;
 
-import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.zhangteng.xim.db.bean.NewFriend;
-import com.zhangteng.xim.db.bean.User;
 import com.zhangteng.xim.db.dao.DaoMaster;
 import com.zhangteng.xim.db.dao.DaoSession;
 import com.zhangteng.xim.db.dao.NewFriendDao;

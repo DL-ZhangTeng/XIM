@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.swiperecyclerview.widget.SlideMenuRecyclerViewItem;
@@ -38,17 +40,18 @@ public class MessageAdapter extends BaseAdapter<BmobIMConversation> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         View contentView = LayoutInflater.from(context).inflate(R.layout.content_item, ((MyViewHolder) holder).item, false);
         //添加内容布局&菜单布局
-        ((TextView) contentView.findViewById(R.id.content_content)).setText("111");
-        ((TextView) contentView.findViewById(R.id.content_title)).setText("111");
-        ((TextView) contentView.findViewById(R.id.content_time)).setText("111");
-        ((CircleImageView) contentView.findViewById(R.id.content_avatar)).setImageResource(R.mipmap.ic_launcher);
+        ((TextView) contentView.findViewById(R.id.content_content)).setText(data.get(position).getMessages().get(data.get(position).getMessages().size() - 1).getContent());
+        ((TextView) contentView.findViewById(R.id.content_title)).setText(data.get(position).getConversationTitle());
+        ((TextView) contentView.findViewById(R.id.content_time)).setText(String.valueOf(data.get(position).getUpdateTime()));
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.app_icon)
+                .centerCrop();
+        Glide.with(context)
+                .load(data.get(position).getConversationIcon())
+                .apply(requestOptions)
+                .into((CircleImageView) contentView.findViewById(R.id.content_avatar));
         ((MyViewHolder) holder).item.addContentView(contentView);
         ((MyViewHolder) holder).item.addMenuView(R.layout.menu_item);
-    }
-
-    @Override
-    public int getItemCount() {
-        return 10;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

@@ -66,9 +66,8 @@ public class IMApi {
         /**
          * 用户管理：2.7、更新本地用户资料，用于在会话页面、聊天页面以及个人信息页面显示
          */
-        public void updateUserInfo(Long id, String userId, String name, String avatar) {
+        public void updateUserInfo(String userId, String name, String avatar) {
             BmobIMUserInfo info = new BmobIMUserInfo();
-            info.setId(id);
             info.setUserId(userId);
             info.setName(name);
             info.setAvatar(avatar);
@@ -88,6 +87,7 @@ public class IMApi {
         public BmobIMUserInfo getUserInfo(String uid) {
             return BmobIM.getInstance().getUserInfo(uid);
         }
+
     }
 
     /////////////////////////////////连接IM服务器///////////////////////////////
@@ -143,8 +143,8 @@ public class IMApi {
         /**
          * get当前连接状态
          */
-        public String getCurrentStatus() {
-            return BmobIM.getInstance().getCurrentStatus().getMsg();
+        public ConnectionStatus getCurrentStatus() {
+            return BmobIM.getInstance().getCurrentStatus();
         }
 
     }

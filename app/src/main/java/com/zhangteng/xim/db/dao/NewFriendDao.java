@@ -47,7 +47,7 @@ public class NewFriendDao extends AbstractDao<NewFriend, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists ? "IF NOT EXISTS " : "";
         db.execSQL("CREATE TABLE " + constraint + "\"NEWFRIEND\" (" +
-                "\"_id\" INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                "\"_id\" INTEGER PRIMARY KEY AUTO_INCREMENT ," +
                 "\"UID\" TEXT ," +
                 "\"MSG\" TEXT ," +
                 "\"NAME\" TEXT ," +
@@ -70,31 +70,31 @@ public class NewFriendDao extends AbstractDao<NewFriend, Long> {
 
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(1, id);
+            stmt.bindLong(0, id);
         }
         String uid = entity.getUid();
         if (uid != null) {
-            stmt.bindString(2, uid);
+            stmt.bindString(1, uid);
         }
         String msg = entity.getMsg();
         if (msg != null) {
-            stmt.bindString(3, msg);
+            stmt.bindString(2, msg);
         }
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(4, name);
+            stmt.bindString(3, name);
         }
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(5, avatar);
+            stmt.bindString(4, avatar);
         }
         Integer status = entity.getStatus();
         if (status != null) {
-            stmt.bindLong(6, status);
+            stmt.bindLong(5, status);
         }
         Long time = entity.getTime();
         if (time != null) {
-            stmt.bindLong(7, time);
+            stmt.bindLong(6, time);
         }
     }
 
@@ -104,31 +104,31 @@ public class NewFriendDao extends AbstractDao<NewFriend, Long> {
 
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(1, id);
+            stmt.bindLong(0, id);
         }
         String uid = entity.getUid();
         if (uid != null) {
-            stmt.bindString(2, uid);
+            stmt.bindString(1, uid);
         }
         String msg = entity.getMsg();
         if (msg != null) {
-            stmt.bindString(3, msg);
+            stmt.bindString(2, msg);
         }
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(4, name);
+            stmt.bindString(3, name);
         }
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(5, avatar);
+            stmt.bindString(4, avatar);
         }
         Integer status = entity.getStatus();
         if (status != null) {
-            stmt.bindLong(6, status);
+            stmt.bindLong(5, status);
         }
         Long time = entity.getTime();
         if (time != null) {
-            stmt.bindLong(7, time);
+            stmt.bindLong(6, time);
         }
     }
 
@@ -155,11 +155,11 @@ public class NewFriendDao extends AbstractDao<NewFriend, Long> {
     public void readEntity(Cursor cursor, NewFriend entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUid(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setMsg(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 2));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 3));
-        entity.setAvatar(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 4));
-        entity.setStatus(cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 5));
-        entity.setTime(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 6));
+        entity.setMsg(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setAvatar(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setStatus(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
+        entity.setTime(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
     }
 
     @Override

@@ -20,6 +20,28 @@ public class UserDao extends AbstractDao<User, Long> {
 
     public static final String TABLENAME = "USER";
 
+    /**
+     * Creates the underlying database table.
+     */
+    public static void createTable(Database db, boolean ifNotExists) {
+        String constraint = ifNotExists ? "IF NOT EXISTS " : "";
+        db.execSQL("CREATE TABLE " + constraint + "\"USER\" (" +
+                "\"_id\" INTEGER PRIMARY KEY AUTO_INCREMENT ," +
+                "\"objectId\" TEXT ," +
+                "\"mobilePhoneNumber\" TEXT ," +
+                "\"email\" TEXT ," +
+                "\"realName\" TEXT ," +
+                "\"sex\" INTEGER ," +
+                "\"age\" INTEGER ," +
+                "\"schoolId\" INTEGER ," +
+                "\"roleId\" INTEGER ," +
+                "\"gradeId\" INTEGER ," +
+                "\"cityId\" INTEGER ," +
+                "\"areaId\" INTEGER ," +
+                "\"provinceId\" INTEGER ," +
+                "\"classId\" INTEGER);");
+    }
+
     public UserDao(DaoConfig config) {
         super(config);
     }
@@ -29,14 +51,75 @@ public class UserDao extends AbstractDao<User, Long> {
         super(config, daoSession);
     }
 
-    /**
-     * Creates the underlying database table.
-     */
-    public static void createTable(Database db, boolean ifNotExists) {
-        String constraint = ifNotExists ? "IF NOT EXISTS " : "";
-        db.execSQL("CREATE TABLE " + constraint + "\"USER\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY AUTO_INCREMENT," + // 0: id
-                "\"NAME\" TEXT);"); // 1: name
+    @Override
+    protected final void bindValues(DatabaseStatement stmt, User entity) {
+        stmt.clearBindings();
+
+        Integer sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindLong(4, sex);
+        }
+
+        Integer age = entity.getAge();
+        if (age != null) {
+            stmt.bindLong(5, age);
+        }
+
+        Integer schoolId = entity.getSchoolId();
+        if (schoolId != null) {
+            stmt.bindLong(6, schoolId);
+        }
+
+        Integer roleId = entity.getRoleId();
+        if (roleId != null) {
+            stmt.bindLong(7, roleId);
+        }
+
+        Integer gradeId = entity.getGradeId();
+        if (gradeId != null) {
+            stmt.bindLong(8, gradeId);
+        }
+
+        Integer cityId = entity.getCityId();
+        if (cityId != null) {
+            stmt.bindLong(9, cityId);
+        }
+        Integer areaId = entity.getAreaId();
+        if (areaId != null) {
+            stmt.bindLong(10, areaId);
+        }
+
+        Integer provinceId = entity.getProvinceId();
+        if (provinceId != null) {
+            stmt.bindLong(11, provinceId);
+        }
+
+        Integer classId = entity.getClassId();
+        if (classId != null) {
+            stmt.bindLong(12, classId);
+        }
+
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(0, id);
+        }
+
+        String objectId = entity.getObjectId();
+        if (objectId != null) {
+            stmt.bindString(1, objectId);
+        }
+        String mobilePhoneNumber = entity.getMobilePhoneNumber();
+        if (mobilePhoneNumber != null) {
+            stmt.bindString(2, mobilePhoneNumber);
+        }
+        String email = entity.getEmail();
+        if (email != null) {
+            stmt.bindString(3, email);
+        }
+        String realName = entity.getRealName();
+        if (realName != null) {
+            stmt.bindString(13, realName);
+        }
     }
 
     /**
@@ -48,33 +131,95 @@ public class UserDao extends AbstractDao<User, Long> {
     }
 
     @Override
-    protected final void bindValues(DatabaseStatement stmt, User entity) {
+    protected final void bindValues(SQLiteStatement stmt, User entity) {
         stmt.clearBindings();
+
+        Integer sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindLong(4, sex);
+        }
+
+        Integer age = entity.getAge();
+        if (age != null) {
+            stmt.bindLong(5, age);
+        }
+
+        Integer schoolId = entity.getSchoolId();
+        if (schoolId != null) {
+            stmt.bindLong(6, schoolId);
+        }
+
+        Integer roleId = entity.getRoleId();
+        if (roleId != null) {
+            stmt.bindLong(7, roleId);
+        }
+
+        Integer gradeId = entity.getGradeId();
+        if (gradeId != null) {
+            stmt.bindLong(8, gradeId);
+        }
+
+        Integer cityId = entity.getCityId();
+        if (cityId != null) {
+            stmt.bindLong(9, cityId);
+        }
+        Integer areaId = entity.getAreaId();
+        if (areaId != null) {
+            stmt.bindLong(10, areaId);
+        }
+
+        Integer provinceId = entity.getProvinceId();
+        if (provinceId != null) {
+            stmt.bindLong(11, provinceId);
+        }
+
+        Integer classId = entity.getClassId();
+        if (classId != null) {
+            stmt.bindLong(12, classId);
+        }
 
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(1, id);
+            stmt.bindLong(0, id);
         }
 
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
+        String objectId = entity.getObjectId();
+        if (objectId != null) {
+            stmt.bindString(1, objectId);
+        }
+        String mobilePhoneNumber = entity.getMobilePhoneNumber();
+        if (mobilePhoneNumber != null) {
+            stmt.bindString(2, mobilePhoneNumber);
+        }
+        String email = entity.getEmail();
+        if (email != null) {
+            stmt.bindString(3, email);
+        }
+        String realName = entity.getRealName();
+        if (realName != null) {
+            stmt.bindString(13, realName);
         }
     }
 
     @Override
-    protected final void bindValues(SQLiteStatement stmt, User entity) {
-        stmt.clearBindings();
-
-        Long id = entity.getId();
-        if (id != null) {
-            stmt.bindLong(1, id);
-        }
-
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
-        }
+    public User readEntity(Cursor cursor, int offset) {
+        User entity = new User(
+                cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0),
+                cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1),
+                cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2),
+                cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3),
+                cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4),
+                cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5),
+                cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6),
+                cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7),
+                cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8),
+                cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9),
+                cursor.isNull(offset + 10) ? null : cursor.getLong(offset + 10),
+                cursor.isNull(offset + 11) ? null : cursor.getLong(offset + 11),
+                cursor.isNull(offset + 12) ? null : cursor.getLong(offset + 12),
+                cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13)
+        );
+        return entity;
     }
 
     @Override
@@ -83,18 +228,62 @@ public class UserDao extends AbstractDao<User, Long> {
     }
 
     @Override
-    public User readEntity(Cursor cursor, int offset) {
-        User entity = new User( //
-                cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-                cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // name
-        );
-        return entity;
-    }
-
-    @Override
     public void readEntity(Cursor cursor, User entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setObjectId(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setMobilePhoneNumber(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setEmail(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        if (!cursor.isNull(offset + 4)) {
+            entity.setSex((int) cursor.getLong(offset + 4));
+        }
+        if (!cursor.isNull(offset + 5)) {
+            entity.setAge((int) cursor.getLong(offset + 5));
+        }
+        if (!cursor.isNull(offset + 6)) {
+            entity.setSchoolId((int) cursor.getLong(offset + 6));
+        }
+        if (!cursor.isNull(offset + 7)) {
+            entity.setRoleId((int) cursor.getLong(offset + 7));
+        }
+        if (!cursor.isNull(offset + 8)) {
+            entity.setGradeId((int) cursor.getLong(offset + 8));
+        }
+        if (!cursor.isNull(offset + 9)) {
+            entity.setCityId((int) cursor.getLong(offset + 9));
+        }
+        if (!cursor.isNull(offset + 10)) {
+            entity.setAreaId((int) cursor.getLong(offset + 10));
+        }
+        if (!cursor.isNull(offset + 11)) {
+            entity.setProvinceId((int) cursor.getLong(offset + 11));
+        }
+        if (!cursor.isNull(offset + 12)) {
+            entity.setClassId((int) cursor.getLong(offset + 12));
+        }
+        entity.setRealName(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
+    }
+
+    /**
+     * Properties of entity User.<br/>
+     * Can be used for QueryBuilder and for referencing column names.
+     */
+    public static class Properties {
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property ObjectId = new Property(1, String.class, "objectId", true, "objectId");
+        public final static Property MobilePhoneNumber = new Property(2, String.class, "mobilePhoneNumber", false, "mobilePhoneNumber");
+        public final static Property Email = new Property(3, String.class, "email", false, "email");
+        public final static Property RealName = new Property(13, String.class, "realName", false, "realName");
+
+        public final static Property Sex = new Property(4, Long.class, "sex", false, "sex");
+        public final static Property Age = new Property(5, Long.class, "age", false, "age");
+        public final static Property SchoolId = new Property(6, Long.class, "schoolId", false, "schoolId");
+        public final static Property RoleId = new Property(7, Long.class, "roleId", false, "roleId");
+        public final static Property GradeId = new Property(8, Long.class, "gradeId", false, "gradeId");
+        public final static Property CityId = new Property(9, Long.class, "cityId", false, "cityId");
+        public final static Property AreaId = new Property(10, Long.class, "areaId", false, "areaId");
+        public final static Property ProvinceId = new Property(11, Long.class, "provinceId", false, "provinceId");
+        public final static Property ClassId = new Property(12, Long.class, "classId", false, "classId");
+
     }
 
     @Override
@@ -120,15 +309,6 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     protected final boolean isEntityUpdateable() {
         return true;
-    }
-
-    /**
-     * Properties of entity User.<br/>
-     * Can be used for QueryBuilder and for referencing column names.
-     */
-    public static class Properties {
-        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
     }
 
 }
