@@ -60,6 +60,12 @@ public class MessageFragment extends BaseFragment {
     @Override
     protected void initData() {
         super.initData();
+//        IMApi.ConversationManager.getInstance()
+//                .startPrivateConversation(
+//                        IMApi.LoacalUserManager.getInstance().getUserInfo(
+//                                UserApi.getInstance().getUserInfo().getObjectId()
+//                        ), true
+//                );
         if (IMApi.ConversationManager.getInstance().loadAllConversation() != null) {
             data.clear();
             data.addAll(IMApi.ConversationManager.getInstance().loadAllConversation());

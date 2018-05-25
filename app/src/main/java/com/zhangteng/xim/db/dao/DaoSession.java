@@ -1,7 +1,7 @@
 package com.zhangteng.xim.db.dao;
 
+import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.db.bean.NewFriend;
-import com.zhangteng.xim.db.bean.User;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.AbstractDaoSession;
@@ -33,7 +33,7 @@ public class DaoSession extends AbstractDaoSession {
         userDaoConfig = daoConfigMap.get(UserDao.class).clone();
         userDaoConfig.initIdentityScope(type);
         userDao = new UserDao(userDaoConfig, this);
-        registerDao(User.class, userDao);
+        registerDao(LocalUser.class, userDao);
 
         newFriendDaoConfig = daoConfigMap.get(NewFriendDao.class).clone();
         newFriendDaoConfig.initIdentityScope(type);

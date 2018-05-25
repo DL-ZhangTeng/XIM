@@ -117,12 +117,7 @@ public class MainActivity extends BaseActivity {
                 }
             });
         }
-        IMApi.ConversationManager.getInstance()
-                .startPrivateConversation(
-                        IMApi.LoacalUserManager.getInstance().getUserInfo(
-                                UserApi.getInstance().getUserInfo().getObjectId()
-                        ), true
-                );
+
         initImagePicker();
         navigationView.setItemIconTintList(null);
         slidingPaneLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {

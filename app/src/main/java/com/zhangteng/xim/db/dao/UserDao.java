@@ -3,7 +3,7 @@ package com.zhangteng.xim.db.dao;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
-import com.zhangteng.xim.db.bean.User;
+import com.zhangteng.xim.db.bean.LocalUser;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
@@ -16,7 +16,7 @@ import org.greenrobot.greendao.internal.DaoConfig;
 /**
  * DAO for table "USER".
  */
-public class UserDao extends AbstractDao<User, Long> {
+public class UserDao extends AbstractDao<LocalUser, Long> {
 
     public static final String TABLENAME = "USER";
 
@@ -26,11 +26,13 @@ public class UserDao extends AbstractDao<User, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists ? "IF NOT EXISTS " : "";
         db.execSQL("CREATE TABLE " + constraint + "\"USER\" (" +
-                "\"_id\" INTEGER PRIMARY KEY AUTO_INCREMENT ," +
+                "\"id\" INTEGER AUTO_INCREMENT PRIMARY KEY ," +
                 "\"objectId\" TEXT ," +
                 "\"mobilePhoneNumber\" TEXT ," +
                 "\"email\" TEXT ," +
                 "\"realName\" TEXT ," +
+                "\"username\" TEXT ," +
+                "\"avatar\" TEXT ," +
                 "\"sex\" INTEGER ," +
                 "\"age\" INTEGER ," +
                 "\"schoolId\" INTEGER ," +
@@ -52,7 +54,7 @@ public class UserDao extends AbstractDao<User, Long> {
     }
 
     @Override
-    protected final void bindValues(DatabaseStatement stmt, User entity) {
+    protected final void bindValues(DatabaseStatement stmt, LocalUser entity) {
         stmt.clearBindings();
 
         Integer sex = entity.getSex();
@@ -119,6 +121,16 @@ public class UserDao extends AbstractDao<User, Long> {
         String realName = entity.getRealName();
         if (realName != null) {
             stmt.bindString(13, realName);
+        }
+
+        String username = entity.getUsername();
+        if (username != null) {
+            stmt.bindString(14, username);
+        }
+
+        String icoPath = entity.getIcoPath();
+        if (icoPath != null) {
+            stmt.bindString(15, icoPath);
         }
     }
 
@@ -131,7 +143,7 @@ public class UserDao extends AbstractDao<User, Long> {
     }
 
     @Override
-    protected final void bindValues(SQLiteStatement stmt, User entity) {
+    protected final void bindValues(SQLiteStatement stmt, LocalUser entity) {
         stmt.clearBindings();
 
         Integer sex = entity.getSex();
@@ -199,11 +211,21 @@ public class UserDao extends AbstractDao<User, Long> {
         if (realName != null) {
             stmt.bindString(13, realName);
         }
+
+        String username = entity.getUsername();
+        if (username != null) {
+            stmt.bindString(14, username);
+        }
+
+        String icoPath = entity.getIcoPath();
+        if (icoPath != null) {
+            stmt.bindString(15, icoPath);
+        }
     }
 
     @Override
-    public User readEntity(Cursor cursor, int offset) {
-        User entity = new User(
+    public LocalUser readEntity(Cursor cursor, int offset) {
+        LocalUser entity = new LocalUser(
                 cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0),
                 cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1),
                 cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2),
@@ -217,7 +239,9 @@ public class UserDao extends AbstractDao<User, Long> {
                 cursor.isNull(offset + 10) ? null : cursor.getLong(offset + 10),
                 cursor.isNull(offset + 11) ? null : cursor.getLong(offset + 11),
                 cursor.isNull(offset + 12) ? null : cursor.getLong(offset + 12),
-                cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13)
+                cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13),
+                cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14),
+                cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15)
         );
         return entity;
     }
@@ -228,7 +252,7 @@ public class UserDao extends AbstractDao<User, Long> {
     }
 
     @Override
-    public void readEntity(Cursor cursor, User entity, int offset) {
+    public void readEntity(Cursor cursor, LocalUser entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setObjectId(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setMobilePhoneNumber(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
@@ -261,6 +285,28 @@ public class UserDao extends AbstractDao<User, Long> {
             entity.setClassId((int) cursor.getLong(offset + 12));
         }
         entity.setRealName(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
+        entity.setUsername(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setIcoPath(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
+    }
+
+    @Override
+    protected final Long updateKeyAfterInsert(LocalUser entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
+    }
+
+    @Override
+    public Long getKey(LocalUser entity) {
+        if (entity != null) {
+            return entity.getId();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean hasKey(LocalUser entity) {
+        return entity.getId() != null;
     }
 
     /**
@@ -268,11 +314,13 @@ public class UserDao extends AbstractDao<User, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property Id = new Property(0, Long.class, "id", true, "id");
         public final static Property ObjectId = new Property(1, String.class, "objectId", true, "objectId");
         public final static Property MobilePhoneNumber = new Property(2, String.class, "mobilePhoneNumber", false, "mobilePhoneNumber");
         public final static Property Email = new Property(3, String.class, "email", false, "email");
         public final static Property RealName = new Property(13, String.class, "realName", false, "realName");
+        public final static Property Username = new Property(14, String.class, "username", false, "username");
+        public final static Property Avatar = new Property(15, String.class, "avatar", false, "avatar");
 
         public final static Property Sex = new Property(4, Long.class, "sex", false, "sex");
         public final static Property Age = new Property(5, Long.class, "age", false, "age");
@@ -284,26 +332,6 @@ public class UserDao extends AbstractDao<User, Long> {
         public final static Property ProvinceId = new Property(11, Long.class, "provinceId", false, "provinceId");
         public final static Property ClassId = new Property(12, Long.class, "classId", false, "classId");
 
-    }
-
-    @Override
-    protected final Long updateKeyAfterInsert(User entity, long rowId) {
-        entity.setId(rowId);
-        return rowId;
-    }
-
-    @Override
-    public Long getKey(User entity) {
-        if (entity != null) {
-            return entity.getId();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public boolean hasKey(User entity) {
-        return entity.getId() != null;
     }
 
     @Override

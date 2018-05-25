@@ -13,7 +13,11 @@ import com.zhangteng.xim.adapter.LinkmanAdapter;
 import com.zhangteng.xim.base.BaseFragment;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.Friend;
+import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.IMApi;
+import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.db.DBManager;
+import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.SortUtils;
 
 import java.util.ArrayList;
@@ -78,15 +82,32 @@ public class LinkmanFragment extends BaseFragment {
     @Override
     protected void initData() {
         super.initData();
-        IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
-            @Override
-            public void onSuccess(@Nullable List<Friend> bmobObject) {
-                Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
-                list.clear();
-                list.addAll(bmobObject);
-                Collections.sort(list);
-                linkmanAdapter.notifyDataSetChanged();
+        long index = DBManager.instance().countUser();
+        if (index <= 0) {
+            IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
+                @Override
+                public void onSuccess(@Nullable List<Friend> bmobObject) {
+                    Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
+                    list.clear();
+                    list.addAll(bmobObject);
+                    Collections.sort(list);
+                    linkmanAdapter.notifyDataSetChanged();
+                    for (Friend friend : list) {
+                        LocalUser user = LocalUser.getLocalUser(friend.getFriendUser());
+                        DBManager.instance().insertUser(user);
+                    }
+                }
+            });
+        } else {
+            List<LocalUser> localUsers = DBManager.instance().queryUsers(0, 2);
+            list.clear();
+            for (LocalUser user : localUsers) {
+                Friend friend = new Friend();
+                friend.setUser(UserApi.getInstance().getUserInfo());
+                friend.setFriendUser(User.getUser(user));
+                list.add(friend);
             }
-        });
+            linkmanAdapter.notifyDataSetChanged();
+        }
     }
 }

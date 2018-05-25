@@ -1,17 +1,19 @@
 package com.zhangteng.xim.db.bean;
 
+import com.zhangteng.xim.bmob.entity.User;
+
 /**
  * Created by swing on 2018/5/25.
  */
-public class User extends com.zhangteng.xim.bmob.entity.User {
+public class LocalUser extends User {
     private Long id;
 
-    public User() {
+    public LocalUser() {
     }
 
-    public User(Long id, String objectId, String mobilePhoneNumber, String email
+    public LocalUser(Long id, String objectId, String mobilePhoneNumber, String email
             , Long sex, Long age, Long schoolId, Long roleId, Long gradeId, Long cityId
-            , Long areaId, Long provinceId, Long classId, String realName) {
+            , Long areaId, Long provinceId, Long classId, String realName, String username, String avatar) {
         super();
         this.id = id;
         this.setObjectId(objectId);
@@ -45,6 +47,8 @@ public class User extends com.zhangteng.xim.bmob.entity.User {
             this.setClassId(classId.intValue());
         }
         this.setRealName(realName);
+        this.setUsername(username);
+        this.setIcoPath(avatar);
     }
 
     public Long getId() {
@@ -53,5 +57,25 @@ public class User extends com.zhangteng.xim.bmob.entity.User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public static LocalUser getLocalUser(User user) {
+        LocalUser localUser = new LocalUser();
+        localUser.setObjectId(user.getObjectId());
+        localUser.setMobilePhoneNumber(user.getMobilePhoneNumber());
+        localUser.setEmail(user.getEmail());
+        localUser.setSex(user.getSex());
+        localUser.setAge(user.getAge());
+        localUser.setSchoolId(user.getSchoolId());
+        localUser.setRoleId(user.getRoleId());
+        localUser.setGradeId(user.getGradeId());
+        localUser.setCityId(user.getCityId());
+        localUser.setAreaId(user.getAreaId());
+        localUser.setProvinceId(user.getProvinceId());
+        localUser.setClassId(user.getClassId());
+        localUser.setRealName(user.getRealName());
+        localUser.setUsername(user.getUsername());
+        localUser.setIcoPath(user.getIcoPath());
+        return localUser;
     }
 }

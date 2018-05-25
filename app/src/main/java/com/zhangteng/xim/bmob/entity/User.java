@@ -1,5 +1,7 @@
 package com.zhangteng.xim.bmob.entity;
 
+import com.zhangteng.xim.db.bean.LocalUser;
+
 import cn.bmob.v3.BmobUser;
 
 /**
@@ -105,5 +107,25 @@ public class User extends BmobUser {
 
     public void setClassId(int classId) {
         this.classId = classId;
+    }
+
+    public static User getUser(LocalUser localUser) {
+        User user = new User();
+        user.setObjectId(localUser.getObjectId());
+        user.setMobilePhoneNumber(localUser.getMobilePhoneNumber());
+        user.setEmail(localUser.getEmail());
+        user.setSex(localUser.getSex());
+        user.setAge(localUser.getAge());
+        user.setSchoolId(localUser.getSchoolId());
+        user.setRoleId(localUser.getRoleId());
+        user.setGradeId(localUser.getGradeId());
+        user.setCityId(localUser.getCityId());
+        user.setAreaId(localUser.getAreaId());
+        user.setProvinceId(localUser.getProvinceId());
+        user.setClassId(localUser.getClassId());
+        user.setRealName(localUser.getRealName());
+        user.setUsername(localUser.getUsername());
+        user.setIcoPath(localUser.getIcoPath());
+        return user;
     }
 }

@@ -3,14 +3,15 @@ package com.zhangteng.xim.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.db.bean.NewFriend;
-import com.zhangteng.xim.db.bean.User;
 import com.zhangteng.xim.db.dao.DaoMaster;
 import com.zhangteng.xim.db.dao.DaoSession;
 import com.zhangteng.xim.db.dao.NewFriendDao;
 import com.zhangteng.xim.db.dao.UserDao;
 
 import org.greenrobot.greendao.query.DeleteQuery;
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.List;
 
@@ -89,25 +90,39 @@ public class DBManager {
         }
     }
 
-    public void insertUser(User user) {
+    public void insertUser(LocalUser user) {
         DBManager.instance().openWritableDb().getUserDao().insert(user);
     }
 
-    public void deleteUser(User user) {
+    public void deleteUser(LocalUser user) {
         DBManager.instance().openWritableDb().getUserDao().delete(user);
     }
 
-    public void updateUser(User user) {
+    public void updateUser(LocalUser user) {
         UserDao userDao = DBManager.instance().openWritableDb().getUserDao();
-        DeleteQuery<User> deleteQuery = userDao.queryBuilder().where(UserDao.Properties.Id.eq(user.getId())).where(UserDao.Properties.ObjectId.eq(user.getObjectId())).buildDelete();
+        DeleteQuery<LocalUser> deleteQuery = userDao.queryBuilder().where(UserDao.Properties.Id.eq(user.getId())).where(UserDao.Properties.ObjectId.eq(user.getObjectId())).buildDelete();
         deleteQuery.executeDeleteWithoutDetachingEntities();
         userDao.insertOrReplace(user);
     }
 
-    public List<User> queryUser(User user) {
+    public List<LocalUser> queryUser(LocalUser user) {
         UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
-        List<User> list = userDao.queryBuilder().where(UserDao.Properties.ObjectId.eq(user.getObjectId())).build().list();
+        List<LocalUser> list = userDao.queryBuilder().where(UserDao.Properties.ObjectId.eq(user.getObjectId())).build().list();
         return list;
+    }
+
+    public List<LocalUser> queryUsers(int startId, int endId) {
+        UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
+        QueryBuilder qb = userDao.queryBuilder();
+        qb.offset(startId).limit(endId - startId);
+        qb.build();
+        return qb.list();
+    }
+
+    public long countUser() {
+        UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
+        QueryBuilder qb = userDao.queryBuilder();
+        return qb.count();
     }
 
     public void insertNewFriend(NewFriend newFriend) {
