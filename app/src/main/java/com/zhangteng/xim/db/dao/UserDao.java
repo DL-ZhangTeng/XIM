@@ -30,9 +30,6 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
                 "\"objectId\" TEXT ," +
                 "\"mobilePhoneNumber\" TEXT ," +
                 "\"email\" TEXT ," +
-                "\"realName\" TEXT ," +
-                "\"username\" TEXT ," +
-                "\"avatar\" TEXT ," +
                 "\"sex\" INTEGER ," +
                 "\"age\" INTEGER ," +
                 "\"schoolId\" INTEGER ," +
@@ -41,7 +38,10 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
                 "\"cityId\" INTEGER ," +
                 "\"areaId\" INTEGER ," +
                 "\"provinceId\" INTEGER ," +
-                "\"classId\" INTEGER);");
+                "\"classId\" INTEGER ," +
+                "\"realName\" TEXT ," +
+                "\"username\" TEXT ," +
+                "\"avatar\" TEXT)");
     }
 
     public UserDao(DaoConfig config) {
@@ -56,50 +56,6 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, LocalUser entity) {
         stmt.clearBindings();
-
-        Integer sex = entity.getSex();
-        if (sex != null) {
-            stmt.bindLong(4, sex);
-        }
-
-        Integer age = entity.getAge();
-        if (age != null) {
-            stmt.bindLong(5, age);
-        }
-
-        Integer schoolId = entity.getSchoolId();
-        if (schoolId != null) {
-            stmt.bindLong(6, schoolId);
-        }
-
-        Integer roleId = entity.getRoleId();
-        if (roleId != null) {
-            stmt.bindLong(7, roleId);
-        }
-
-        Integer gradeId = entity.getGradeId();
-        if (gradeId != null) {
-            stmt.bindLong(8, gradeId);
-        }
-
-        Integer cityId = entity.getCityId();
-        if (cityId != null) {
-            stmt.bindLong(9, cityId);
-        }
-        Integer areaId = entity.getAreaId();
-        if (areaId != null) {
-            stmt.bindLong(10, areaId);
-        }
-
-        Integer provinceId = entity.getProvinceId();
-        if (provinceId != null) {
-            stmt.bindLong(11, provinceId);
-        }
-
-        Integer classId = entity.getClassId();
-        if (classId != null) {
-            stmt.bindLong(12, classId);
-        }
 
         Long id = entity.getId();
         if (id != null) {
@@ -117,6 +73,35 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
         String email = entity.getEmail();
         if (email != null) {
             stmt.bindString(3, email);
+        }
+        Integer sex = entity.getSex();
+        stmt.bindLong(4, sex);
+
+        Integer age = entity.getAge();
+        stmt.bindLong(5, age);
+
+        Integer schoolId = entity.getSchoolId();
+        stmt.bindLong(6, schoolId);
+
+        Integer roleId = entity.getRoleId();
+        stmt.bindLong(7, roleId);
+
+        Integer gradeId = entity.getGradeId();
+        stmt.bindLong(8, gradeId);
+
+        Integer cityId = entity.getCityId();
+        stmt.bindLong(9, cityId);
+
+        Integer areaId = entity.getAreaId();
+        stmt.bindLong(10, areaId);
+
+        Integer provinceId = entity.getProvinceId();
+        stmt.bindLong(11, provinceId);
+
+
+        Integer classId = entity.getClassId();
+        if (classId != null) {
+            stmt.bindLong(12, classId);
         }
         String realName = entity.getRealName();
         if (realName != null) {
@@ -146,6 +131,23 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
     protected final void bindValues(SQLiteStatement stmt, LocalUser entity) {
         stmt.clearBindings();
 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(0, id);
+        }
+
+        String objectId = entity.getObjectId();
+        if (objectId != null) {
+            stmt.bindString(1, objectId);
+        }
+        String mobilePhoneNumber = entity.getMobilePhoneNumber();
+        if (mobilePhoneNumber != null) {
+            stmt.bindString(2, mobilePhoneNumber);
+        }
+        String email = entity.getEmail();
+        if (email != null) {
+            stmt.bindString(3, email);
+        }
         Integer sex = entity.getSex();
         if (sex != null) {
             stmt.bindLong(4, sex);
@@ -188,24 +190,6 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
         Integer classId = entity.getClassId();
         if (classId != null) {
             stmt.bindLong(12, classId);
-        }
-
-        Long id = entity.getId();
-        if (id != null) {
-            stmt.bindLong(0, id);
-        }
-
-        String objectId = entity.getObjectId();
-        if (objectId != null) {
-            stmt.bindString(1, objectId);
-        }
-        String mobilePhoneNumber = entity.getMobilePhoneNumber();
-        if (mobilePhoneNumber != null) {
-            stmt.bindString(2, mobilePhoneNumber);
-        }
-        String email = entity.getEmail();
-        if (email != null) {
-            stmt.bindString(3, email);
         }
         String realName = entity.getRealName();
         if (realName != null) {
@@ -318,10 +302,6 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
         public final static Property ObjectId = new Property(1, String.class, "objectId", true, "objectId");
         public final static Property MobilePhoneNumber = new Property(2, String.class, "mobilePhoneNumber", false, "mobilePhoneNumber");
         public final static Property Email = new Property(3, String.class, "email", false, "email");
-        public final static Property RealName = new Property(13, String.class, "realName", false, "realName");
-        public final static Property Username = new Property(14, String.class, "username", false, "username");
-        public final static Property Avatar = new Property(15, String.class, "avatar", false, "avatar");
-
         public final static Property Sex = new Property(4, Long.class, "sex", false, "sex");
         public final static Property Age = new Property(5, Long.class, "age", false, "age");
         public final static Property SchoolId = new Property(6, Long.class, "schoolId", false, "schoolId");
@@ -331,7 +311,9 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
         public final static Property AreaId = new Property(10, Long.class, "areaId", false, "areaId");
         public final static Property ProvinceId = new Property(11, Long.class, "provinceId", false, "provinceId");
         public final static Property ClassId = new Property(12, Long.class, "classId", false, "classId");
-
+        public final static Property RealName = new Property(13, String.class, "realName", false, "realName");
+        public final static Property Username = new Property(14, String.class, "username", false, "username");
+        public final static Property Avatar = new Property(15, String.class, "avatar", false, "avatar");
     }
 
     @Override
