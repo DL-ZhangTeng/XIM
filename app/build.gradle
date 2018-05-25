@@ -46,4 +46,5 @@ dependencies {
     implementation project(':swiperecyclerview')
     implementation 'com.ms-square:expandableTextView:0.1.4'
     implementation project(':imagepicker')
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
 }

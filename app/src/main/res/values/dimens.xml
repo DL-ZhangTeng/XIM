@@ -18,5 +18,5 @@
     <dimen name="common_title_bar_font_size">18sp</dimen>
     <dimen name="common_leftorright_padding">16dp</dimen>
     <dimen name="sticky_text_size">16sp</dimen>
-    <dimen name="sticky_height">30dp</dimen>
+    <dimen name="sticky_height">32dp</dimen>
 </resources>

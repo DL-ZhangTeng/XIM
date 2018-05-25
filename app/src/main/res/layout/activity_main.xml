@@ -27,9 +27,9 @@
             android:id="@+id/title_bar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tabbar_height"
-            app:leftButtonBg="@mipmap/ic_launcher"
-            app:leftButtonHeight="@dimen/tabbar_height"
-            app:leftButtonWidth="@dimen/tabbar_height"
+            app:leftButtonBg="@mipmap/app_icon"
+            app:leftButtonHeight="36dp"
+            app:leftButtonWidth="36dp"
             app:rightButtonHeight="@dimen/tabbar_height"
             app:rightButtonSrc="@mipmap/add"
             app:rightButtonWidth="@dimen/tabbar_height" />

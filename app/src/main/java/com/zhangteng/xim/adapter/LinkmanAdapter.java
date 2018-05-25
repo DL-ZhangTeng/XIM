@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
@@ -35,8 +37,14 @@ public class LinkmanAdapter extends BaseAdapter<Friend> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((LinkmanViewHolder) holder).circleImageView.setImageResource(R.mipmap.ic_launcher);
-        ((LinkmanViewHolder) holder).textView.setText(String.valueOf(position));
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.app_icon)
+                .centerCrop();
+        Glide.with(context)
+                .load(data.get(position).getFriendUser().getIcoPath())
+                .apply(requestOptions)
+                .into(((LinkmanViewHolder) holder).circleImageView);
+        ((LinkmanViewHolder) holder).textView.setText(data.get(position).getFriendUser().getUsername());
     }
 
     public static class LinkmanViewHolder extends RecyclerView.ViewHolder {

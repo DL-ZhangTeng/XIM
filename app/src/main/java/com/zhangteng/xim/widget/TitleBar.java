@@ -1,11 +1,9 @@
 package com.zhangteng.xim.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -159,6 +157,9 @@ public class TitleBar extends RelativeLayout {
         title.setText(titleText);
     }
 
+    public ImageView getLeftBtn() {
+        return leftBtn;
+    }
 
     public void setTitleDrawableRight(boolean upOrDown) {
         if (isShowDrawable) {
@@ -185,6 +186,9 @@ public class TitleBar extends RelativeLayout {
         rightBtn.setOnClickListener(onClickListener);
     }
 
+    public void setLeftClickListener(OnClickListener onClickListener) {
+        leftBtn.setOnClickListener(onClickListener);
+    }
 
     public void setTitleClickListener(OnClickListener ontitleClickListener) {
         if (title != null) {

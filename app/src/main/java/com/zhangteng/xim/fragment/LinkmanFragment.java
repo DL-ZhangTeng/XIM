@@ -14,8 +14,10 @@ import com.zhangteng.xim.base.BaseFragment;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.Friend;
 import com.zhangteng.xim.bmob.http.IMApi;
+import com.zhangteng.xim.utils.SortUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -29,6 +31,9 @@ public class LinkmanFragment extends BaseFragment {
 
     private LinkmanAdapter linkmanAdapter;
     private List<Friend> list;
+    private int groupNum = 0;
+    private int groupPosition = 0;
+    private int groupTotal;
 
     @Override
     protected int getResourceId() {
@@ -40,9 +45,21 @@ public class LinkmanFragment extends BaseFragment {
         ItemStickyDecoration.GroupInfoInterface groupInfoInterface = new ItemStickyDecoration.GroupInfoInterface() {
             @Override
             public GroupInfo getGroupInfo(int position) {
-                int groupId = position / 5;
-                int index = position % 5;
-                GroupInfo groupInfo = new GroupInfo(groupId, String.valueOf(groupId), index, 5);
+                char groupId = SortUtils.getFirstLetterC(list.get(position).getFriendUser().getUsername());
+                if (groupId != groupNum) {
+                    if (groupNum != 0) {
+                        groupTotal = groupPosition + 1;
+                    } else {
+                        groupTotal = list.size();
+                    }
+                    groupNum = groupId;
+                    groupPosition = 0;
+
+                } else {
+                    groupPosition++;
+                }
+                int index = groupPosition;
+                GroupInfo groupInfo = new GroupInfo(groupId, String.valueOf(groupId), index, groupTotal);
                 groupInfo.setPosition(index);
                 return groupInfo;
             }
@@ -54,6 +71,7 @@ public class LinkmanFragment extends BaseFragment {
         ItemStickyDecoration itemStickyDecoration = new ItemStickyDecoration(groupInfoInterface);
         itemStickyDecoration.setmStickyHeight((int) getResources().getDimension(R.dimen.sticky_height));
         itemStickyDecoration.setTextSize((int) getResources().getDimension(R.dimen.sticky_text_size));
+        itemStickyDecoration.setTextPadding((int) getResources().getDimension(R.dimen.common_leftorright_padding));
         recyclerView.addItemDecoration(itemStickyDecoration);
     }
 
@@ -66,6 +84,7 @@ public class LinkmanFragment extends BaseFragment {
                 Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
                 list.clear();
                 list.addAll(bmobObject);
+                Collections.sort(list);
                 linkmanAdapter.notifyDataSetChanged();
             }
         });

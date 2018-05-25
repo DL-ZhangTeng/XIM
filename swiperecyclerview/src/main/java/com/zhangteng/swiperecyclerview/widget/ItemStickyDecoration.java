@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
 import android.view.View;
 
-import com.zhangteng.swiperecyclerview.R;
 import com.zhangteng.swiperecyclerview.bean.GroupInfo;
 
 /**
@@ -18,6 +17,7 @@ public class ItemStickyDecoration extends RecyclerView.ItemDecoration {
     private final Paint.FontMetrics mFontMetrics;
     private int mStickyHeight = 60;
     private int textSize = 16;
+    private int padding = 16;
     private Paint mTextPaint;
     private Paint mPaint;
 
@@ -52,6 +52,10 @@ public class ItemStickyDecoration extends RecyclerView.ItemDecoration {
                         int top = view.getTop() - mStickyHeight;
                         int bottom = view.getTop();
                         drawStickyHeader(c, groupinfo, left, top, right, bottom);
+                    } else {
+                        int top = view.getTop() - 1;
+                        int bottom = view.getTop();
+                        c.drawRect(left, top, right, bottom, mPaint);
                     }
                 } else {
                     //当 ItemView 是屏幕上第一个可见的View 时，不管它是不是组内第一个View
@@ -78,8 +82,8 @@ public class ItemStickyDecoration extends RecyclerView.ItemDecoration {
     private void drawStickyHeader(Canvas c, GroupInfo groupinfo, int left, int top, int right, int bottom) {
         //绘制Header
         c.drawRect(left, top, right, bottom, mPaint);
-        float titleX = left;
-        float titleY = bottom - mFontMetrics.descent;
+        float titleX = left + padding;
+        float titleY = bottom - mFontMetrics.descent - padding / 2;
         //绘制Title
         c.drawText(groupinfo.getTitle(), titleX, titleY, mTextPaint);
     }
@@ -91,8 +95,6 @@ public class ItemStickyDecoration extends RecyclerView.ItemDecoration {
         GroupInfo groupInfo = groupInfoInterface.getGroupInfo(position);
         if (groupInfo != null && groupInfo.isFirst()) {
             outRect.top = mStickyHeight;
-        } else {
-            outRect.top = 1;
         }
     }
 
@@ -103,6 +105,10 @@ public class ItemStickyDecoration extends RecyclerView.ItemDecoration {
     public void setTextSize(int textSize) {
         this.textSize = textSize;
         mTextPaint.setTextSize(textSize);
+    }
+
+    public void setTextPadding(int padding) {
+        this.padding = padding;
     }
 
     private GroupInfoInterface groupInfoInterface;
