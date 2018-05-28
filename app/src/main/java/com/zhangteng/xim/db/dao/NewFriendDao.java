@@ -67,34 +67,34 @@ public class NewFriendDao extends AbstractDao<NewFriend, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, NewFriend entity) {
         stmt.clearBindings();
-        int index = 0;
+
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(index++, id);
+            stmt.bindLong(1, id);
         }
         String uid = entity.getUid();
         if (uid != null) {
-            stmt.bindString(index++, uid);
+            stmt.bindString(2, uid);
         }
         String msg = entity.getMsg();
         if (msg != null) {
-            stmt.bindString(index++, msg);
+            stmt.bindString(3, msg);
         }
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(index++, name);
+            stmt.bindString(4, name);
         }
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(index++, avatar);
+            stmt.bindString(5, avatar);
         }
         Integer status = entity.getStatus();
         if (status != null) {
-            stmt.bindLong(index++, status);
+            stmt.bindLong(6, status);
         }
         Long time = entity.getTime();
         if (time != null) {
-            stmt.bindLong(index++, time);
+            stmt.bindLong(7, time);
         }
     }
 
@@ -102,34 +102,33 @@ public class NewFriendDao extends AbstractDao<NewFriend, Long> {
     protected final void bindValues(SQLiteStatement stmt, NewFriend entity) {
         stmt.clearBindings();
 
-        int index = 0;
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(index++, id);
+            stmt.bindLong(1, id);
         }
         String uid = entity.getUid();
         if (uid != null) {
-            stmt.bindString(index++, uid);
+            stmt.bindString(2, uid);
         }
         String msg = entity.getMsg();
         if (msg != null) {
-            stmt.bindString(index++, msg);
+            stmt.bindString(3, msg);
         }
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(index++, name);
+            stmt.bindString(4, name);
         }
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(index++, avatar);
+            stmt.bindString(5, avatar);
         }
         Integer status = entity.getStatus();
         if (status != null) {
-            stmt.bindLong(index++, status);
+            stmt.bindLong(6, status);
         }
         Long time = entity.getTime();
         if (time != null) {
-            stmt.bindLong(index++, time);
+            stmt.bindLong(7, time);
         }
     }
 

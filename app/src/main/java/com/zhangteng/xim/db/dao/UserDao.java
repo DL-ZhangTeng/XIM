@@ -57,67 +57,65 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
     protected final void bindValues(DatabaseStatement stmt, LocalUser entity) {
         stmt.clearBindings();
 
-        int index = 0;
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(index++, id);
+            stmt.bindLong(1, id);
         }
 
         String objectId = entity.getObjectId();
         if (objectId != null) {
-            stmt.bindString(index++, objectId);
+            stmt.bindString(2, objectId);
         }
         String mobilePhoneNumber = entity.getMobilePhoneNumber();
         if (mobilePhoneNumber != null) {
-            stmt.bindString(index++, mobilePhoneNumber);
+            stmt.bindString(3, mobilePhoneNumber);
         }
         String email = entity.getEmail();
         if (email != null) {
-            stmt.bindString(index++, email);
+            stmt.bindString(4, email);
         }
         Integer sex = entity.getSex();
-        stmt.bindLong(index++, sex);
+        stmt.bindLong(5, sex);
 
         Integer age = entity.getAge();
-        stmt.bindLong(index++, age);
+        stmt.bindLong(6, age);
 
         Integer schoolId = entity.getSchoolId();
-        stmt.bindLong(index++, schoolId);
+        stmt.bindLong(7, schoolId);
 
         Integer roleId = entity.getRoleId();
-        stmt.bindLong(index++, roleId);
+        stmt.bindLong(8, roleId);
 
         Integer gradeId = entity.getGradeId();
-        stmt.bindLong(index++, gradeId);
+        stmt.bindLong(9, gradeId);
 
         Integer cityId = entity.getCityId();
-        stmt.bindLong(index++, cityId);
+        stmt.bindLong(10, cityId);
 
         Integer areaId = entity.getAreaId();
-        stmt.bindLong(index++, areaId);
+        stmt.bindLong(11, areaId);
 
         Integer provinceId = entity.getProvinceId();
-        stmt.bindLong(index++, provinceId);
+        stmt.bindLong(12, provinceId);
 
         Integer classId = entity.getClassId();
-        stmt.bindLong(index++, classId);
+        stmt.bindLong(13, classId);
 
         String realName = entity.getRealName();
         if (realName != null) {
-            stmt.bindString(index++, realName);
+            stmt.bindString(14, realName);
         }
 
         String username = entity.getUsername();
         if (username != null) {
-            stmt.bindString(index++, username);
+            stmt.bindString(15, username);
         }
 
         String icoPath = entity.getIcoPath();
         if (icoPath != null) {
-            stmt.bindString(index++, icoPath);
+            stmt.bindString(16, icoPath);
         }
 
-        index = 0;
     }
 
     /**
@@ -131,67 +129,64 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
     @Override
     protected final void bindValues(SQLiteStatement stmt, LocalUser entity) {
         stmt.clearBindings();
-        int index = 0;
         Long id = entity.getId();
         if (id != null) {
-            stmt.bindLong(index++, id);
+            stmt.bindLong(1, id);
         }
 
         String objectId = entity.getObjectId();
         if (objectId != null) {
-            stmt.bindString(index++, objectId);
+            stmt.bindString(2, objectId);
         }
         String mobilePhoneNumber = entity.getMobilePhoneNumber();
         if (mobilePhoneNumber != null) {
-            stmt.bindString(index++, mobilePhoneNumber);
+            stmt.bindString(3, mobilePhoneNumber);
         }
         String email = entity.getEmail();
         if (email != null) {
-            stmt.bindString(index++, email);
+            stmt.bindString(4, email);
         }
         Integer sex = entity.getSex();
-        stmt.bindLong(index++, sex);
+        stmt.bindLong(5, sex);
 
         Integer age = entity.getAge();
-        stmt.bindLong(index++, age);
+        stmt.bindLong(6, age);
 
         Integer schoolId = entity.getSchoolId();
-        stmt.bindLong(index++, schoolId);
+        stmt.bindLong(7, schoolId);
 
         Integer roleId = entity.getRoleId();
-        stmt.bindLong(index++, roleId);
+        stmt.bindLong(8, roleId);
 
         Integer gradeId = entity.getGradeId();
-        stmt.bindLong(index++, gradeId);
+        stmt.bindLong(9, gradeId);
 
         Integer cityId = entity.getCityId();
-        stmt.bindLong(index++, cityId);
+        stmt.bindLong(10, cityId);
 
         Integer areaId = entity.getAreaId();
-        stmt.bindLong(index++, areaId);
+        stmt.bindLong(11, areaId);
 
         Integer provinceId = entity.getProvinceId();
-        stmt.bindLong(index++, provinceId);
+        stmt.bindLong(12, provinceId);
 
         Integer classId = entity.getClassId();
-        stmt.bindLong(index++, classId);
+        stmt.bindLong(13, classId);
 
         String realName = entity.getRealName();
         if (realName != null) {
-            stmt.bindString(index++, realName);
+            stmt.bindString(14, realName);
         }
 
         String username = entity.getUsername();
         if (username != null) {
-            stmt.bindString(index++, username);
+            stmt.bindString(15, username);
         }
 
         String icoPath = entity.getIcoPath();
         if (icoPath != null) {
-            stmt.bindString(index++, icoPath);
+            stmt.bindString(16, icoPath);
         }
-
-        index = 0;
     }
 
     @Override
