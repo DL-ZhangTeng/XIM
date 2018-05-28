@@ -14,6 +14,7 @@ import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.RegisterParams;
+import com.zhangteng.xim.utils.AppManager;
 
 import butterknife.BindView;
 import cn.bmob.v3.exception.BmobException;
@@ -103,7 +104,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         intent.putExtra("username", username.getText().toString());
         intent.putExtra("password", password.getText().toString());
         RegisterActivity.this.setResult(1, intent);
-        RegisterActivity.this.finish();
+        AppManager.finishActivity(this);
     }
 
     @Override

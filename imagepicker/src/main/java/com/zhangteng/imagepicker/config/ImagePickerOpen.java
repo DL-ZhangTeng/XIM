@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.zhangteng.imagepicker.R;
 import com.zhangteng.imagepicker.activitys.ImagePickerActivity;
 import com.zhangteng.imagepicker.utils.FileUtils;
 
@@ -45,6 +46,7 @@ public class ImagePickerOpen {
 
         Intent intent = new Intent(mActivity, ImagePickerActivity.class);
         mActivity.startActivity(intent);
+        mActivity.overridePendingTransition(R.anim.activity_show, R.anim.activity_show_1);
     }
 
     public void openCamera(Activity mActivity) {
@@ -66,6 +68,7 @@ public class ImagePickerOpen {
 
         Intent intent = new Intent(mActivity, ImagePickerActivity.class);
         mActivity.startActivity(intent);
+        mActivity.overridePendingTransition(R.anim.activity_show, R.anim.activity_show_1);
     }
 
     public ImagePickerConfig getImagePickerConfig() {

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_black"
+    tools:context="com.zhangteng.xim.activity.SettingActivity">
+
+    <com.zhangteng.xim.widget.TitleBar
+        android:id="@+id/setting_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titlebar_height"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:leftButtonBg="@mipmap/back" />
+
+    <TextView
+        android:id="@+id/setting_about"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titlebar_height"
+        android:layout_marginTop="@dimen/common_leftorright_padding"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:onClick="buttonClick"
+        android:paddingEnd="@dimen/common_leftorright_padding"
+        android:paddingStart="@dimen/common_leftorright_padding"
+        android:text="关于XIM"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/setting_titlebar" />
+
+    <TextView
+        android:id="@+id/setting_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titlebar_height"
+        android:layout_marginTop="0.5dp"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:onClick="buttonClick"
+        android:paddingEnd="@dimen/common_leftorright_padding"
+        android:paddingStart="@dimen/common_leftorright_padding"
+        android:text="帮助与反馈"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/setting_about" />
+
+    <TextView
+        android:id="@+id/setting_change"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titlebar_height"
+        android:layout_marginTop="@dimen/common_leftorright_padding"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:onClick="buttonClick"
+        android:paddingEnd="@dimen/common_leftorright_padding"
+        android:paddingStart="@dimen/common_leftorright_padding"
+        android:text="切换账号"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/setting_feedback" />
+
+    <TextView
+        android:id="@+id/setting_logout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titlebar_height"
+        android:layout_marginTop="0.5dp"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:onClick="buttonClick"
+        android:paddingEnd="@dimen/common_leftorright_padding"
+        android:paddingStart="@dimen/common_leftorright_padding"
+        android:text="退出"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/setting_change" />
+</android.support.constraint.ConstraintLayout>

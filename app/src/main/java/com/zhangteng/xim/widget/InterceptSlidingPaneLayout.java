@@ -26,7 +26,7 @@ public class InterceptSlidingPaneLayout extends SlidingPaneLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (isOpen()) {
-            return true;
+            return super.onInterceptTouchEvent(ev);
         }
         if (ev.getAction() == MotionEvent.ACTION_DOWN && ev.getX() <= 2) {
             return true;

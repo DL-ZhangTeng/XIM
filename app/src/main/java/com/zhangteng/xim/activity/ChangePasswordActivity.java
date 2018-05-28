@@ -12,8 +12,10 @@ import android.widget.Toast;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.LoginParams;
+import com.zhangteng.xim.utils.AppManager;
 
 import butterknife.BindView;
 import cn.bmob.v3.exception.BmobException;
@@ -81,9 +83,9 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
             LoginParams loginParams = new LoginParams();
             loginParams.setName(username.getText().toString());
             loginParams.setPassword(code.getText().toString());
-            UserApi.getInstance().login(loginParams, new BmobCallBack(this, false) {
+            UserApi.getInstance().login(loginParams, new BmobCallBack<User>(this, false) {
                 @Override
-                public void onSuccess(@Nullable Object bmobObject) {
+                public void onSuccess(@Nullable User bmobObject) {
                     UserApi.getInstance().resetPassword(code.getText().toString(), password.getText().toString(), new BmobCallBack(ChangePasswordActivity.this, true) {
                         @Override
                         public void onSuccess(@Nullable Object bmobObject) {
@@ -112,7 +114,7 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
         intent.putExtra("username", username.getText().toString());
         intent.putExtra("password", password.getText().toString());
         setResult(1, intent);
-        finish();
+        AppManager.finishActivity(this);
     }
 
     @Override

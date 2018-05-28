@@ -3,6 +3,7 @@ package com.zhangteng.xim.utils;
 import android.app.Activity;
 import android.content.Context;
 
+import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -56,9 +57,16 @@ public class AppManager {
      * 结束指定类名的Activity
      */
     public static void finishActivity(Class<?> cls) {
-        for (Activity activity : activityStack) {
+        Iterator<Activity> iterator = activityStack.iterator();
+        while (iterator.hasNext()) {
+            Activity activity = iterator.next();
             if (activity.getClass().equals(cls)) {
-                finishActivity(activity);
+                if (activity != null) {
+                    activityStack.iterator().remove();
+                    if (!activity.isFinishing()) {
+                        activity.finish();
+                    }
+                }
             }
         }
     }

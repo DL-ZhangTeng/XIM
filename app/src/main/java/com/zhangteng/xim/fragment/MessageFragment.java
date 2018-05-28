@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MessageAdapter;
 import com.zhangteng.xim.base.BaseFragment;
@@ -39,15 +39,13 @@ public class MessageFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
-        refreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
-            @Override
-            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                refreshLayout.finishLoadMore(200);
-            }
-
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-                refreshLayout.finishRefresh(200);
+                data.clear();
+                data.addAll(IMApi.ConversationManager.getInstance().loadAllConversation());
+                messageAdapter.notifyDataSetChanged();
+                refreshLayout.finishRefresh();
             }
         });
         data = new ArrayList<>();
@@ -60,12 +58,6 @@ public class MessageFragment extends BaseFragment {
     @Override
     protected void initData() {
         super.initData();
-//        IMApi.ConversationManager.getInstance()
-//                .startPrivateConversation(
-//                        IMApi.LoacalUserManager.getInstance().getUserInfo(
-//                                UserApi.getInstance().getUserInfo().getObjectId()
-//                        ), true
-//                );
         if (IMApi.ConversationManager.getInstance().loadAllConversation() != null) {
             data.clear();
             data.addAll(IMApi.ConversationManager.getInstance().loadAllConversation());

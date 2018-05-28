@@ -1,10 +1,13 @@
 package com.zhangteng.xim.activity;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -27,6 +30,8 @@ import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.utils.ActivityHelper;
+import com.zhangteng.xim.utils.StringUtils;
 import com.zhangteng.xim.widget.NoScrollViewPager;
 import com.zhangteng.xim.widget.TitleBar;
 
@@ -94,7 +99,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initView() {
         //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
-        if (!TextUtils.isEmpty(UserApi.getInstance().getUserInfo().getObjectId()) &&
+        String objectId = null;
+        try {
+            objectId = UserApi.getInstance().getUserInfo().getObjectId();
+        } catch (NullPointerException e) {
+            Log.e("MainActivity", "objectId is null");
+        }
+        if (StringUtils.isNotEmpty(objectId) &&
                 IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
             IMApi.IMServiceManager.getInstance().connectService(new BmobCallBack<String>(MainActivity.this, false) {
                 @Override
@@ -120,6 +131,24 @@ public class MainActivity extends BaseActivity {
 
         initImagePicker();
         navigationView.setItemIconTintList(null);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_item_collection:
+                        break;
+                    case R.id.navigation_item_album:
+                        break;
+                    case R.id.navigation_item_file:
+                        break;
+                    case R.id.navigation_item_setting:
+                        ActivityHelper.jumpToActivity(MainActivity.this, SettingActivity.class, 1);
+                        break;
+                }
+                return true;
+            }
+        });
         slidingPaneLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -202,6 +231,10 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (slidingPaneLayout.isOpen()) {
+            slidingPaneLayout.closePane();
+            return true;
+        }
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (System.currentTimeMillis() - firstTime > 2000) {
                 Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();

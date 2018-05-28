@@ -99,7 +99,7 @@ public class LinkmanFragment extends BaseFragment {
                 }
             });
         } else {
-            List<LocalUser> localUsers = DBManager.instance().queryUsers(0, 2);
+            List<LocalUser> localUsers = DBManager.instance().queryUsers(0, Integer.MAX_VALUE);
             list.clear();
             for (LocalUser user : localUsers) {
                 Friend friend = new Friend();

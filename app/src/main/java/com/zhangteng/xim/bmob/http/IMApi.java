@@ -74,6 +74,10 @@ public class IMApi {
             BmobIM.getInstance().updateUserInfo(info);
         }
 
+        public void updateUserInfo(BmobIMUserInfo imUserInfo) {
+            BmobIM.getInstance().updateUserInfo(imUserInfo);
+        }
+
         /**
          * 用户管理：2.8、批量更新本地用户信息
          */

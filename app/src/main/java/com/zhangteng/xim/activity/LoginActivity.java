@@ -17,6 +17,8 @@ import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.LoginParams;
+import com.zhangteng.xim.utils.ActivityHelper;
+import com.zhangteng.xim.utils.AppManager;
 
 import butterknife.BindView;
 
@@ -82,16 +84,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 UserApi.getInstance().login(loginParams, new BmobCallBack<User>(this, true) {
                     @Override
                     public void onSuccess(@Nullable User bmobObject) {
-                        LoginActivity.this.startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        LoginActivity.this.finish();
-
+                        ActivityHelper.jumpActivity(LoginActivity.this, MainActivity.class, 1);
+                        AppManager.finishActivity(LoginActivity.this);
                     }
                 });
             }
         } else if (i == R.id.register) {
-            LoginActivity.this.startActivityForResult(new Intent(LoginActivity.this, RegisterActivity.class), 1);
+            ActivityHelper.jumpToActivityResult(LoginActivity.this, RegisterActivity.class, 1, 1);
         } else if (i == R.id.login_error) {
-            LoginActivity.this.startActivityForResult(new Intent(LoginActivity.this, ChangePasswordActivity.class), 1);
+            ActivityHelper.jumpToActivityResult(LoginActivity.this, ChangePasswordActivity.class, 1, 1);
         }
     }
 

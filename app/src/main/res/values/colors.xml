@@ -13,6 +13,7 @@
     <!-- dialog bg -->
     <color name="dialog_nav_bg">#99000000</color>
     <color name="background">#fcfcfc</color>
+    <color name="background_black">#e8e8e8</color>
 
     <color name="circle_text">#8793ac</color>
 </resources>

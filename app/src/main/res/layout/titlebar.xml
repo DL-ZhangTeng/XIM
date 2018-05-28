@@ -20,7 +20,6 @@
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:onClick="buttonClick"
             android:scaleType="fitStart" />
 
 

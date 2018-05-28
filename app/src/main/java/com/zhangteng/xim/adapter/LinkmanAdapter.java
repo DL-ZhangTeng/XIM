@@ -14,8 +14,11 @@ import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.bmob.entity.Friend;
+import com.zhangteng.xim.bmob.http.IMApi;
 
 import java.util.List;
+
+import cn.bmob.newim.bean.BmobIMUserInfo;
 
 /**
  * Created by swing on 2018/5/21.
@@ -36,7 +39,7 @@ public class LinkmanAdapter extends BaseAdapter<Friend> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         RequestOptions requestOptions = new RequestOptions()
                 .placeholder(R.mipmap.app_icon)
                 .centerCrop();
@@ -45,6 +48,17 @@ public class LinkmanAdapter extends BaseAdapter<Friend> {
                 .apply(requestOptions)
                 .into(((LinkmanViewHolder) holder).circleImageView);
         ((LinkmanViewHolder) holder).textView.setText(data.get(position).getFriendUser().getUsername());
+        ((LinkmanViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BmobIMUserInfo info = new BmobIMUserInfo();
+                info.setUserId(data.get(position).getFriendUser().getObjectId());
+                info.setName(data.get(position).getFriendUser().getUsername());
+                info.setAvatar(data.get(position).getFriendUser().getIcoPath());
+                IMApi.LoacalUserManager.getInstance().updateUserInfo(info);
+                IMApi.ConversationManager.getInstance().startPrivateConversation(info, false);
+            }
+        });
     }
 
     public static class LinkmanViewHolder extends RecyclerView.ViewHolder {

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group>
 
         <item
             android:id="@+id/navigation_item_collection"
-            android:icon="@mipmap/app_icon"
+            android:icon="@mipmap/collection"
             android:title="我的收藏" />
         <item
             android:id="@+id/navigation_item_album"
-            android:icon="@mipmap/app_icon"
+            android:icon="@mipmap/photos"
             android:title="我的相册" />
         <item
             android:id="@+id/navigation_item_file"
-            android:icon="@mipmap/app_icon"
+            android:icon="@mipmap/files"
             android:title="我的文件" />
         <item
             android:id="@+id/navigation_item_setting"

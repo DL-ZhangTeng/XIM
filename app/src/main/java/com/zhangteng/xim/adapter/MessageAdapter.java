@@ -14,6 +14,7 @@ import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.swiperecyclerview.widget.SlideMenuRecyclerViewItem;
 import com.zhangteng.xim.R;
+import com.zhangteng.xim.utils.DateUtils;
 
 import java.util.List;
 
@@ -40,9 +41,10 @@ public class MessageAdapter extends BaseAdapter<BmobIMConversation> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         View contentView = LayoutInflater.from(context).inflate(R.layout.content_item, ((MyViewHolder) holder).item, false);
         //添加内容布局&菜单布局
-        ((TextView) contentView.findViewById(R.id.content_content)).setText(data.get(position).getMessages().get(data.get(position).getMessages().size() - 1).getContent());
+        if (data.get(position).getMessages().size() > 0)
+            ((TextView) contentView.findViewById(R.id.content_content)).setText(data.get(position).getMessages().get(data.get(position).getMessages().size() - 1).getContent());
         ((TextView) contentView.findViewById(R.id.content_title)).setText(data.get(position).getConversationTitle());
-        ((TextView) contentView.findViewById(R.id.content_time)).setText(String.valueOf(data.get(position).getUpdateTime()));
+        ((TextView) contentView.findViewById(R.id.content_time)).setText(DateUtils.getDay(data.get(position).getUpdateTime()));
         RequestOptions requestOptions = new RequestOptions()
                 .placeholder(R.mipmap.app_icon)
                 .centerCrop();

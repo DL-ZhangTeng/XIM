@@ -63,8 +63,15 @@ public class ActivityHelper {
         activity.finish();
     }
 
-
     public static void jumpActivityResult(Activity activity, Class cls, int requestCode, int code) {
+        Intent intent = new Intent();
+        intent.setClass(activity, cls);
+        activity.startActivityForResult(intent, requestCode);
+        anim(activity, code);
+        activity.finish();
+    }
+
+    public static void jumpToActivityResult(Activity activity, Class cls, int requestCode, int code) {
         Intent intent = new Intent();
         intent.setClass(activity, cls);
         activity.startActivityForResult(intent, requestCode);
