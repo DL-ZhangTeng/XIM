@@ -26,39 +26,46 @@ public class DBManager {
     private static DBManager dbManager = null;
     private static Context context = null;
     private DaoMaster.DevOpenHelper openHelper;
-    private static String DBNAME = "GreenDaoModule.db";
+    public static String DBNAME = "GreenDaoModule.db";
+    public static String CITYNODBNAME = "CityNo.db";
 
     private DBManager() {
     }
 
+    /**
+     * 默认db管理实例
+     */
     public static synchronized DBManager instance() {
         if (dbManager == null) {
             synchronized (DBManager.class) {
                 if (dbManager == null) {
                     dbManager = new DBManager();
-                    if (context != null) {
-                        dbManager.initDbHelp();
-                    } else {
-                        throw new NullPointerException("context is null");
-                    }
                 }
             }
+        }
+        if (context != null) {
+            dbManager.initDbHelp();
+        } else {
+            throw new NullPointerException("context is null");
         }
         return dbManager;
     }
 
+    /**
+     * 自定义数据库名（CityNO.db）
+     */
     public static synchronized DBManager instance(String dbNmae) {
         if (dbManager == null) {
             synchronized (DBManager.class) {
                 if (dbManager == null) {
                     dbManager = new DBManager();
-                    if (context != null) {
-                        dbManager.initDbHelp(dbNmae);
-                    } else {
-                        throw new NullPointerException("context is null");
-                    }
                 }
             }
+        }
+        if (context != null) {
+            dbManager.initDbHelp(dbNmae);
+        } else {
+            throw new NullPointerException("context is null");
         }
         return dbManager;
     }
@@ -72,7 +79,6 @@ public class DBManager {
         if (openHelper != null) {
             openHelper.close();
             openHelper = null;
-            context = null;
         }
     }
 
@@ -125,7 +131,7 @@ public class DBManager {
 
     public void updateUser(LocalUser user) {
         UserDao userDao = DBManager.instance().openWritableDb().getUserDao();
-        DeleteQuery<LocalUser> deleteQuery = userDao.queryBuilder().where(UserDao.Properties.Id.eq(user.getId())).where(UserDao.Properties.ObjectId.eq(user.getObjectId())).buildDelete();
+        DeleteQuery<LocalUser> deleteQuery = userDao.queryBuilder().where(UserDao.Properties.ObjectId.eq(user.getObjectId())).buildDelete();
         deleteQuery.executeDeleteWithoutDetachingEntities();
         userDao.insertOrReplace(user);
     }
@@ -178,12 +184,12 @@ public class DBManager {
     }
 
     public CityNo queryCityNo(String code) {
-        CityNoDao userDao = DBManager.instance().openReadableDb().getCityNoDao();
-        List<CityNo> list = userDao.queryBuilder().where(CityNoDao.Properties.Code.eq(code)).build().list();
+        CityNoDao cityNoDao = DBManager.instance(DBManager.CITYNODBNAME).openReadableDb().getCityNoDao();
+        List<CityNo> list = cityNoDao.queryBuilder().where(CityNoDao.Properties.Code.eq(code)).build().list();
         return list.isEmpty() ? null : list.get(0);
     }
 
     public void insertCityNo(CityNo cityNo) {
-        DBManager.instance().openWritableDb().getCityNoDao().insert(cityNo);
+        DBManager.instance(DBManager.CITYNODBNAME).openWritableDb().getCityNoDao().insert(cityNo);
     }
 }

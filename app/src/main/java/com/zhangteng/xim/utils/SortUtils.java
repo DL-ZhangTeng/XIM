@@ -42,8 +42,11 @@ public class SortUtils {
      * 根据一个包含汉字的字符串返回一个汉字拼音首字母的字符串 最重要的一个方法，思路如下：一个个字符读入、判断、输出
      */
     public static char getFirstLetterC(String sourceStr) {
-        String str = sourceStr.toLowerCase();
-        return Char2Initial(str.charAt(0));
+        if (StringUtils.isNotEmpty(sourceStr)) {
+            String str = sourceStr.toUpperCase();
+            return Char2Initial(str.charAt(0));
+        }
+        return 'Z' + 1;
     }
 
     public static String getFirstLetter(String sourceStr) {

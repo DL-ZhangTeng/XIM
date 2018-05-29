@@ -1,14 +1,18 @@
 package com.zhangteng.xim.activity;
 
 import android.content.Intent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.db.DBManager;
+import com.zhangteng.xim.db.bean.CityNo;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.StringUtils;
 
@@ -50,7 +54,12 @@ public class FriendInfoActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
     }
 
     @Override
@@ -63,7 +72,21 @@ public class FriendInfoActivity extends BaseActivity {
         realName.setText(StringUtils.isNotEmpty(user.getRealName()) ? user.getRealName() : user.getUsername());
         sex.setImageResource(user.getSex() == 0 ? R.mipmap.ic_sex_male : R.mipmap.ic_sex_female);
         username.setText(String.format("XIM账号：%s", user.getUsername()));
-        area.setText("");
-
+        if (user.getProvinceId() != 0 || user.getCityId() != 0 || user.getAreaId() != 0) {
+            CityNo province = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getProvinceId()));
+            CityNo city = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getCityId()));
+            CityNo arean = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getAreaId()));
+            area.setText(String.format("%s  %s  %s",
+                    province != null ? province.getRegion() : "",
+                    city != null ? city.getRegion() : "",
+                    arean != null ? arean.getRegion() : ""));
+        }
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.app_icon)
+                .centerCrop();
+        Glide.with(this)
+                .load(user.getIcoPath())
+                .apply(requestOptions)
+                .into(circleImageView);
     }
 }

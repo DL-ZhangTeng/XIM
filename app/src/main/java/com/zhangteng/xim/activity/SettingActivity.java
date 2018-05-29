@@ -4,9 +4,12 @@ import android.view.View;
 
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
+import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.AppManager;
+
+import cn.bmob.newim.core.ConnectionStatus;
 
 public class SettingActivity extends BaseActivity {
 
@@ -36,6 +39,9 @@ public class SettingActivity extends BaseActivity {
         super.buttonClick(v);
         switch (v.getId()) {
             case R.id.setting_logout:
+                if (IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() == ConnectionStatus.CONNECTED.getCode()) {
+                    IMApi.IMServiceManager.getInstance().disConnectService();
+                }
                 UserApi.getInstance().Logout();
                 AppManager.finishActivity(this);
                 ActivityHelper.jumpActivity(SettingActivity.this, LoginActivity.class, 1);

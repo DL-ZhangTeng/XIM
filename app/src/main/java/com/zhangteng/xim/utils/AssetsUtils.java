@@ -19,10 +19,12 @@ import java.io.InputStreamReader;
 public class AssetsUtils {
     //数据库名称
     public static String dbName = "CityNo.db";
+    public static String dbJournal = "CityNo.db-journal";
     //数据库存放的文件夹 /data/data/com.zhangteng.xim/databases 下面
     private static String pathStr = "data/data/" + MyApplication.getGlobalContext().getPackageName() + "/databases";
     //数据库存储路径
     private static String filePath = pathStr + "/" + dbName;
+    private static String journalFilePath = pathStr + "/" + dbJournal;
 
     /**
      * 获取assets中的json字符串
@@ -67,6 +69,7 @@ public class AssetsUtils {
     public static boolean initDatabase(String fileName, Context context) {
         System.out.println("filePath:" + filePath);
         File jhPath = new File(filePath);
+        File journal = new File(journalFilePath);
         if (jhPath.exists()) {
             Log.i("CityNo", "存在数据库");
             return true;
@@ -94,6 +97,21 @@ public class AssetsUtils {
                 fos.flush();
                 fos.close();
                 is.close();
+
+                InputStream jis = am.open(fileName);
+                Log.i("CityNo", jis + "");
+                FileOutputStream jfos = new FileOutputStream(journalFilePath);
+                Log.i("CityNo", "fos=" + jfos);
+                Log.i("CityNo", "jhPath=" + journalFilePath);
+                byte[] jbuffer = new byte[1024];
+                int jcount = 0;
+                while ((jcount = jis.read(jbuffer)) > 0) {
+                    Log.i("CityNo", "得到");
+                    jfos.write(jbuffer, 0, jcount);
+                }
+                jfos.flush();
+                jfos.close();
+                jis.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

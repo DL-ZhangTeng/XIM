@@ -33,6 +33,15 @@ public class ExampleInstrumentedTest {
         assertEquals("com.zhangteng.xim", appContext.getPackageName());
     }
 
+    @Test
+    public void queryCityNo() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+//        DBManager.init(appContext);
+        CityNo cityNo = DBManager.instance(AssetsUtils.dbName).queryCityNo("330100");
+        assertEquals("com.zhangteng.xim", appContext.getPackageName());
+    }
+
     String parent = "000000";
 
     /**

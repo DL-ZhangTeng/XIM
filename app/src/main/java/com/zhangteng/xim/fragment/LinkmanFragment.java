@@ -1,11 +1,15 @@
 package com.zhangteng.xim.fragment;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.zhangteng.swiperecyclerview.bean.GroupInfo;
 import com.zhangteng.swiperecyclerview.widget.ItemStickyDecoration;
 import com.zhangteng.xim.R;
@@ -27,11 +31,14 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
+import cn.bmob.v3.exception.BmobException;
 
 /**
  * Created by swing on 2018/5/17.
  */
 public class LinkmanFragment extends BaseFragment {
+    @BindView(R.id.refreshLayout)
+    SmartRefreshLayout refreshLayout;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
@@ -40,6 +47,7 @@ public class LinkmanFragment extends BaseFragment {
     private int groupNum = 0;
     private int groupPosition = 0;
     private int groupTotal;
+    private ItemStickyDecoration.GroupInfoInterface groupInfoInterface;
 
     @Override
     protected int getResourceId() {
@@ -48,7 +56,34 @@ public class LinkmanFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
-        ItemStickyDecoration.GroupInfoInterface groupInfoInterface = new ItemStickyDecoration.GroupInfoInterface() {
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull final RefreshLayout refreshLayout) {
+                IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
+                    @Override
+                    public void onSuccess(@Nullable List<Friend> bmobObject) {
+                        Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
+                        list.clear();
+                        list.addAll(bmobObject);
+                        Collections.sort(list);
+                        linkmanAdapter.notifyDataSetChanged();
+                        for (Friend friend : list) {
+                            LocalUser user = LocalUser.getLocalUser(friend.getFriendUser());
+                            DBManager.instance().updateUser(user);
+                        }
+                        refreshLayout.finishRefresh();
+                    }
+
+                    @Override
+                    public void onFailure(BmobException bmobException) {
+                        super.onFailure(bmobException);
+                        Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_failure", Toast.LENGTH_SHORT).show();
+                        refreshLayout.finishRefresh();
+                    }
+                });
+            }
+        });
+        groupInfoInterface = new ItemStickyDecoration.GroupInfoInterface() {
             @Override
             public GroupInfo getGroupInfo(int position) {
                 char groupId = SortUtils.getFirstLetterC(list.get(position).getFriendUser().getUsername());
