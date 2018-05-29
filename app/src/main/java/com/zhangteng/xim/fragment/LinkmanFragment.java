@@ -25,6 +25,7 @@ import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.SortUtils;
+import com.zhangteng.xim.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +65,11 @@ public class LinkmanFragment extends BaseFragment {
                     public void onSuccess(@Nullable List<Friend> bmobObject) {
                         Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
                         list.clear();
-                        list.addAll(bmobObject);
+                        for (Friend friend : bmobObject) {
+                            if (StringUtils.isNotEmpty(friend.getFriendUser().getObjectId())) {
+                                list.add(friend);
+                            }
+                        }
                         Collections.sort(list);
                         linkmanAdapter.notifyDataSetChanged();
                         for (Friend friend : list) {
@@ -135,7 +140,11 @@ public class LinkmanFragment extends BaseFragment {
                 public void onSuccess(@Nullable List<Friend> bmobObject) {
                     Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
                     list.clear();
-                    list.addAll(bmobObject);
+                    for (Friend friend : bmobObject) {
+                        if (StringUtils.isNotEmpty(friend.getFriendUser().getObjectId())) {
+                            list.add(friend);
+                        }
+                    }
                     Collections.sort(list);
                     linkmanAdapter.notifyDataSetChanged();
                     for (Friend friend : list) {
