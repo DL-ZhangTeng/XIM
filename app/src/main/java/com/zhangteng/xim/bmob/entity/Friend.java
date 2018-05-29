@@ -34,7 +34,7 @@ public class Friend extends BmobObject implements Comparable {
     @Override
     public int compareTo(@NonNull Object o) {
         if (o instanceof Friend) {
-            return SortUtils.getFirstLetterC(this.friendUser.getUsername()) - SortUtils.getFirstLetterC(((Friend) o).getFriendUser().getUsername());
+            return SortUtils.getFirstC(this.friendUser.getUsername()) - SortUtils.getFirstC(((Friend) o).getFriendUser().getUsername());
         }
         throw new ClassCastException("only compare to friend");
     }

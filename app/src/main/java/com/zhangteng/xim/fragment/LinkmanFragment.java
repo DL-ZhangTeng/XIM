@@ -91,7 +91,7 @@ public class LinkmanFragment extends BaseFragment {
         groupInfoInterface = new ItemStickyDecoration.GroupInfoInterface() {
             @Override
             public GroupInfo getGroupInfo(int position) {
-                char groupId = SortUtils.getFirstLetterC(list.get(position).getFriendUser().getUsername());
+                char groupId = SortUtils.getFirstC(list.get(position).getFriendUser().getUsername());
                 if (groupId != groupNum) {
                     if (groupNum != 0) {
                         groupTotal = groupPosition + 1;

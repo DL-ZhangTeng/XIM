@@ -20,9 +20,9 @@ public class SortUtils {
     // GB2312码汉字区间十进制表示
     private static int[] table = new int[27];
     // 对应首字母区间表
-    private static char[] initialtable = {'a', 'b', 'c', 'd', 'e', 'f', 'g',
-            'h', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-            't', 't', 'w', 'x', 'y', 'z',};
+    private static char[] initialtable = {'A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z'};
 
     // 初始化
     static {
@@ -41,7 +41,7 @@ public class SortUtils {
     /**
      * 根据一个包含汉字的字符串返回一个汉字拼音首字母的字符串 最重要的一个方法，思路如下：一个个字符读入、判断、输出
      */
-    public static char getFirstLetterC(String sourceStr) {
+    public static char getFirstC(String sourceStr) {
         if (StringUtils.isNotEmpty(sourceStr)) {
             String str = sourceStr.toUpperCase();
             return Char2Initial(str.charAt(0));
