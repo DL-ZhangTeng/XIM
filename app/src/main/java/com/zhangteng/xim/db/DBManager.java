@@ -3,8 +3,10 @@ package com.zhangteng.xim.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.zhangteng.xim.db.bean.CityNo;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.db.bean.NewFriend;
+import com.zhangteng.xim.db.dao.CityNoDao;
 import com.zhangteng.xim.db.dao.DaoMaster;
 import com.zhangteng.xim.db.dao.DaoSession;
 import com.zhangteng.xim.db.dao.NewFriendDao;
@@ -24,6 +26,7 @@ public class DBManager {
     private static DBManager dbManager = null;
     private static Context context = null;
     private DaoMaster.DevOpenHelper openHelper;
+    private static String DBNAME = "GreenDaoModule.db";
 
     private DBManager() {
     }
@@ -44,6 +47,23 @@ public class DBManager {
         return dbManager;
     }
 
+    public static synchronized DBManager instance(String dbNmae) {
+        if (dbManager == null) {
+            synchronized (DBManager.class) {
+                if (dbManager == null) {
+                    dbManager = new DBManager();
+                    if (context != null) {
+                        dbManager.initDbHelp(dbNmae);
+                    } else {
+                        throw new NullPointerException("context is null");
+                    }
+                }
+            }
+        }
+        return dbManager;
+    }
+
+
     public static void init(Context context) {
         DBManager.context = context;
     }
@@ -59,10 +79,15 @@ public class DBManager {
 
     private void initDbHelp() {
         close();
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, "GreenDaoModule.db", null);
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, DBNAME, null);
         this.openHelper = helper;
     }
 
+    private void initDbHelp(String dbNmae) {
+        close();
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, dbNmae, null);
+        this.openHelper = helper;
+    }
 
     public DaoSession openReadableDb() {
         isInitOk();
@@ -111,6 +136,12 @@ public class DBManager {
         return list;
     }
 
+    public LocalUser queryUser(String objectId) {
+        UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
+        List<LocalUser> list = userDao.queryBuilder().where(UserDao.Properties.ObjectId.eq(objectId)).build().list();
+        return list.isEmpty() ? null : list.get(0);
+    }
+
     public List<LocalUser> queryUsers(int startId, int endId) {
         UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
         QueryBuilder qb = userDao.queryBuilder();
@@ -144,5 +175,15 @@ public class DBManager {
         NewFriendDao newFriendDao = DBManager.instance().openReadableDb().getNewFriendDao();
         List<NewFriend> list = newFriendDao.queryBuilder().where(NewFriendDao.Properties.Uid.eq(newFriend.getUid())).build().list();
         return list;
+    }
+
+    public CityNo queryCityNo(String code) {
+        CityNoDao userDao = DBManager.instance().openReadableDb().getCityNoDao();
+        List<CityNo> list = userDao.queryBuilder().where(CityNoDao.Properties.Code.eq(code)).build().list();
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    public void insertCityNo(CityNo cityNo) {
+        DBManager.instance().openWritableDb().getCityNoDao().insert(cityNo);
     }
 }

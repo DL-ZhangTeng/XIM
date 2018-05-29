@@ -9,9 +9,11 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.utils.AssetsUtils;
 
 /**
  * Created by swing on 2018/5/24.
@@ -37,6 +39,10 @@ public class SplashActivity extends AppCompatActivity {
         super.setContentView(R.layout.activity_splash);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
+        }
+        //初始化地区数据库
+        if (!AssetsUtils.isExistCityNoDb()) {
+            AssetsUtils.initDatabase(AssetsUtils.dbName, MyApplication.getGlobalContext());
         }
     }
 

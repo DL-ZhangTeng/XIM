@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.zhangteng.swiperecyclerview.bean.GroupInfo;
 import com.zhangteng.swiperecyclerview.widget.ItemStickyDecoration;
 import com.zhangteng.xim.R;
+import com.zhangteng.xim.activity.FriendInfoActivity;
 import com.zhangteng.xim.adapter.LinkmanAdapter;
 import com.zhangteng.xim.base.BaseFragment;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
@@ -18,6 +19,7 @@ import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
+import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.SortUtils;
 
 import java.util.ArrayList;
@@ -70,6 +72,15 @@ public class LinkmanFragment extends BaseFragment {
         };
         list = new ArrayList<>();
         linkmanAdapter = new LinkmanAdapter(list, this.getContext());
+        linkmanAdapter.setOnClickListener(new LinkmanAdapter.ItemOnClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                if (list.size() > position) {
+                    String objectId = list.get(position).getFriendUser().getObjectId();
+                    ActivityHelper.jumpToActivityForParams(LinkmanFragment.this.getActivity(), FriendInfoActivity.class, "objectId", objectId, 1);
+                }
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(linkmanAdapter);
         ItemStickyDecoration itemStickyDecoration = new ItemStickyDecoration(groupInfoInterface);

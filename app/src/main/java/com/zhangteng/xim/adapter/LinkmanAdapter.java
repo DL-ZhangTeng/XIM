@@ -38,6 +38,8 @@ public class LinkmanAdapter extends BaseAdapter<Friend> {
         return new LinkmanViewHolder(view);
     }
 
+    private ItemOnClickListener onClickListener;
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         RequestOptions requestOptions = new RequestOptions()
@@ -51,14 +53,24 @@ public class LinkmanAdapter extends BaseAdapter<Friend> {
         ((LinkmanViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BmobIMUserInfo info = new BmobIMUserInfo();
-                info.setUserId(data.get(position).getFriendUser().getObjectId());
-                info.setName(data.get(position).getFriendUser().getUsername());
-                info.setAvatar(data.get(position).getFriendUser().getIcoPath());
-                IMApi.LoacalUserManager.getInstance().updateUserInfo(info);
-                IMApi.ConversationManager.getInstance().startPrivateConversation(info, false);
+                if (onClickListener != null) {
+                    BmobIMUserInfo info = new BmobIMUserInfo();
+                    info.setUserId(data.get(position).getFriendUser().getObjectId());
+                    info.setName(data.get(position).getFriendUser().getUsername());
+                    info.setAvatar(data.get(position).getFriendUser().getIcoPath());
+                    IMApi.LoacalUserManager.getInstance().updateUserInfo(info);
+                    onClickListener.onClick(view, position);
+                }
             }
         });
+    }
+
+    public void setOnClickListener(ItemOnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public interface ItemOnClickListener {
+        void onClick(View view, int position);
     }
 
     public static class LinkmanViewHolder extends RecyclerView.ViewHolder {

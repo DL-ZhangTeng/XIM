@@ -46,6 +46,7 @@
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.ChangePasswordActivity" />
         <activity android:name=".activity.SettingActivity" />
+        <activity android:name=".activity.FriendInfoActivity" />
         <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/Full">

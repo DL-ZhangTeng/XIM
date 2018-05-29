@@ -142,11 +142,11 @@ public class NewFriendDao extends AbstractDao<NewFriend, Long> {
         NewFriend entity = new NewFriend(
                 cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0),
                 cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1),
-                cursor.isNull(offset + 2) ? null : cursor.getString(offset + 1),
-                cursor.isNull(offset + 3) ? null : cursor.getString(offset + 1),
-                cursor.isNull(offset + 4) ? null : cursor.getString(offset + 1),
-                cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 1),
-                cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 1)
+                cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2),
+                cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3),
+                cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4),
+                cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5),
+                cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6)
         );
         return entity;
     }

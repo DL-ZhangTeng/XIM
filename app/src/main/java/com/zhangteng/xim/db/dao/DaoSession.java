@@ -1,5 +1,6 @@
 package com.zhangteng.xim.db.dao;
 
+import com.zhangteng.xim.db.bean.CityNo;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.db.bean.NewFriend;
 
@@ -26,6 +27,9 @@ public class DaoSession extends AbstractDaoSession {
     private final DaoConfig newFriendDaoConfig;
     private final NewFriendDao newFriendDao;
 
+    private final DaoConfig cityNoDaoConfig;
+    private final CityNoDao cityNoDao;
+
     public DaoSession(Database db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
             daoConfigMap) {
         super(db);
@@ -39,11 +43,17 @@ public class DaoSession extends AbstractDaoSession {
         newFriendDaoConfig.initIdentityScope(type);
         newFriendDao = new NewFriendDao(newFriendDaoConfig, this);
         registerDao(NewFriend.class, newFriendDao);
+
+        cityNoDaoConfig = daoConfigMap.get(CityNoDao.class).clone();
+        cityNoDaoConfig.initIdentityScope(type);
+        cityNoDao = new CityNoDao(cityNoDaoConfig, this);
+        registerDao(CityNo.class, cityNoDao);
     }
 
     public void clear() {
         userDaoConfig.clearIdentityScope();
         newFriendDaoConfig.clearIdentityScope();
+        cityNoDaoConfig.clearIdentityScope();
     }
 
     public UserDao getUserDao() {
@@ -52,5 +62,9 @@ public class DaoSession extends AbstractDaoSession {
 
     public NewFriendDao getNewFriendDao() {
         return newFriendDao;
+    }
+
+    public CityNoDao getCityNoDao() {
+        return cityNoDao;
     }
 }
