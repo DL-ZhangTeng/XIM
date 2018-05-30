@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -71,6 +72,13 @@ public class MainActivity extends BaseActivity {
         User user = UserApi.getInstance().getUserInfo();
         //获取头布局文件
         View headerView = navigationView.getHeaderView(0);
+        ImageView code = headerView.findViewById(R.id.iv_code);
+        code.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityHelper.jumpToActivity(MainActivity.this, MyCodeActivity.class, 1);
+            }
+        });
         TextView name = (TextView) headerView.findViewById(R.id.tv_name);
         name.setText(user.getUsername());
         CircleImageView imageView = headerView.findViewById(R.id.iv_header);
