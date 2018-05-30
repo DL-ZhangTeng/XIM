@@ -2,6 +2,7 @@ package com.zhangteng.xim.bmob.entity;
 
 import android.support.annotation.NonNull;
 
+import com.zhangteng.swiperecyclerview.bean.GroupInfo;
 import com.zhangteng.xim.utils.SortUtils;
 
 import cn.bmob.v3.BmobObject;
@@ -14,6 +15,16 @@ public class Friend extends BmobObject implements Comparable {
     private User user;
     //好友
     private User friendUser;
+
+    private GroupInfo groupInfo;
+
+    public GroupInfo getGroupInfo() {
+        return groupInfo;
+    }
+
+    public void setGroupInfo(GroupInfo groupInfo) {
+        this.groupInfo = groupInfo;
+    }
 
     public User getUser() {
         return user;
@@ -34,7 +45,23 @@ public class Friend extends BmobObject implements Comparable {
     @Override
     public int compareTo(@NonNull Object o) {
         if (o instanceof Friend) {
-            return SortUtils.getFirstC(this.friendUser.getUsername()) - SortUtils.getFirstC(((Friend) o).getFriendUser().getUsername());
+            char self = SortUtils.getFirstC(this.friendUser.getUsername());
+            if (this.groupInfo == null) {
+                this.groupInfo = new GroupInfo();
+                groupInfo.setTitle(String.valueOf(self));
+                groupInfo.setGroupNum(self);
+                groupInfo.setPosition(GroupInfo.totals[self - 'A']);
+                GroupInfo.totals[self - 'A']++;
+            }
+            char other = SortUtils.getFirstC(((Friend) o).getFriendUser().getUsername());
+            if (((Friend) o).getGroupInfo() == null) {
+                ((Friend) o).setGroupInfo(new GroupInfo());
+                ((Friend) o).getGroupInfo().setPosition(GroupInfo.totals[other - 'A']);
+                GroupInfo.totals[other - 'A']++;
+                ((Friend) o).getGroupInfo().setTitle(String.valueOf(other));
+                ((Friend) o).getGroupInfo().setGroupNum(other);
+            }
+            return self - other;
         }
         throw new ClassCastException("only compare to friend");
     }

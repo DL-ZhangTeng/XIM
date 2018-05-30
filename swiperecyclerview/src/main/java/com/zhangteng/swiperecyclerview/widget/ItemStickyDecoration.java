@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.zhangteng.swiperecyclerview.bean.GroupInfo;
@@ -85,7 +87,7 @@ public class ItemStickyDecoration extends RecyclerView.ItemDecoration {
         float titleX = left + padding;
         float titleY = bottom - mFontMetrics.descent - padding / 2;
         //绘制Title
-        c.drawText(groupinfo.getTitle(), titleX, titleY, mTextPaint);
+        c.drawText(TextUtils.isEmpty(groupinfo.getTitle()) ? "" : groupinfo.getTitle(), titleX, titleY, mTextPaint);
     }
 
     @Override
@@ -95,7 +97,10 @@ public class ItemStickyDecoration extends RecyclerView.ItemDecoration {
         GroupInfo groupInfo = groupInfoInterface.getGroupInfo(position);
         if (groupInfo != null && groupInfo.isFirst()) {
             outRect.top = mStickyHeight;
+        } else {
+            outRect.top = 0;
         }
+        Log.e("top", String.valueOf(outRect.top) + position);
     }
 
     public void setmStickyHeight(int mStickyHeight) {

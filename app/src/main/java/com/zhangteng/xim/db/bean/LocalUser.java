@@ -1,5 +1,7 @@
 package com.zhangteng.xim.db.bean;
 
+import com.zhangteng.swiperecyclerview.bean.GroupInfo;
+import com.zhangteng.xim.bmob.entity.Friend;
 import com.zhangteng.xim.bmob.entity.User;
 
 /**
@@ -8,12 +10,15 @@ import com.zhangteng.xim.bmob.entity.User;
 public class LocalUser extends User {
     private Long id;
 
+    private GroupInfo groupInfo;
+
     public LocalUser() {
     }
 
     public LocalUser(Long id, String objectId, String mobilePhoneNumber, String email
             , Long sex, Long age, Long schoolId, Long roleId, Long gradeId, Long cityId
-            , Long areaId, Long provinceId, Long classId, String realName, String username, String avatar) {
+            , Long areaId, Long provinceId, Long classId, String realName, String username, String avatar
+            , Long groupNum, String title, Long position, Long total) {
         super();
         this.id = id;
         this.setObjectId(objectId);
@@ -49,6 +54,13 @@ public class LocalUser extends User {
         this.setRealName(realName);
         this.setUsername(username);
         this.setIcoPath(avatar);
+
+        GroupInfo groupInfo = new GroupInfo();
+        groupInfo.setGroupNum(groupNum.intValue());
+        groupInfo.setTitle(title);
+        groupInfo.setPosition(position.intValue());
+        groupInfo.setTotal(total.intValue());
+        this.setGroupInfo(groupInfo);
     }
 
     public Long getId() {
@@ -59,7 +71,8 @@ public class LocalUser extends User {
         this.id = id;
     }
 
-    public static LocalUser getLocalUser(User user) {
+    public static LocalUser getLocalUser(Friend friend) {
+        User user = friend.getFriendUser();
         LocalUser localUser = new LocalUser();
         localUser.setObjectId(user.getObjectId());
         localUser.setMobilePhoneNumber(user.getMobilePhoneNumber());
@@ -76,6 +89,15 @@ public class LocalUser extends User {
         localUser.setRealName(user.getRealName());
         localUser.setUsername(user.getUsername());
         localUser.setIcoPath(user.getIcoPath());
+        localUser.setGroupInfo(friend.getGroupInfo());
         return localUser;
+    }
+
+    public GroupInfo getGroupInfo() {
+        return groupInfo;
+    }
+
+    public void setGroupInfo(GroupInfo groupInfo) {
+        this.groupInfo = groupInfo;
     }
 }

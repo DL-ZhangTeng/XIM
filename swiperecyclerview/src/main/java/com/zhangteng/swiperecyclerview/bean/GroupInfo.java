@@ -8,6 +8,12 @@ public class GroupInfo {
     private String title;
     private int position;
     private int total;
+    /**
+     * 按26个英文字母分组
+     * 存储26个组的总数
+     * 多的一个备用
+     */
+    public static int[] totals = new int[27];
 
     public GroupInfo() {
     }
@@ -17,6 +23,13 @@ public class GroupInfo {
         this.title = title;
         this.position = position;
         this.total = total;
+    }
+
+    public GroupInfo(Long groupNum, String title, Long position, Long total) {
+        this.groupNum = groupNum.intValue();
+        this.title = title;
+        this.position = position.intValue();
+        this.total = total.intValue();
     }
 
     public boolean isFirst() {
@@ -57,5 +70,11 @@ public class GroupInfo {
 
     public void setTotal(int total) {
         this.total = total;
+    }
+
+    public static void initTotals() {
+        for (int i = 0; i < totals.length; i++) {
+            totals[i] = 0;
+        }
     }
 }

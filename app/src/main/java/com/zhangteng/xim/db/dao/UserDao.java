@@ -3,6 +3,7 @@ package com.zhangteng.xim.db.dao;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import com.zhangteng.swiperecyclerview.bean.GroupInfo;
 import com.zhangteng.xim.db.bean.LocalUser;
 
 import org.greenrobot.greendao.AbstractDao;
@@ -41,7 +42,11 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
                 "\"classId\" INTEGER ," +
                 "\"realName\" TEXT ," +
                 "\"username\" TEXT ," +
-                "\"avatar\" TEXT)");
+                "\"avatar\" TEXT ," +
+                "\"groupNum\" INTEGER ," +
+                "\"title\" TEXT ," +
+                "\"position\" INTEGER ," +
+                "\"total\" INTEGER)");
     }
 
     public UserDao(DaoConfig config) {
@@ -116,6 +121,19 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
             stmt.bindString(16, icoPath);
         }
 
+        Integer groupNum = entity.getGroupInfo().getGroupNum();
+        stmt.bindLong(17, groupNum);
+
+        String title = entity.getGroupInfo().getTitle();
+        if (title != null) {
+            stmt.bindString(18, title);
+        }
+
+        Integer position = entity.getGroupInfo().getPosition();
+        stmt.bindLong(19, position);
+
+        Integer total = entity.getGroupInfo().getTotal();
+        stmt.bindLong(20, total);
     }
 
     /**
@@ -187,6 +205,20 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
         if (icoPath != null) {
             stmt.bindString(16, icoPath);
         }
+
+        Integer groupNum = entity.getGroupInfo().getGroupNum();
+        stmt.bindLong(17, groupNum);
+
+        String title = entity.getGroupInfo().getTitle();
+        if (title != null) {
+            stmt.bindString(18, title);
+        }
+
+        Integer position = entity.getGroupInfo().getPosition();
+        stmt.bindLong(19, position);
+
+        Integer total = entity.getGroupInfo().getTotal();
+        stmt.bindLong(20, total);
     }
 
     @Override
@@ -207,7 +239,11 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
                 cursor.isNull(offset + 12) ? null : cursor.getLong(offset + 12),
                 cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13),
                 cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14),
-                cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15)
+                cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15),
+                cursor.isNull(offset + 16) ? null : cursor.getLong(offset + 16),
+                cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17),
+                cursor.isNull(offset + 18) ? null : cursor.getLong(offset + 18),
+                cursor.isNull(offset + 19) ? null : cursor.getLong(offset + 19)
         );
         return entity;
     }
@@ -253,6 +289,14 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
         entity.setRealName(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
         entity.setUsername(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
         entity.setIcoPath(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
+
+        entity.setGroupInfo(
+                new GroupInfo(
+                        cursor.isNull(offset + 16) ? -1 : cursor.getLong(offset + 16),
+                        cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17),
+                        cursor.isNull(offset + 18) ? -1 : cursor.getLong(offset + 18),
+                        cursor.isNull(offset + 19) ? -1 : cursor.getLong(offset + 19)));
+
     }
 
     @Override
@@ -296,6 +340,11 @@ public class UserDao extends AbstractDao<LocalUser, Long> {
         public final static Property RealName = new Property(13, String.class, "realName", false, "realName");
         public final static Property Username = new Property(14, String.class, "username", false, "username");
         public final static Property Avatar = new Property(15, String.class, "avatar", false, "avatar");
+
+        public final static Property GroupNum = new Property(16, Long.class, "groupNum", false, "groupNum");
+        public final static Property Title = new Property(17, String.class, "title", false, "title");
+        public final static Property Position = new Property(18, Long.class, "position", false, "position");
+        public final static Property Total = new Property(19, Long.class, "total", false, "total");
     }
 
     @Override

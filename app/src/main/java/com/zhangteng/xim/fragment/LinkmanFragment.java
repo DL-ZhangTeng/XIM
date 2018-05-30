@@ -24,7 +24,6 @@ import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.ActivityHelper;
-import com.zhangteng.xim.utils.SortUtils;
 import com.zhangteng.xim.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -45,9 +44,6 @@ public class LinkmanFragment extends BaseFragment {
 
     private LinkmanAdapter linkmanAdapter;
     private List<Friend> list;
-    private int groupNum = 0;
-    private int groupPosition = 0;
-    private int groupTotal;
     private ItemStickyDecoration.GroupInfoInterface groupInfoInterface;
 
     @Override
@@ -65,15 +61,20 @@ public class LinkmanFragment extends BaseFragment {
                     public void onSuccess(@Nullable List<Friend> bmobObject) {
                         Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
                         list.clear();
+                        if (bmobObject == null) {
+                            bmobObject = new ArrayList<>();
+                        }
                         for (Friend friend : bmobObject) {
                             if (StringUtils.isNotEmpty(friend.getFriendUser().getObjectId())) {
                                 list.add(friend);
                             }
                         }
+                        GroupInfo.initTotals();
                         Collections.sort(list);
                         linkmanAdapter.notifyDataSetChanged();
                         for (Friend friend : list) {
-                            LocalUser user = LocalUser.getLocalUser(friend.getFriendUser());
+                            friend.getGroupInfo().setTotal(GroupInfo.totals[friend.getGroupInfo().getGroupNum() - 'A']);
+                            LocalUser user = LocalUser.getLocalUser(friend);
                             DBManager.instance().updateUser(user);
                         }
                         refreshLayout.finishRefresh();
@@ -91,23 +92,7 @@ public class LinkmanFragment extends BaseFragment {
         groupInfoInterface = new ItemStickyDecoration.GroupInfoInterface() {
             @Override
             public GroupInfo getGroupInfo(int position) {
-                char groupId = SortUtils.getFirstC(list.get(position).getFriendUser().getUsername());
-                if (groupId != groupNum) {
-                    if (groupNum != 0) {
-                        groupTotal = groupPosition + 1;
-                    } else {
-                        groupTotal = list.size();
-                    }
-                    groupNum = groupId;
-                    groupPosition = 0;
-
-                } else {
-                    groupPosition++;
-                }
-                int index = groupPosition;
-                GroupInfo groupInfo = new GroupInfo(groupId, String.valueOf(groupId), index, groupTotal);
-                groupInfo.setPosition(index);
-                return groupInfo;
+                return list.get(position).getGroupInfo();
             }
         };
         list = new ArrayList<>();
@@ -140,6 +125,9 @@ public class LinkmanFragment extends BaseFragment {
                 public void onSuccess(@Nullable List<Friend> bmobObject) {
                     Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
                     list.clear();
+                    if (bmobObject == null) {
+                        bmobObject = new ArrayList<>();
+                    }
                     for (Friend friend : bmobObject) {
                         if (StringUtils.isNotEmpty(friend.getFriendUser().getObjectId())) {
                             list.add(friend);
@@ -148,7 +136,8 @@ public class LinkmanFragment extends BaseFragment {
                     Collections.sort(list);
                     linkmanAdapter.notifyDataSetChanged();
                     for (Friend friend : list) {
-                        LocalUser user = LocalUser.getLocalUser(friend.getFriendUser());
+                        friend.getGroupInfo().setTotal(GroupInfo.totals[friend.getGroupInfo().getGroupNum() - 'A']);
+                        LocalUser user = LocalUser.getLocalUser(friend);
                         DBManager.instance().insertUser(user);
                     }
                 }
@@ -160,6 +149,7 @@ public class LinkmanFragment extends BaseFragment {
                 Friend friend = new Friend();
                 friend.setUser(UserApi.getInstance().getUserInfo());
                 friend.setFriendUser(User.getUser(user));
+                friend.setGroupInfo(user.getGroupInfo());
                 list.add(friend);
             }
             linkmanAdapter.notifyDataSetChanged();

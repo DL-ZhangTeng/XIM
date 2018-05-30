@@ -46,7 +46,7 @@ public class SortUtils {
             String str = sourceStr.toUpperCase();
             return Char2Initial(str.charAt(0));
         }
-        return 'Z' + 1;
+        return 'Z';
     }
 
     public static String getFirstLetter(String sourceStr) {
