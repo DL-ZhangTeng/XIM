@@ -14,7 +14,7 @@ import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.CityNo;
 import com.zhangteng.xim.db.bean.LocalUser;
-import com.zhangteng.xim.utils.StringUtils;
+import com.zhangteng.xim.utils.ActivityHelper;
 
 import butterknife.BindView;
 
@@ -57,7 +57,7 @@ public class FriendInfoActivity extends BaseActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ActivityHelper.jumpToActivityForParams(FriendInfoActivity.this, SendActivity.class, "objectId", user.getObjectId(), 1);
             }
         });
     }
@@ -69,9 +69,9 @@ public class FriendInfoActivity extends BaseActivity {
             objectId = getIntent().getStringExtra("objectId");
         }
         user = DBManager.instance().queryUser(objectId);
-        realName.setText(StringUtils.isNotEmpty(user.getRealName()) ? user.getRealName() : user.getUsername());
+        realName.setText(user.getUsername());
         sex.setImageResource(user.getSex() == 0 ? R.mipmap.ic_sex_male : R.mipmap.ic_sex_female);
-        username.setText(String.format("XIM账号：%s", user.getUsername()));
+        username.setText(String.format("XIM账号：%s", user.getObjectId()));
         if (user.getProvinceId() != 0 || user.getCityId() != 0 || user.getAreaId() != 0) {
             CityNo province = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getProvinceId()));
             CityNo city = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getCityId()));

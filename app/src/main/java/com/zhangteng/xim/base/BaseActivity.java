@@ -116,7 +116,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void goBack() {
         ActivityHelper.setActivityAnimClose(this);
-        finish();
+        AppManager.finishActivity(this);
     }
 }
 

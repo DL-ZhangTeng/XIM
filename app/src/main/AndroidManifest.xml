@@ -50,6 +50,9 @@
         <activity android:name=".activity.MyCodeActivity" />
         <activity android:name=".activity.ShareActivity" />
         <activity
+            android:name=".activity.SendActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/Full">
             <intent-filter>

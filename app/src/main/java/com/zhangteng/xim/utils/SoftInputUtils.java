@@ -8,8 +8,8 @@ public class SoftInputUtils {
     /**
      * 打卡软键盘
      *
-     * @param mEditText输入框
-     * @param mContext上下文
+     * @param mEditText 输入框
+     * @param mContext 上下文
      */
     public static void openKeybord(EditText mEditText, Context mContext) {
         InputMethodManager imm = (InputMethodManager) mContext
@@ -22,8 +22,8 @@ public class SoftInputUtils {
     /**
      * 关闭软键盘
      *
-     * @param mEditText输入框
-     * @param mContext上下文
+     * @param mEditText 输入框
+     * @param mContext 上下文
      */
 
     public static void closeKeybord(EditText mEditText, Context mContext) {

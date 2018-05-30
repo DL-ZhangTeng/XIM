@@ -30,6 +30,7 @@ import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.listener.ConnectListener;
 import cn.bmob.newim.listener.ConnectStatusChangeListener;
+import cn.bmob.newim.listener.ConversationListener;
 import cn.bmob.newim.listener.MessageListener;
 import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.newim.listener.MessagesQueryListener;
@@ -174,6 +175,18 @@ public class IMApi {
          */
         public BmobIMConversation startPrivateConversation(BmobIMUserInfo info, boolean status) {
             return BmobIM.getInstance().startPrivateConversation(info, status, null);
+        }
+
+        /**
+         * 开启会话（暂态，常态）
+         */
+        public BmobIMConversation startPrivateConversation(BmobIMUserInfo info, boolean status, final BmobCallBack<BmobIMConversation> bmobCallBack) {
+            return BmobIM.getInstance().startPrivateConversation(info, status, new ConversationListener() {
+                @Override
+                public void done(BmobIMConversation bmobIMConversation, BmobException e) {
+                    bmobCallBack.onResponse(BmobIMConversation.obtain(BmobIMClient.getInstance(), bmobIMConversation), e);
+                }
+            });
         }
 
         /**
