@@ -101,7 +101,13 @@ public class MainActivity extends BaseActivity {
                 .into(titleBar.getLeftBtn());
     }
 
-    private IHandlerCallBack iHandlerCallBack = new HandlerCallBack();
+    private IHandlerCallBack iHandlerCallBack = new HandlerCallBack() {
+        @Override
+        public void onFinish() {
+            super.onFinish();
+            ActivityHelper.jumpToActivity(MainActivity.this, ShareActivity.class, 1);
+        }
+    };
     private List<String> path = new ArrayList<>();
 
     @Override
