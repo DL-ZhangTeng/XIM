@@ -43,8 +43,8 @@ public class SettingActivity extends BaseActivity {
                     IMApi.IMServiceManager.getInstance().disConnectService();
                 }
                 UserApi.getInstance().Logout();
-                AppManager.finishActivity(this);
                 ActivityHelper.jumpActivity(SettingActivity.this, LoginActivity.class, 1);
+                AppManager.finishAllActivity();
                 break;
             case R.id.setting_about:
                 break;
