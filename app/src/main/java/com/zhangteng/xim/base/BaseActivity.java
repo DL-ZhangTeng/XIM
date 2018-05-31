@@ -118,5 +118,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         ActivityHelper.setActivityAnimClose(this);
         AppManager.finishActivity(this);
     }
+
 }
 

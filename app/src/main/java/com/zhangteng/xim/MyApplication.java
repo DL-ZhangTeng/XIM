@@ -54,7 +54,7 @@ public class MyApplication extends Application {
         //TODO 集成：1.8、初始化IM SDK，并注册消息接收器
         if (getApplicationInfo().packageName.equals(getMyProcessName())) {
             BmobIM.init(this);
-            BmobIM.registerDefaultMessageHandler(new DemoMessageHandler());
+            BmobIM.registerDefaultMessageHandler(new DemoMessageHandler(this));
         }
     }
 

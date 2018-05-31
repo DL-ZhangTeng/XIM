@@ -49,6 +49,7 @@
         <activity android:name=".activity.FriendInfoActivity" />
         <activity android:name=".activity.MyCodeActivity" />
         <activity android:name=".activity.ShareActivity" />
+        <activity android:name=".activity.NewFriendActivity" />
         <activity
             android:name=".activity.SendActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />

@@ -244,7 +244,7 @@ public class IMApi {
          * @param event
          * @param bmobCallBack
          */
-        public void updateUserInfo(MessageEvent event, final BmobCallBack bmobCallBack) {
+        public void updateUserInfo(MessageEvent event, final BmobCallBack<User> bmobCallBack) {
             final BmobIMConversation conversation = event.getConversation();
             final BmobIMUserInfo info = event.getFromUserInfo();
             final BmobIMMessage msg = event.getMessage();
@@ -270,10 +270,8 @@ public class IMApi {
                             if (!msg.isTransient()) {
                                 BmobIM.getInstance().updateConversation(conversation);
                             }
-                        } else {
-
                         }
-                        bmobCallBack.onResponse(null, e);
+                        bmobCallBack.onResponse(object, e);
                     }
                 });
 

@@ -31,16 +31,23 @@ import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.db.DBManager;
+import com.zhangteng.xim.event.RefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.StringUtils;
 import com.zhangteng.xim.widget.NoScrollViewPager;
 import com.zhangteng.xim.widget.TitleBar;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import cn.bmob.newim.core.ConnectionStatus;
+import cn.bmob.newim.event.MessageEvent;
+import cn.bmob.newim.event.OfflineMessageEvent;
 import cn.bmob.v3.exception.BmobException;
 
 public class MainActivity extends BaseActivity {
@@ -133,6 +140,7 @@ public class MainActivity extends BaseActivity {
                                             : UserApi.getInstance().getUserInfo().getRealName()
                                     , UserApi.getInstance().getUserInfo().getIcoPath()
                             );
+                    EventBus.getDefault().post(new RefreshEvent());
                 }
 
                 @Override
@@ -225,6 +233,70 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+    }
+
+    /**
+     * 注册消息接收事件
+     *
+     * @param event
+     */
+    //TODO 消息接收：8.3、通知有在线消息接收
+    @Subscribe
+    public void onEventMainThread(MessageEvent event) {
+        checkRedPoint();
+    }
+
+    /**
+     * 注册离线消息接收事件
+     *
+     * @param event
+     */
+    //TODO 消息接收：8.4、通知有离线消息接收
+    @Subscribe
+    public void onEventMainThread(OfflineMessageEvent event) {
+        checkRedPoint();
+    }
+
+    /**
+     * 注册自定义消息接收事件
+     *
+     * @param event
+     */
+    //TODO 消息接收：8.5、通知有自定义消息接收
+    @Subscribe
+    public void onEventMainThread(RefreshEvent event) {
+        checkRedPoint();
+    }
+
+    /**
+     *
+     */
+    private void checkRedPoint() {
+        //TODO
+        long count = IMApi.ConversationManager.getInstance().getAllUnReadCount();
+        if (count > 0) {
+
+        } else {
+
+        }
+        //TODO 显示底部导航红点
+        if (DBManager.instance().hasNewFriendInvitation()) {
+
+        } else {
+
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     private void initImagePicker() {

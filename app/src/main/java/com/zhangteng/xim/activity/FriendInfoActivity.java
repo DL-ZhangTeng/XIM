@@ -15,6 +15,7 @@ import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.CityNo;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.ActivityHelper;
+import com.zhangteng.xim.utils.AppManager;
 
 import butterknife.BindView;
 
@@ -58,6 +59,7 @@ public class FriendInfoActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 ActivityHelper.jumpToActivityForParams(FriendInfoActivity.this, SendActivity.class, "objectId", user.getObjectId(), 1);
+                AppManager.finishActivity(FriendInfoActivity.this);
             }
         });
     }

@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.zhangteng.xim.R;
@@ -23,7 +25,9 @@ import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.AppManager;
+import com.zhangteng.xim.utils.StringUtils;
 import com.zhangteng.xim.utils.SystemBarTintManager;
+import com.zhangteng.xim.utils.ToastUtils;
 import com.zhangteng.xim.widget.TitleBar;
 
 import java.util.List;
@@ -33,6 +37,7 @@ import butterknife.ButterKnife;
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
+import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.v3.exception.BmobException;
 
 public class SendActivity extends AppCompatActivity {
@@ -42,11 +47,16 @@ public class SendActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     @BindView(R.id.send)
     ConstraintLayout send;
+    @BindView(R.id.edit_msg)
+    EditText editText;
+    @BindView(R.id.btn_send)
+    Button button;
     private LocalUser user;
     private String objectId;
     private List<BmobIMConversation> list;
     private List<BmobIMMessage> data;
     private SendAdapter sendAdapter;
+    private BmobIMConversation bmobIMConversation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,49 +92,88 @@ public class SendActivity extends AppCompatActivity {
         if (intent.hasExtra("objectId")) {
             objectId = getIntent().getStringExtra("objectId");
         }
-        list = IMApi.ConversationManager.getInstance().loadAllConversation();
-        for (BmobIMConversation bmobIMConversation : list) {
-            if (bmobIMConversation.getConversationId().equals(objectId) || bmobIMConversation.getConversationTitle().equals(objectId)) {
-                data = bmobIMConversation.getMessages();
+        Bundle bundle = getBundle();
+        BmobIMConversation conversationEntrance = null;
+        if (bundle != null) {
+            conversationEntrance = (BmobIMConversation) getBundle().getSerializable("c");
+        }
+        if (conversationEntrance != null) {
+            bmobIMConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
+            data = conversationEntrance.getMessages();
+        } else {
+            list = IMApi.ConversationManager.getInstance().loadAllConversation();
+            for (BmobIMConversation bmobIMConversation : list) {
+                if (bmobIMConversation.getConversationId().equals(objectId) || bmobIMConversation.getConversationTitle().equals(objectId)) {
+                    this.bmobIMConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), bmobIMConversation);
+                    data = bmobIMConversation.getMessages();
+                }
             }
         }
         sendAdapter = new SendAdapter(this, data);
         recyclerView.setAdapter(sendAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        send.setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BmobIMUserInfo bmobIMUserInfo = new BmobIMUserInfo();
-                bmobIMUserInfo.setUserId(user.getObjectId());
-                bmobIMUserInfo.setAvatar(user.getIcoPath());
-                bmobIMUserInfo.setName(user.getUsername());
-                IMApi.ConversationManager.getInstance().startPrivateConversation(bmobIMUserInfo, false, new BmobCallBack<BmobIMConversation>(SendActivity.this, false) {
-                    @Override
-                    public void onSuccess(@Nullable BmobIMConversation bmobIMConversation) {
-                        IMApi.MassageSender.getInstance().sendMessage("111", bmobIMConversation, new BmobCallBack<BmobIMMessage>(SendActivity.this, false) {
+                if (StringUtils.isNotEmpty(editText.getText().toString())) {
+                    if (bmobIMConversation == null) {
+                        BmobIMUserInfo bmobIMUserInfo = new BmobIMUserInfo();
+                        bmobIMUserInfo.setUserId(user.getObjectId());
+                        bmobIMUserInfo.setAvatar(user.getIcoPath());
+                        bmobIMUserInfo.setName(user.getUsername());
+                        IMApi.ConversationManager.getInstance().startPrivateConversation(bmobIMUserInfo, false, new BmobCallBack<BmobIMConversation>(SendActivity.this, false) {
                             @Override
-                            public void onSuccess(@Nullable BmobIMMessage bmobObject) {
-                                Log.e("message", "success");
-                            }
-
-                            @Override
-                            public void onFailure(BmobException bmobException) {
-                                super.onFailure(bmobException);
-                                Log.e("message", "failure");
+                            public void onSuccess(@Nullable final BmobIMConversation bmobIMConversation) {
+                                SendActivity.this.bmobIMConversation = bmobIMConversation;
+                                sendMessage();
                             }
                         });
+                    } else {
+                        sendMessage();
                     }
-                });
+                }
             }
         });
     }
 
 
     protected void initData() {
-        user = DBManager.instance().queryUser(objectId);
-        titleBar.setTitleText(user.getUsername());
+        if (StringUtils.isNotEmpty(objectId)) {
+            user = DBManager.instance().queryUser(objectId);
+            titleBar.setTitleText(user.getUsername());
+        } else if (bmobIMConversation != null) {
+            titleBar.setTitleText(bmobIMConversation.getConversationTitle());
+        }
     }
 
+    private void sendMessage() {
+        IMApi.MassageSender.getInstance().sendMessage(editText.getText().toString(), bmobIMConversation, new BmobCallBack<BmobIMMessage>(SendActivity.this, false) {
+            @Override
+            public void onSuccess(@Nullable BmobIMMessage bmobObject) {
+                Log.e("message", "success");
+                editText.setText("");
+                data.clear();
+                data.addAll(bmobIMConversation.getMessages());
+                sendAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+                editText.setText("");
+                Log.e("message", "failure");
+                ToastUtils.showShort(SendActivity.this, "send failed");
+            }
+        });
+    }
+
+    public Bundle getBundle() {
+        if (getIntent() != null && getIntent().hasExtra(getPackageName())) {
+            return getIntent().getBundleExtra(getPackageName());
+        } else {
+            return null;
+        }
+    }
 
     public void buttonClick(View v) {
         switch (v.getId()) {
@@ -178,4 +227,5 @@ public class SendActivity extends AppCompatActivity {
         ActivityHelper.setActivityAnimClose(this);
         AppManager.finishActivity(this);
     }
+
 }

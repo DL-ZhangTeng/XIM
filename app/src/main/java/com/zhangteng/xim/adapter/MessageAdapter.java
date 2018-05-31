@@ -14,16 +14,17 @@ import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.swiperecyclerview.widget.SlideMenuRecyclerViewItem;
 import com.zhangteng.xim.R;
+import com.zhangteng.xim.bmob.conversation.Conversation;
+import com.zhangteng.xim.bmob.conversation.NewFriendConversation;
+import com.zhangteng.xim.bmob.conversation.PrivateConversation;
 import com.zhangteng.xim.utils.DateUtils;
 
 import java.util.List;
 
-import cn.bmob.newim.bean.BmobIMConversation;
-
 /**
  * Created by swing on 2018/5/18.
  */
-public class MessageAdapter extends BaseAdapter<BmobIMConversation> {
+public class MessageAdapter extends BaseAdapter<Conversation> {
     private Context context;
 
     public MessageAdapter(List data, Context context) {
@@ -39,21 +40,46 @@ public class MessageAdapter extends BaseAdapter<BmobIMConversation> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        View contentView = LayoutInflater.from(context).inflate(R.layout.content_item, ((MyViewHolder) holder).item, false);
-        //添加内容布局&菜单布局
-        if (data.get(position).getMessages().size() > 0)
-            ((TextView) contentView.findViewById(R.id.content_content)).setText(data.get(position).getMessages().get(data.get(position).getMessages().size() - 1).getContent());
-        ((TextView) contentView.findViewById(R.id.content_title)).setText(data.get(position).getConversationTitle());
-        ((TextView) contentView.findViewById(R.id.content_time)).setText(DateUtils.getDay(data.get(position).getUpdateTime()));
-        RequestOptions requestOptions = new RequestOptions()
-                .placeholder(R.mipmap.app_icon)
-                .centerCrop();
-        Glide.with(context)
-                .load(data.get(position).getConversationIcon())
-                .apply(requestOptions)
-                .into((CircleImageView) contentView.findViewById(R.id.content_avatar));
-        ((MyViewHolder) holder).item.addContentView(contentView);
-        ((MyViewHolder) holder).item.addMenuView(R.layout.menu_item);
+        if (data.get(position) instanceof PrivateConversation) {
+            final PrivateConversation privateConversation = (PrivateConversation) data.get(position);
+            View contentView = LayoutInflater.from(context).inflate(R.layout.content_item, ((MyViewHolder) holder).item, false);
+            //添加内容布局&菜单布局
+            ((TextView) contentView.findViewById(R.id.content_content)).setText(privateConversation.getLastMessageContent());
+            ((TextView) contentView.findViewById(R.id.content_title)).setText(privateConversation.getcName());
+            ((TextView) contentView.findViewById(R.id.content_time)).setText(DateUtils.getDay(privateConversation.getLastMessageTime()));
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.mipmap.app_icon)
+                    .centerCrop();
+            Glide.with(context)
+                    .load(privateConversation.getAvatar())
+                    .apply(requestOptions)
+                    .into((CircleImageView) contentView.findViewById(R.id.content_avatar));
+            contentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    privateConversation.onClick(context);
+                }
+            });
+            ((MyViewHolder) holder).item.addContentView(contentView);
+            ((MyViewHolder) holder).item.addMenuView(R.layout.menu_item);
+            ((MyViewHolder) holder).item.findViewById(R.id.menu_top).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    privateConversation.onTopClik(context);
+                    notifyDataSetChanged();
+                }
+            });
+            ((MyViewHolder) holder).item.findViewById(R.id.menu_delete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    privateConversation.onDeteleClik(context);
+                    notifyDataSetChanged();
+                }
+            });
+        } else if (data.get(position) instanceof NewFriendConversation) {
+            NewFriendConversation newFriendConversation = (NewFriendConversation) data.get(position);
+            //todo 好友请求布局
+        }
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

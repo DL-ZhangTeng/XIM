@@ -13,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
+import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class SendAdapter extends BaseAdapter<BmobIMMessage> {
                 .placeholder(R.mipmap.app_icon)
                 .centerCrop();
         Glide.with(context)
-                .load(data.get(position).getBmobIMUserInfo().getAvatar())
+                .load(IMApi.LoacalUserManager.getInstance().getUserInfo(data.get(position).getFromId()).getAvatar())
                 .apply(requestOptions)
                 .into(((MessageViewHolder) holder).circleImageView);
         ((MessageViewHolder) holder).message.setText(data.get(position).getContent());
@@ -59,7 +60,7 @@ public class SendAdapter extends BaseAdapter<BmobIMMessage> {
 
     @Override
     public int getItemViewType(int position) {
-        if (data.get(position).getBmobIMUserInfo().getUserId().equals(UserApi.getInstance().getUserInfo().getObjectId())) {
+        if (data.get(position).getFromId().equals(UserApi.getInstance().getUserInfo().getObjectId())) {
             return RIGHT;
         } else {
             return LEFT;
