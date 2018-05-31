@@ -23,6 +23,7 @@ import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
+import com.zhangteng.xim.event.RefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.AppManager;
 import com.zhangteng.xim.utils.StringUtils;
@@ -30,17 +31,24 @@ import com.zhangteng.xim.utils.SystemBarTintManager;
 import com.zhangteng.xim.utils.ToastUtils;
 import com.zhangteng.xim.widget.TitleBar;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.BmobIMClient;
+import cn.bmob.newim.event.MessageEvent;
+import cn.bmob.newim.listener.MessageListHandler;
 import cn.bmob.v3.exception.BmobException;
 
-public class SendActivity extends AppCompatActivity {
+public class SendActivity extends AppCompatActivity implements MessageListHandler {
     @BindView(R.id.title_bar)
     TitleBar titleBar;
     @BindView(R.id.recyclerView)
@@ -57,6 +65,7 @@ public class SendActivity extends AppCompatActivity {
     private List<BmobIMMessage> data;
     private SendAdapter sendAdapter;
     private BmobIMConversation bmobIMConversation;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +83,7 @@ public class SendActivity extends AppCompatActivity {
             tintManager.setStatusBarTintResource(R.color.theme);
         }
         super.setContentView(getResourceId());
+        EventBus.getDefault().register(this);
         AppManager.addActivity(this);
         setContentView(getResourceId());
         ButterKnife.bind(this);
@@ -81,6 +91,16 @@ public class SendActivity extends AppCompatActivity {
         initData();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onEventMainThread(RefreshEvent event) {
+
+    }
 
     protected int getResourceId() {
         return R.layout.activity_send;
@@ -88,6 +108,12 @@ public class SendActivity extends AppCompatActivity {
 
 
     protected void initView() {
+        data = new ArrayList<>();
+        sendAdapter = new SendAdapter(this, data);
+        recyclerView.setAdapter(sendAdapter);
+        linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
         Intent intent = getIntent();
         if (intent.hasExtra("objectId")) {
             objectId = getIntent().getStringExtra("objectId");
@@ -99,19 +125,17 @@ public class SendActivity extends AppCompatActivity {
         }
         if (conversationEntrance != null) {
             bmobIMConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
-            data = conversationEntrance.getMessages();
+            queryMessage(conversationEntrance, null, 10);
         } else {
             list = IMApi.ConversationManager.getInstance().loadAllConversation();
             for (BmobIMConversation bmobIMConversation : list) {
                 if (bmobIMConversation.getConversationId().equals(objectId) || bmobIMConversation.getConversationTitle().equals(objectId)) {
                     this.bmobIMConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), bmobIMConversation);
-                    data = bmobIMConversation.getMessages();
+                    queryMessage(bmobIMConversation, null, 10);
                 }
             }
         }
-        sendAdapter = new SendAdapter(this, data);
-        recyclerView.setAdapter(sendAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,15 +170,29 @@ public class SendActivity extends AppCompatActivity {
         }
     }
 
+    private void queryMessage(BmobIMConversation bmobIMConversation, BmobIMMessage message, int limit) {
+        IMApi.MessageManager.getInstance().queryMessages(bmobIMConversation, message, limit, new BmobCallBack<List<BmobIMMessage>>(this, false) {
+            @Override
+            public void onSuccess(@Nullable List<BmobIMMessage> bmobObject) {
+                data.clear();
+                data.addAll(bmobObject);
+                sendAdapter.setData(data);
+                sendAdapter.notifyDataSetChanged();
+                linearLayoutManager.scrollToPositionWithOffset(data.size() - 1, 0);
+            }
+        });
+    }
+
     private void sendMessage() {
         IMApi.MassageSender.getInstance().sendMessage(editText.getText().toString(), bmobIMConversation, new BmobCallBack<BmobIMMessage>(SendActivity.this, false) {
             @Override
             public void onSuccess(@Nullable BmobIMMessage bmobObject) {
                 Log.e("message", "success");
                 editText.setText("");
-                data.clear();
-                data.addAll(bmobIMConversation.getMessages());
-                sendAdapter.notifyDataSetChanged();
+                sendAdapter.addMessage(bmobObject);
+                linearLayoutManager.scrollToPositionWithOffset(data.size() - 1, 0);
+                EventBus.getDefault().post(new RefreshEvent());
+                bmobIMConversation.updateReceiveStatus(bmobObject);
             }
 
             @Override
@@ -228,4 +266,24 @@ public class SendActivity extends AppCompatActivity {
         AppManager.finishActivity(this);
     }
 
+    @Override
+    public void onMessageReceive(List<MessageEvent> list) {
+        for (int i = 0; i < list.size(); i++) {
+            MessageEvent event = list.get(i);
+            if (event != null && bmobIMConversation != null && event.getConversation().getConversationId().equals(bmobIMConversation.getConversationId()))
+                sendAdapter.addMessage(event.getMessage());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BmobIM.getInstance().addMessageListHandler(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BmobIM.getInstance().removeMessageListHandler(this);
+    }
 }

@@ -1,5 +1,6 @@
 package com.zhangteng.xim.activity;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -288,15 +289,15 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onStop() {
+    protected void onDestroy() {
+        super.onDestroy();
         EventBus.getDefault().unregister(this);
-        super.onStop();
     }
 
     private void initImagePicker() {

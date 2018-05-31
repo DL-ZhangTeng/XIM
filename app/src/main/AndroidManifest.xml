@@ -52,6 +52,7 @@
         <activity android:name=".activity.NewFriendActivity" />
         <activity
             android:name=".activity.SendActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
             android:name=".activity.SplashActivity"

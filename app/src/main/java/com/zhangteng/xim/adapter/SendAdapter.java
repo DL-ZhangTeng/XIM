@@ -67,6 +67,16 @@ public class SendAdapter extends BaseAdapter<BmobIMMessage> {
         }
     }
 
+    public void addMessage(BmobIMMessage message) {
+        data.add(message);
+        notifyDataSetChanged();
+    }
+
+    public void deleteMessage(BmobIMMessage message) {
+        data.remove(message);
+        notifyDataSetChanged();
+    }
+
     public class MessageViewHolder extends RecyclerView.ViewHolder {
         private CircleImageView circleImageView;
         private Button message;
@@ -77,4 +87,6 @@ public class SendAdapter extends BaseAdapter<BmobIMMessage> {
             message = itemView.findViewById(R.id.message);
         }
     }
+
+
 }

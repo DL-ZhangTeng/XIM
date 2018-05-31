@@ -1,9 +1,12 @@
 package com.zhangteng.xim.fragment;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -95,6 +98,7 @@ public class MessageFragment extends BaseFragment {
     @Subscribe
     public void onEventMainThread(OfflineMessageEvent event) {
         //重新刷新列表
+        Log.e("event", "test");
         messageAdapter.setData(getConversations());
         messageAdapter.notifyDataSetChanged();
     }
@@ -145,14 +149,14 @@ public class MessageFragment extends BaseFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onStop() {
+    public void onDestroy() {
+        super.onDestroy();
         EventBus.getDefault().unregister(this);
-        super.onStop();
     }
 }

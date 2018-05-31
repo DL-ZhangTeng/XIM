@@ -1,5 +1,6 @@
 package com.zhangteng.xim.fragment;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -63,24 +64,7 @@ public class LinkmanFragment extends BaseFragment {
                 IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
                     @Override
                     public void onSuccess(@Nullable List<Friend> bmobObject) {
-                        Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
-                        list.clear();
-                        if (bmobObject == null) {
-                            bmobObject = new ArrayList<>();
-                        }
-                        for (Friend friend : bmobObject) {
-                            if (StringUtils.isNotEmpty(friend.getFriendUser().getObjectId())) {
-                                list.add(friend);
-                            }
-                        }
-                        GroupInfo.initTotals();
-                        Collections.sort(list);
-                        linkmanAdapter.notifyDataSetChanged();
-                        for (Friend friend : list) {
-                            friend.getGroupInfo().setTotal(GroupInfo.totals[friend.getGroupInfo().getGroupNum() - 'A']);
-                            LocalUser user = LocalUser.getLocalUser(friend);
-                            DBManager.instance().updateUser(user);
-                        }
+                        sortData(bmobObject);
                         refreshLayout.finishRefresh();
                     }
 
@@ -127,23 +111,7 @@ public class LinkmanFragment extends BaseFragment {
             IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
                 @Override
                 public void onSuccess(@Nullable List<Friend> bmobObject) {
-                    Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_success", Toast.LENGTH_SHORT).show();
-                    list.clear();
-                    if (bmobObject == null) {
-                        bmobObject = new ArrayList<>();
-                    }
-                    for (Friend friend : bmobObject) {
-                        if (StringUtils.isNotEmpty(friend.getFriendUser().getObjectId())) {
-                            list.add(friend);
-                        }
-                    }
-                    Collections.sort(list);
-                    linkmanAdapter.notifyDataSetChanged();
-                    for (Friend friend : list) {
-                        friend.getGroupInfo().setTotal(GroupInfo.totals[friend.getGroupInfo().getGroupNum() - 'A']);
-                        LocalUser user = LocalUser.getLocalUser(friend);
-                        DBManager.instance().insertUser(user);
-                    }
+                    sortData(bmobObject);
                 }
             });
         } else {
@@ -160,6 +128,26 @@ public class LinkmanFragment extends BaseFragment {
         }
     }
 
+    private void sortData(List<Friend> bmobObject) {
+        list.clear();
+        if (bmobObject == null) {
+            bmobObject = new ArrayList<>();
+        }
+        for (Friend friend : bmobObject) {
+            if (StringUtils.isNotEmpty(friend.getFriendUser().getObjectId())) {
+                list.add(friend);
+            }
+        }
+        GroupInfo.initTotals();
+        Collections.sort(list);
+        linkmanAdapter.notifyDataSetChanged();
+        for (Friend friend : list) {
+            friend.getGroupInfo().setTotal(GroupInfo.totals[friend.getGroupInfo().getGroupNum() - 'A']);
+            LocalUser user = LocalUser.getLocalUser(friend);
+            DBManager.instance().updateUser(user);
+        }
+    }
+
     /**
      * 注册自定义消息接收事件
      *
@@ -168,18 +156,23 @@ public class LinkmanFragment extends BaseFragment {
     @Subscribe
     public void onEventMainThread(RefreshEvent event) {
         //重新刷新列表
-        linkmanAdapter.notifyDataSetChanged();
+        IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
+            @Override
+            public void onSuccess(@Nullable List<Friend> bmobObject) {
+                sortData(bmobObject);
+            }
+        });
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onStop() {
+    public void onDestroy() {
+        super.onDestroy();
         EventBus.getDefault().unregister(this);
-        super.onStop();
     }
 }
