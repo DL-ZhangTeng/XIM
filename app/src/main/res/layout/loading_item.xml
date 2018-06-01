@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhangteng.loadingview.LoadingView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/loading_view"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:loadingviewcolor="@color/background_black"
+    app:loadingviewradius="8dp"
+    app:loadingviewvelocity="500" />

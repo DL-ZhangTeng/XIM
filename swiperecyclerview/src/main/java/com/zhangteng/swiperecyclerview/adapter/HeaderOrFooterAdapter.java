@@ -1,13 +1,11 @@
 package com.zhangteng.swiperecyclerview.adapter;
 
-import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,11 +15,14 @@ import android.view.ViewGroup;
  */
 public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
 
-    private static final int BASE_ITEM_TYPE_HEADER = 100000;
-    private static final int BASE_ITEM_TYPE_FOOTER = 200000;
+    public static final int BASE_ITEM_TYPE_HEADER = 100000;
+    public static final int BASE_ITEM_TYPE_FOOTER = 200000;
 
-    private SparseArrayCompat<Integer> mHeaderViews = new SparseArrayCompat<>();
-    private SparseArrayCompat<Integer> mFootViews = new SparseArrayCompat<>();
+    private SparseArrayCompat<Integer> mHeaderViewInts = new SparseArrayCompat<>();
+    private SparseArrayCompat<Integer> mFootViewInts = new SparseArrayCompat<>();
+
+    private SparseArrayCompat<View> mHeaderViews = new SparseArrayCompat<>();
+    private SparseArrayCompat<View> mFootViews = new SparseArrayCompat<>();
 
     private RecyclerView.Adapter mInnerAdapter;
 
@@ -33,13 +34,15 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (mHeaderViews.get(viewType) != null) {
+        if (mHeaderViewInts.get(viewType) != null) {
 
-            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent, mHeaderViews.get(viewType));
+            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent, mHeaderViewInts.get(viewType));
+            mHeaderViews.put(viewType, holder.itemView);
             return holder;
 
-        } else if (mFootViews.get(viewType) != null) {
-            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent, mFootViews.get(viewType));
+        } else if (mFootViewInts.get(viewType) != null) {
+            RecyclerView.ViewHolder holder = createHeaderOrFooterViewHolder(parent, mFootViewInts.get(viewType));
+            mFootViews.put(viewType, holder.itemView);
             return holder;
         }
         return mInnerAdapter.onCreateViewHolder(parent, viewType);
@@ -67,9 +70,9 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
     public int getItemViewType(int position) {
 
         if (isHeaderViewPos(position)) {
-            return mHeaderViews.keyAt(position);
+            return mHeaderViewInts.keyAt(position);
         } else if (isFooterViewPos(position)) {
-            return mFootViews.keyAt(position - getHeadersCount() - getRealItemCount());
+            return mFootViewInts.keyAt(position - getHeadersCount() - getRealItemCount());
         }
         return mInnerAdapter.getItemViewType(position - getHeadersCount());
     }
@@ -87,9 +90,9 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
                 @Override
                 public int getSpanSize(int position) {
                     int viewType = getItemViewType(position);
-                    if (mHeaderViews.get(viewType) != null) {
+                    if (mHeaderViewInts.get(viewType) != null) {
                         return gridLayoutManager.getSpanCount();
-                    } else if (mFootViews.get(viewType) != null) {
+                    } else if (mFootViewInts.get(viewType) != null) {
                         return gridLayoutManager.getSpanCount();
                     }
                     if (spanSizeLookup != null) {
@@ -130,20 +133,20 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
 
     public void addHeaderView(@LayoutRes int view) {
         hasHeaderOrFooter = true;
-        mHeaderViews.put(mHeaderViews.size() + BASE_ITEM_TYPE_HEADER, view);
+        mHeaderViewInts.put(mHeaderViewInts.size() + BASE_ITEM_TYPE_HEADER, view);
     }
 
     public void addFootView(@LayoutRes int view) {
         hasHeaderOrFooter = true;
-        mFootViews.put(mFootViews.size() + BASE_ITEM_TYPE_FOOTER, view);
+        mFootViewInts.put(mFootViewInts.size() + BASE_ITEM_TYPE_FOOTER, view);
     }
 
     public int getHeadersCount() {
-        return mHeaderViews.size();
+        return mHeaderViewInts.size();
     }
 
     public int getFootersCount() {
-        return mFootViews.size();
+        return mFootViewInts.size();
     }
 
     private int getRealItemCount() {
@@ -154,4 +157,19 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
 
     public abstract void onBindHeaderOrFooterViewHolder(@NonNull RecyclerView.ViewHolder holder, int viewType);
 
+    public View getHeaderViewByType(int viewType) {
+        return mHeaderViews.get(viewType);
+    }
+
+    public View getFooterViewByType(int viewType) {
+        return mFootViews.get(viewType);
+    }
+
+    public View getHeaderViewByPos(int position) {
+        return mHeaderViews.get(getItemViewType(position));
+    }
+
+    public View getFooterViewByPos(int position) {
+        return mFootViews.get(getItemViewType(position));
+    }
 }

@@ -26,6 +26,7 @@ import cn.bmob.newim.bean.BmobIMMessage;
 public class SendAdapter extends BaseAdapter<BmobIMMessage> {
     private static final int RIGHT = 1;
     private static final int LEFT = 0;
+    private static final int LOADING = -1;
     private Context context;
 
     public SendAdapter(Context context, List<BmobIMMessage> data) {
@@ -87,6 +88,5 @@ public class SendAdapter extends BaseAdapter<BmobIMMessage> {
             message = itemView.findViewById(R.id.message);
         }
     }
-
 
 }

@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -11,12 +12,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.zhangteng.loadingview.LoadingView;
+import com.zhangteng.swiperecyclerview.adapter.HeaderOrFooterAdapter;
+import com.zhangteng.swiperecyclerview.widget.PullDownLoadingRecyclerView;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.SendAdapter;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
@@ -48,11 +54,13 @@ import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.listener.MessageListHandler;
 import cn.bmob.v3.exception.BmobException;
 
-public class SendActivity extends AppCompatActivity implements MessageListHandler {
+public class SendActivity extends AppCompatActivity implements MessageListHandler,
+        PullDownLoadingRecyclerView.PullDownListener<List<BmobIMMessage>>,
+        View.OnClickListener {
     @BindView(R.id.title_bar)
     TitleBar titleBar;
     @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+    PullDownLoadingRecyclerView recyclerView;
     @BindView(R.id.send)
     ConstraintLayout send;
     @BindView(R.id.edit_msg)
@@ -64,6 +72,7 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
     private List<BmobIMConversation> list;
     private List<BmobIMMessage> data;
     private SendAdapter sendAdapter;
+    private HeaderOrFooterAdapter headerOrFooterAdapter;
     private BmobIMConversation bmobIMConversation;
     private LinearLayoutManager linearLayoutManager;
 
@@ -110,10 +119,32 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
     protected void initView() {
         data = new ArrayList<>();
         sendAdapter = new SendAdapter(this, data);
-        recyclerView.setAdapter(sendAdapter);
+        headerOrFooterAdapter = new HeaderOrFooterAdapter(sendAdapter) {
+            @Override
+            public RecyclerView.ViewHolder createHeaderOrFooterViewHolder(ViewGroup parent, Integer viewInt) {
+                LoadingView loadingView = (LoadingView) LayoutInflater.from(SendActivity.this).inflate(viewInt, parent, false);
+                return new LoadingViewHolder(loadingView);
+            }
+
+            @Override
+            public void onBindHeaderOrFooterViewHolder(@NonNull RecyclerView.ViewHolder holder, int viewType) {
+
+            }
+
+            class LoadingViewHolder extends RecyclerView.ViewHolder {
+                private LoadingView loadingView;
+
+                public LoadingViewHolder(View itemView) {
+                    super(itemView);
+                    loadingView = (LoadingView) itemView;
+                }
+            }
+        };
+        headerOrFooterAdapter.addHeaderView(R.layout.loading_item);
+        recyclerView.setAdapter(headerOrFooterAdapter);
+        recyclerView.setListener(this);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-
         Intent intent = getIntent();
         if (intent.hasExtra("objectId")) {
             objectId = getIntent().getStringExtra("objectId");
@@ -125,39 +156,17 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
         }
         if (conversationEntrance != null) {
             bmobIMConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
-            queryMessage(conversationEntrance, null, 10);
+            queryMessage(conversationEntrance, true, 10);
         } else {
             list = IMApi.ConversationManager.getInstance().loadAllConversation();
             for (BmobIMConversation bmobIMConversation : list) {
                 if (bmobIMConversation.getConversationId().equals(objectId) || bmobIMConversation.getConversationTitle().equals(objectId)) {
                     this.bmobIMConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), bmobIMConversation);
-                    queryMessage(bmobIMConversation, null, 10);
+                    queryMessage(bmobIMConversation, true, 10);
                 }
             }
         }
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (StringUtils.isNotEmpty(editText.getText().toString())) {
-                    if (bmobIMConversation == null) {
-                        BmobIMUserInfo bmobIMUserInfo = new BmobIMUserInfo();
-                        bmobIMUserInfo.setUserId(user.getObjectId());
-                        bmobIMUserInfo.setAvatar(user.getIcoPath());
-                        bmobIMUserInfo.setName(user.getUsername());
-                        IMApi.ConversationManager.getInstance().startPrivateConversation(bmobIMUserInfo, false, new BmobCallBack<BmobIMConversation>(SendActivity.this, false) {
-                            @Override
-                            public void onSuccess(@Nullable final BmobIMConversation bmobIMConversation) {
-                                SendActivity.this.bmobIMConversation = bmobIMConversation;
-                                sendMessage();
-                            }
-                        });
-                    } else {
-                        sendMessage();
-                    }
-                }
-            }
-        });
+        button.setOnClickListener(this);
     }
 
 
@@ -170,18 +179,32 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
         }
     }
 
-    private void queryMessage(BmobIMConversation bmobIMConversation, BmobIMMessage message, int limit) {
-        IMApi.MessageManager.getInstance().queryMessages(bmobIMConversation, message, limit, new BmobCallBack<List<BmobIMMessage>>(this, false) {
+    private void queryMessage(BmobIMConversation bmobIMConversation, final boolean isFistLoad, int limit) {
+        IMApi.MessageManager.getInstance().queryMessages(bmobIMConversation, null, limit, new BmobCallBack<List<BmobIMMessage>>(this, false) {
             @Override
             public void onSuccess(@Nullable List<BmobIMMessage> bmobObject) {
-                data.clear();
-                data.addAll(bmobObject);
-                sendAdapter.setData(data);
-                sendAdapter.notifyDataSetChanged();
-                linearLayoutManager.scrollToPositionWithOffset(data.size() - 1, 0);
+                if (isFistLoad) {
+                    data.clear();
+                    data.addAll(bmobObject);
+                    sendAdapter.setData(data);
+                    sendAdapter.notifyDataSetChanged();
+                    headerOrFooterAdapter.notifyDataSetChanged();
+                    linearLayoutManager.scrollToPositionWithOffset(data.size() - 1, 0);
+                } else {
+                    recyclerView.stopPullDown(bmobObject);
+                }
+            }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+                if (!isFistLoad) {
+                    recyclerView.stopPullDown(null);
+                }
             }
         });
     }
+
 
     private void sendMessage() {
         IMApi.MassageSender.getInstance().sendMessage(editText.getText().toString(), bmobIMConversation, new BmobCallBack<BmobIMMessage>(SendActivity.this, false) {
@@ -285,5 +308,49 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
     protected void onPause() {
         super.onPause();
         BmobIM.getInstance().removeMessageListHandler(this);
+    }
+
+    @Override
+    public void onLoading() {
+        queryMessage(bmobIMConversation, false, 10 + data.size());
+    }
+
+    @Override
+    public void onFinish(List<BmobIMMessage> bmobIMMessages) {
+        int index;
+        if (data.size() == bmobIMMessages.size()) {
+            index = 0;
+        } else if (bmobIMMessages.size() % 10 == 0) {
+            index = 10;
+        } else {
+            index = bmobIMMessages.size() % 10;
+        }
+        data.clear();
+        data.addAll(bmobIMMessages);
+        sendAdapter.setData(data);
+        sendAdapter.notifyDataSetChanged();
+        headerOrFooterAdapter.notifyDataSetChanged();
+        linearLayoutManager.scrollToPositionWithOffset(index, 0);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (StringUtils.isNotEmpty(editText.getText().toString())) {
+            if (bmobIMConversation == null) {
+                BmobIMUserInfo bmobIMUserInfo = new BmobIMUserInfo();
+                bmobIMUserInfo.setUserId(user.getObjectId());
+                bmobIMUserInfo.setAvatar(user.getIcoPath());
+                bmobIMUserInfo.setName(user.getUsername());
+                IMApi.ConversationManager.getInstance().startPrivateConversation(bmobIMUserInfo, false, new BmobCallBack<BmobIMConversation>(SendActivity.this, false) {
+                    @Override
+                    public void onSuccess(@Nullable final BmobIMConversation bmobIMConversation) {
+                        SendActivity.this.bmobIMConversation = bmobIMConversation;
+                        sendMessage();
+                    }
+                });
+            } else {
+                sendMessage();
+            }
+        }
     }
 }

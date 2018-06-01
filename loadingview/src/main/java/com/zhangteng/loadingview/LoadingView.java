@@ -107,6 +107,8 @@ public class LoadingView extends View {
     private float startWidth;
     private float startHeight;
 
+    private boolean selfAdaptation = false;
+
     public LoadingView(Context context) {
         super(context);
         init(context, null);
@@ -234,21 +236,23 @@ public class LoadingView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int specHeightSize = MeasureSpec.getSize(heightMeasureSpec);
-        int specWidthSize = MeasureSpec.getSize(widthMeasureSpec);
-        //整个动画占位3个矩形及3个矩形对角线 + 一个矩形对角线（用来左移动画显示） = 8个translateXY
-        //当控件宽度小于动画所需宽度，则适应宽度，将radius重设（以specWidthSize / 8为translateXY）
-        if (translateXY * 8 > specWidthSize) {
-            resetRadius = (float) (Math.sqrt(Math.pow(specWidthSize / 8, 2) * 2) / 2);
-            //当高度小于一个对角线则适应高度
-            if (translateXY * 2 > specHeightSize) {
-                resetRadius = (float) (Math.sqrt(Math.pow(specHeightSize / 2, 2) * 2) / 2);
-            }
-            reset();
-        } else {
-            if (translateXY * 2 > specHeightSize) {
-                resetRadius = (float) (Math.sqrt(Math.pow(specHeightSize / 2, 2) * 2) / 2);
+        if (selfAdaptation) {
+            int specHeightSize = MeasureSpec.getSize(heightMeasureSpec);
+            int specWidthSize = MeasureSpec.getSize(widthMeasureSpec);
+            //整个动画占位3个矩形及3个矩形对角线 + 一个矩形对角线（用来左移动画显示） = 8个translateXY
+            //当控件宽度小于动画所需宽度，则适应宽度，将radius重设（以specWidthSize / 8为translateXY）
+            if (translateXY * 8 > specWidthSize) {
+                resetRadius = (float) (Math.sqrt(Math.pow(specWidthSize / 8, 2) * 2) / 2);
+                //当高度小于一个对角线则适应高度
+                if (translateXY * 2 > specHeightSize) {
+                    resetRadius = (float) (Math.sqrt(Math.pow(specHeightSize / 2, 2) * 2) / 2);
+                }
                 reset();
+            } else {
+                if (translateXY * 2 > specHeightSize) {
+                    resetRadius = (float) (Math.sqrt(Math.pow(specHeightSize / 2, 2) * 2) / 2);
+                    reset();
+                }
             }
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -302,6 +306,10 @@ public class LoadingView extends View {
             removeCallbacks(anim);
             isStart = false;
         }
+    }
+
+    public void setSelfAdaptation(boolean selfAdaptation) {
+
     }
 
     public float getRadius() {

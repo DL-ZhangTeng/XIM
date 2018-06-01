@@ -25,7 +25,7 @@
             app:leftButtonBg="@mipmap/back"
             app:titleText="聊天" />
 
-        <android.support.v7.widget.RecyclerView
+        <com.zhangteng.swiperecyclerview.widget.PullDownLoadingRecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
