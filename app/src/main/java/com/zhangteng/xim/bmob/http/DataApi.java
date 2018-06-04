@@ -7,11 +7,16 @@ import com.zhangteng.xim.bmob.entity.Like;
 import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.Remark;
 import com.zhangteng.xim.bmob.entity.Story;
+import com.zhangteng.xim.utils.StringUtils;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobDate;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DeleteBatchListener;
@@ -46,25 +51,65 @@ public class DataApi {
      *
      * @param bmobCallBack
      */
-    public <T> void query(T data, final BmobCallBack<List<T>> bmobCallBack) {
-        BmobQuery<T> query = new BmobQuery<>();
-        if (data instanceof Story) {
-            query.addWhereEqualTo("user", ((Story) data).getUser());
-        } else if (data instanceof Remark) {
-            query.addWhereEqualTo("story", ((Remark) data).getStory());
-        } else if (data instanceof Like) {
-            query.addWhereEqualTo("story", ((Like) data).getStory());
-        } else if (data instanceof Photo) {
-            query.addWhereEqualTo("user", ((Photo) data).getUser());
+    public void queryStory(Story data, final BmobCallBack<List<Story>> bmobCallBack) {
+        BmobQuery<Story> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", ((Story) data).getUser());
+        query.setLimit(1);
+        if (StringUtils.isNotEmpty(data.getCreatedAt())) {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = null;
+            try {
+                date = sdf1.parse(data.getCreatedAt());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            query.addWhereLessThanOrEqualTo("createdAt", new BmobDate(date));
         }
         query.order("-updatedAt");
-        query.findObjects(new FindListener<T>() {
+        query.findObjects(new FindListener<Story>() {
             @Override
-            public void done(List<T> list, BmobException e) {
+            public void done(List<Story> list, BmobException e) {
                 bmobCallBack.onResponse(list, e);
             }
         });
     }
+
+    public void queryRemark(Remark data, final BmobCallBack<List<Remark>> bmobCallBack) {
+        BmobQuery<Remark> query = new BmobQuery<>();
+        query.addWhereEqualTo("story", ((Remark) data).getStory());
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Remark>() {
+            @Override
+            public void done(List<Remark> list, BmobException e) {
+                bmobCallBack.onResponse(list, e);
+            }
+        });
+    }
+
+    public void queryLike(Like data, final BmobCallBack<List<Like>> bmobCallBack) {
+        BmobQuery<Like> query = new BmobQuery<>();
+        query.addWhereEqualTo("story", ((Like) data).getStory());
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Like>() {
+            @Override
+            public void done(List<Like> list, BmobException e) {
+                bmobCallBack.onResponse(list, e);
+            }
+        });
+    }
+
+    public void queryPhoto(Photo data, final BmobCallBack<List<Photo>> bmobCallBack) {
+        BmobQuery<Photo> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", data.getUser());
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Photo>() {
+            @Override
+            public void done(List<Photo> list, BmobException e) {
+                bmobCallBack.onResponse(list, e);
+            }
+        });
+    }
+
 
     /**
      * 删除数据

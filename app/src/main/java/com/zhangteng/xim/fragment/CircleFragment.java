@@ -1,27 +1,39 @@
 package com.zhangteng.xim.fragment;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 import com.zhangteng.swiperecyclerview.adapter.HeaderOrFooterAdapter;
+import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.CircleAdapter;
 import com.zhangteng.xim.base.BaseFragment;
+import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.Story;
+import com.zhangteng.xim.bmob.entity.User;
+import com.zhangteng.xim.bmob.http.DataApi;
+import com.zhangteng.xim.bmob.http.UserApi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
+import cn.bmob.v3.exception.BmobException;
 
 /**
  * Created by swing on 2018/5/17.
@@ -31,6 +43,9 @@ public class CircleFragment extends BaseFragment {
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+    private User user;
+    private Photo photo;
+    private List<Story> list;
 
     private CircleAdapter adapter;
     private HeaderOrFooterAdapter headerOrFooterAdapter;
@@ -42,21 +57,19 @@ public class CircleFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
+        user = UserApi.getInstance().getUserInfo();
         refreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
             @Override
             public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                refreshLayout.finishLoadMore(200);
+                queryStory(true);
             }
 
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-                refreshLayout.finishRefresh(200);
+                queryStory(false);
             }
         });
-        List<Story> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            list.add(new Story());
-        }
+        list = new ArrayList<>();
         adapter = new CircleAdapter(getContext(), list);
         headerOrFooterAdapter = new HeaderOrFooterAdapter(adapter) {
             @Override
@@ -66,13 +79,30 @@ public class CircleFragment extends BaseFragment {
 
             @Override
             public void onBindHeaderOrFooterViewHolder(@NonNull RecyclerView.ViewHolder holder, int viewType) {
+                RequestOptions requestOptions = new RequestOptions()
+                        .placeholder(R.mipmap.app_icon).centerCrop();
+                ((HeaderViewHolder) holder).name.setText(user.getUsername());
+                Glide.with(Objects.requireNonNull(CircleFragment.this.getContext()))
+                        .load(user.getIcoPath())
+                        .apply(requestOptions)
+                        .into(((HeaderViewHolder) holder).header);
+                Glide.with(CircleFragment.this.getContext())
+                        .load(photo == null || photo.getPhoto() == null ? "" : photo.getPhoto().getUrl())
+                        .apply(requestOptions)
+                        .into(((HeaderViewHolder) holder).background);
 
             }
 
             class HeaderViewHolder extends RecyclerView.ViewHolder {
+                private ImageView background;
+                private TextView name;
+                private CircleImageView header;
 
                 public HeaderViewHolder(View itemView) {
                     super(itemView);
+                    background = itemView.findViewById(R.id.circle_header_bg);
+                    name = itemView.findViewById(R.id.circle_header_name);
+                    header = itemView.findViewById(R.id.circle_header_head);
                 }
             }
         };
@@ -80,5 +110,56 @@ public class CircleFragment extends BaseFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(headerOrFooterAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL));
+    }
+
+    @Override
+    protected void initData() {
+        super.initData();
+        photo = new Photo();
+        photo.setUser(user);
+        DataApi.getInstance().queryPhoto(photo, new BmobCallBack<List<Photo>>(getContext(), false) {
+            @Override
+            public void onSuccess(@Nullable List<Photo> bmobObject) {
+                for (Photo photo1 : bmobObject) {
+                    if (photo1.getMark().equals("circle")) {
+                        photo = photo1;
+                    }
+                }
+                adapter.notifyDataSetChanged();
+                headerOrFooterAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+            }
+        });
+        queryStory(false);
+    }
+
+    private void queryStory(final boolean isLoad) {
+        Story story = new Story();
+        if (list.size() > 0) {
+            story = list.get(0);
+        } else {
+            story.setUser(user);
+        }
+        DataApi.getInstance().queryStory(story, new BmobCallBack<List<Story>>(getContext(), false) {
+            @Override
+            public void onSuccess(@Nullable List<Story> bmobObject) {
+                if (!isLoad)
+                    list.clear();
+                list.addAll(bmobObject);
+                adapter.notifyDataSetChanged();
+                headerOrFooterAdapter.notifyDataSetChanged();
+                refreshLayout.finishLoadMore();
+            }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+                refreshLayout.finishLoadMore();
+            }
+        });
     }
 }
