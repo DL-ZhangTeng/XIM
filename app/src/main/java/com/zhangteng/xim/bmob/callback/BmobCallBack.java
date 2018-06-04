@@ -11,7 +11,6 @@ import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.bmob.tools.NetUtil;
 
-
 import cn.bmob.v3.exception.BmobException;
 
 /**
@@ -124,5 +123,12 @@ public abstract class BmobCallBack<T> {
         if (message.equals("") || message == null) {
             Toast.makeText(MyApplication.getInstance(), message, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 文件上传下载时的进度
+     */
+    public void onProgress(Integer value) {
+
     }
 }

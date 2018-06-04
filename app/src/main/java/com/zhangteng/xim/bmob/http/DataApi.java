@@ -1,18 +1,26 @@
 package com.zhangteng.xim.bmob.http;
 
+import android.os.Environment;
+
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.Like;
 import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.Remark;
 import com.zhangteng.xim.bmob.entity.Story;
 
+import java.io.File;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.DeleteBatchListener;
+import cn.bmob.v3.listener.DownloadFileListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadBatchListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 /**
  * Created by swing on 2018/6/4.
@@ -170,5 +178,131 @@ public class DataApi {
                 }
             });
         }
+    }
+
+    /**
+     * 上传文件
+     */
+    public void uploadFile(String path, final BmobCallBack<String> bmobCallBack) {
+        BmobFile bmobFile = new BmobFile(new File(path));
+        bmobFile.uploadblock(new UploadFileListener() {
+
+            @Override
+            public void done(BmobException e) {
+                bmobCallBack.onResponse(null, e);
+            }
+
+            @Override
+            public void onProgress(Integer value) {
+                bmobCallBack.onProgress(value);
+            }
+        });
+    }
+
+    /**
+     * 批量上传
+     */
+    public void uploadBatch(final String[] filePaths, final BmobCallBack<List<String>> bmobCallBack) {
+        BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
+
+            @Override
+            public void onSuccess(List<BmobFile> files, List<String> urls) {
+                //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
+                //2、urls-上传文件的完整url地址
+                if (urls.size() == filePaths.length) {//如果数量相等，则代表文件全部上传完成
+                    //do something
+                    bmobCallBack.onResponse(urls, null);
+                } else {
+                    bmobCallBack.onResponse(urls, new BmobException("未完全上传"));
+                }
+            }
+
+            @Override
+            public void onError(int statuscode, String errormsg) {
+                bmobCallBack.onResponse(null, new BmobException(statuscode, errormsg));
+            }
+
+            @Override
+            public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
+                //1、curIndex--表示当前第几个文件正在上传
+                //2、curPercent--表示当前上传文件的进度值（百分比）
+                //3、total--表示总的上传文件数
+                //4、totalPercent--表示总的上传进度（百分比）
+                bmobCallBack.onProgress(totalPercent);
+            }
+        });
+    }
+
+    /**
+     * 下载文件
+     */
+    private void downloadFile(BmobFile file) {
+        //允许设置下载文件的存储路径，默认下载文件的目录为：context.getApplicationContext().getCacheDir()+"/bmob/"
+        File saveFile = new File(Environment.getExternalStorageDirectory(), file.getFilename());
+        file.download(saveFile, new DownloadFileListener() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void done(String savePath, BmobException e) {
+                if (e == null) {
+
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onProgress(Integer value, long newworkSpeed) {
+
+            }
+
+        });
+    }
+
+    /**
+     * 删除文件
+     */
+    public void deleteFile(String url) {
+        BmobFile file = new BmobFile();
+        file.setUrl(url);//此url是上传文件成功之后通过bmobFile.getUrl()方法获取的。
+        file.delete(new UpdateListener() {
+
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+
+                } else {
+
+                }
+            }
+        });
+
+    }
+
+    /**
+     * 批量删除
+     */
+    public void deleteBatch(String[] urls) {
+        //此url必须是上传文件成功之后通过bmobFile.getUrl()方法获取的。
+        BmobFile.deleteBatch(urls, new DeleteBatchListener() {
+
+            @Override
+            public void done(String[] failUrls, BmobException e) {
+                if (e == null) {
+
+                } else {
+                    if (failUrls != null) {
+
+                    } else {
+
+                    }
+                }
+            }
+        });
+
     }
 }

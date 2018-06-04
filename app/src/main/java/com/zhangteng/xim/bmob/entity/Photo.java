@@ -1,13 +1,14 @@
 package com.zhangteng.xim.bmob.entity;
 
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.datatype.BmobFile;
 
 /**
  * Created by swing on 2018/6/4.
  */
 public class Photo extends BmobObject {
     private User user;
-    private String photo;
+    private BmobFile photo;
     private String mark;
     private String name;
 
@@ -27,11 +28,11 @@ public class Photo extends BmobObject {
         this.user = user;
     }
 
-    public String getPhoto() {
+    public BmobFile getPhoto() {
         return photo;
     }
 
-    public void setPhoto(String photo) {
+    public void setPhoto(BmobFile photo) {
         this.photo = photo;
     }
 
