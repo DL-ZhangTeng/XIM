@@ -39,7 +39,7 @@ public class MessageAdapter extends BaseAdapter<Conversation> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (data.get(position) instanceof PrivateConversation) {
             final PrivateConversation privateConversation = (PrivateConversation) data.get(position);
             View contentView = LayoutInflater.from(context).inflate(R.layout.content_item, ((MyViewHolder) holder).item, false);
@@ -65,14 +65,19 @@ public class MessageAdapter extends BaseAdapter<Conversation> {
             ((MyViewHolder) holder).item.findViewById(R.id.menu_top).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    ((MyViewHolder) holder).item.reset();
                     privateConversation.onTopClik(context);
+                    data.remove(privateConversation);
+                    data.add(0, privateConversation);
                     notifyDataSetChanged();
                 }
             });
             ((MyViewHolder) holder).item.findViewById(R.id.menu_delete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    ((MyViewHolder) holder).item.reset();
                     privateConversation.onDeteleClik(context);
+                    data.remove(position);
                     notifyDataSetChanged();
                 }
             });

@@ -33,6 +33,9 @@
         android:layout_marginStart="16dp"
         android:gravity="left|top"
         android:textColor="#989898"
+        android:ellipsize="end"
+        android:maxEms="13"
+        android:maxLines="1"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/content_avatar"
         app:layout_constraintTop_toBottomOf="@id/content_title" />

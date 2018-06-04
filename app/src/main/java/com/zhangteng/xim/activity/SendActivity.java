@@ -312,7 +312,11 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
 
     @Override
     public void onLoading() {
-        queryMessage(bmobIMConversation, false, 10 + data.size());
+        if (bmobIMConversation != null) {
+            queryMessage(bmobIMConversation, false, 10 + data.size());
+        } else {
+            recyclerView.stopPullDown(data);
+        }
     }
 
     @Override
