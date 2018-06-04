@@ -9,6 +9,15 @@ public class Photo extends BmobObject {
     private User user;
     private String photo;
     private String mark;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public User getUser() {
         return user;
