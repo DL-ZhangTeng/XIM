@@ -70,6 +70,8 @@ public class ShareActivity extends BaseActivity {
         }
     };
 
+    private BmobCallBack bmobCallBack;
+
     @Override
     protected int getResourceId() {
         return R.layout.activity_share;
@@ -106,7 +108,7 @@ public class ShareActivity extends BaseActivity {
         titleBar.setRightClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DataApi.getInstance().uploadBatch(photoList.toArray(new String[photoList.size()]), new BmobCallBack<List<String>>(ShareActivity.this, false) {
+                bmobCallBack = new BmobCallBack<List<String>>(ShareActivity.this, true, true, "正在上传，请稍等...", true) {
                     @Override
                     public void onSuccess(@Nullable List<String> bmobObject) {
                         Story story = new Story();
@@ -133,7 +135,9 @@ public class ShareActivity extends BaseActivity {
                         super.onFailure(bmobException);
                         showToast(bmobException.getMessage());
                     }
-                });
+                };
+                bmobCallBack.onStart();
+                DataApi.getInstance().uploadBatch(photoList.toArray(new String[photoList.size()]), bmobCallBack);
             }
         });
     }
@@ -154,5 +158,12 @@ public class ShareActivity extends BaseActivity {
                 .isShowCamera(true)                     // 是否现实相机按钮  默认：false
                 .filePath("/imagePicker/ImagePickerPictures")          // 图片存放路径
                 .build();
+    }
+
+    @Override
+    public void finish() {
+        if (bmobCallBack != null)
+            bmobCallBack.dismissLongTimeProgressDialog();
+        super.finish();
     }
 }
