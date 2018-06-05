@@ -27,6 +27,7 @@ import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,18 +56,23 @@ public class CircleFragment extends BaseFragment {
         return R.layout.fragment_circle;
     }
 
+    private long start;
+    private long d = 86400000;
+    private int index = 1;
+
     @Override
     protected void initView(View view) {
+        start = System.currentTimeMillis();
         user = UserApi.getInstance().getUserInfo();
         refreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
             @Override
             public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                queryStory(true);
+                queryStorys(true);
             }
 
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-                queryStory(false);
+                queryStorys(false);
             }
         });
         list = new ArrayList<>();
@@ -134,9 +140,12 @@ public class CircleFragment extends BaseFragment {
                 super.onFailure(bmobException);
             }
         });
-        queryStory(false);
+        queryStorys(false);
     }
 
+    /**
+     * 单人动态查询
+     */
     private void queryStory(final boolean isLoad) {
         Story story = new Story();
         if (isLoad && list.size() > 0) {
@@ -145,7 +154,39 @@ public class CircleFragment extends BaseFragment {
         if (story.getUser() == null)
             story.setUser(user);
 
-        DataApi.getInstance().queryStory(story, new BmobCallBack<List<Story>>(getContext(), false) {
+        DataApi.getInstance().queryStory(story, 10, new BmobCallBack<List<Story>>(getContext(), false) {
+            @Override
+            public void onSuccess(@Nullable List<Story> bmobObject) {
+                if (bmobObject != null && !bmobObject.isEmpty()) {
+                    if (!isLoad)
+                        list.clear();
+                    list.addAll(bmobObject);
+                    adapter.notifyDataSetChanged();
+                    headerOrFooterAdapter.notifyDataSetChanged();
+                }
+                refreshLayout.finishLoadMore();
+                refreshLayout.finishRefresh();
+            }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+                refreshLayout.finishLoadMore();
+                refreshLayout.finishRefresh();
+            }
+        });
+    }
+
+    /**
+     * 所有动态查询
+     */
+    private void queryStorys(final boolean isLoad) {
+        if (isLoad) {
+            index++;
+        } else {
+            index = 1;
+        }
+        DataApi.getInstance().queryStorys(DateUtils.getDay(start - d * (index - 1)), DateUtils.getDay(start - d * index), new BmobCallBack<List<Story>>(getContext(), false) {
             @Override
             public void onSuccess(@Nullable List<Story> bmobObject) {
                 if (bmobObject != null && !bmobObject.isEmpty()) {

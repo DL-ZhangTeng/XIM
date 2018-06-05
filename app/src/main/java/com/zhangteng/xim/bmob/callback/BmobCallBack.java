@@ -131,4 +131,8 @@ public abstract class BmobCallBack<T> {
     public void onProgress(Integer value) {
 
     }
+
+    public Context getContext() {
+        return mContext;
+    }
 }

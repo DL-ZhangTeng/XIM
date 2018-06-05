@@ -179,7 +179,7 @@ public class DateUtils {
      */
     public static String getDay(long time) {
 
-        return new SimpleDateFormat("yyyy-MM-dd").format(time);
+        return new SimpleDateFormat(FORMAT).format(time);
 
     }
 
