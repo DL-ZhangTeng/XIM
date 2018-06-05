@@ -139,11 +139,12 @@ public class CircleFragment extends BaseFragment {
 
     private void queryStory(final boolean isLoad) {
         Story story = new Story();
-        if (list.size() > 0) {
-            story = list.get(0);
-        } else {
-            story.setUser(user);
+        if (isLoad && list.size() > 0) {
+            story = list.get(list.size() - 1);
         }
+        if (story.getUser() == null)
+            story.setUser(user);
+
         DataApi.getInstance().queryStory(story, new BmobCallBack<List<Story>>(getContext(), false) {
             @Override
             public void onSuccess(@Nullable List<Story> bmobObject) {
@@ -153,12 +154,14 @@ public class CircleFragment extends BaseFragment {
                 adapter.notifyDataSetChanged();
                 headerOrFooterAdapter.notifyDataSetChanged();
                 refreshLayout.finishLoadMore();
+                refreshLayout.finishRefresh();
             }
 
             @Override
             public void onFailure(BmobException bmobException) {
                 super.onFailure(bmobException);
                 refreshLayout.finishLoadMore();
+                refreshLayout.finishRefresh();
             }
         });
     }

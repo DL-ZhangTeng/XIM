@@ -54,7 +54,7 @@ public class DataApi {
     public void queryStory(Story data, final BmobCallBack<List<Story>> bmobCallBack) {
         BmobQuery<Story> query = new BmobQuery<>();
         query.addWhereEqualTo("user", ((Story) data).getUser());
-        query.setLimit(1);
+        query.setLimit(10);
         if (StringUtils.isNotEmpty(data.getCreatedAt())) {
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = null;
@@ -82,6 +82,22 @@ public class DataApi {
             @Override
             public void done(List<Remark> list, BmobException e) {
                 bmobCallBack.onResponse(list, e);
+            }
+        });
+    }
+
+    public void queryRemark(String objectId, final BmobCallBack<Remark> bmobCallBack) {
+        BmobQuery<Remark> query = new BmobQuery<>();
+        query.addWhereEqualTo("objectId", objectId);
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Remark>() {
+            @Override
+            public void done(List<Remark> list, BmobException e) {
+                if (list.size() > 0)
+                    bmobCallBack.onResponse(list.get(0), e);
+                else {
+                    bmobCallBack.onResponse(null, e);
+                }
             }
         });
     }

@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.xim.R;
 
@@ -17,8 +19,11 @@ import java.util.List;
  * Created by swing on 2018/5/22.
  */
 public class NineImageAdapter extends BaseAdapter<String> {
-    public NineImageAdapter(List data) {
+    private Context context;
+
+    public NineImageAdapter(Context context, List data) {
         super(data);
+        this.context = context;
     }
 
     @NonNull
@@ -29,7 +34,12 @@ public class NineImageAdapter extends BaseAdapter<String> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.app_icon).centerCrop();
+        Glide.with(context)
+                .load(data.get(position))
+                .apply(requestOptions)
+                .into(((NineImageViewHolder) holder).imageView);
     }
 
     class NineImageViewHolder extends RecyclerView.ViewHolder {

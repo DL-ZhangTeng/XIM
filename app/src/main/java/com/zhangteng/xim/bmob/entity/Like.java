@@ -13,7 +13,7 @@ public class Like extends BmobObject {
     /**
      * 评论人
      */
-    private User from;
+    private User user;
 
     public Story getStory() {
         return story;
@@ -23,11 +23,11 @@ public class Like extends BmobObject {
         this.story = story;
     }
 
-    public User getFrom() {
-        return from;
+    public User getUser() {
+        return user;
     }
 
-    public void setFrom(User from) {
-        this.from = from;
+    public void setUser(User user) {
+        this.user = user;
     }
 }
