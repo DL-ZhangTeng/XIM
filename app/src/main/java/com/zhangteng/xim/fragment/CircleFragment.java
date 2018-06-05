@@ -148,11 +148,13 @@ public class CircleFragment extends BaseFragment {
         DataApi.getInstance().queryStory(story, new BmobCallBack<List<Story>>(getContext(), false) {
             @Override
             public void onSuccess(@Nullable List<Story> bmobObject) {
-                if (!isLoad)
-                    list.clear();
-                list.addAll(bmobObject);
-                adapter.notifyDataSetChanged();
-                headerOrFooterAdapter.notifyDataSetChanged();
+                if (bmobObject != null && !bmobObject.isEmpty()) {
+                    if (!isLoad)
+                        list.clear();
+                    list.addAll(bmobObject);
+                    adapter.notifyDataSetChanged();
+                    headerOrFooterAdapter.notifyDataSetChanged();
+                }
                 refreshLayout.finishLoadMore();
                 refreshLayout.finishRefresh();
             }

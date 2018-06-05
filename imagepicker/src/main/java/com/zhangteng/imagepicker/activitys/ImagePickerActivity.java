@@ -139,7 +139,6 @@ public class ImagePickerActivity extends BaseActivity {
             @Override
             public void onImageClick(List<String> selectImage) {
                 mTextViewFinish.setText(mContext.getString(R.string.image_picker_finish, selectImage.size(), imagePickerConfig.getMaxSize()));
-                iHandlerCallBack.onSuccess(selectImage);
                 ImagePickerActivity.this.selectImage = selectImage;
             }
         });

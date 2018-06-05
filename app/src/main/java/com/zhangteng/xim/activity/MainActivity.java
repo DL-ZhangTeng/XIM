@@ -111,9 +111,15 @@ public class MainActivity extends BaseActivity {
 
     private IHandlerCallBack iHandlerCallBack = new HandlerCallBack() {
         @Override
-        public void onFinish() {
-            super.onFinish();
-            ActivityHelper.jumpToActivity(MainActivity.this, ShareActivity.class, 1);
+        public void onSuccess(List<String> photoList) {
+            super.onSuccess(photoList);
+            if (photoList != null && photoList.size() > 0) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                arrayList.addAll(photoList);
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("photoList", arrayList);
+                ActivityHelper.jumpToActivityWithBundle(MainActivity.this, ShareActivity.class, bundle, 1);
+            }
         }
     };
     private List<String> path = new ArrayList<>();

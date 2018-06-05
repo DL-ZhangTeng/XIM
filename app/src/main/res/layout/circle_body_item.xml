@@ -93,11 +93,13 @@
         app:layout_constraintTop_toBottomOf="@id/circle_body_location" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/circle_body_bg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/common_leftorright_padding"
         android:layout_marginStart="12dp"
         android:background="@drawable/bg_comment"
+        android:visibility="gone"
         app:layout_constraintLeft_toRightOf="@id/circle_body_header"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/circle_body_time">

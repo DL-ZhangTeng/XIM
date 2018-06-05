@@ -1,8 +1,10 @@
 package com.zhangteng.xim.adapter;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,6 +26,7 @@ import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
+import com.zhangteng.xim.utils.StringUtils;
 
 import java.util.List;
 
@@ -49,23 +52,38 @@ public class CircleAdapter extends BaseAdapter<Story> {
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
-        Story story = data.get(position);
+        final Story story = data.get(position);
         ((ItemViewHolder) holder).expandableTextView.setText(story.getContent());
         ((ItemViewHolder) holder).recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+        ((ItemViewHolder) holder).recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.top = 1;
+                outRect.bottom = 1;
+                outRect.right = 1;
+                outRect.left = 1;
+            }
+        });
         ((ItemViewHolder) holder).recyclerView.setAdapter(new NineImageAdapter(context, story.getIconPaths()));
+        if (story.getUser().getIcoPath() == null) {
+            story.setUser(User.getUser(DBManager.instance().queryUser(story.getUser().getObjectId())));
+        }
+        ((ItemViewHolder) holder).name.setText(story.getUser().getUsername());
+        ((ItemViewHolder) holder).location.setText("");
+        ((ItemViewHolder) holder).time.setText(story.getCreatedAt());
         RequestOptions requestOptions = new RequestOptions()
                 .placeholder(R.mipmap.app_icon).centerCrop();
         Glide.with(context)
                 .load(story.getUser().getIcoPath())
                 .apply(requestOptions)
                 .into(((ItemViewHolder) holder).circleImageView);
+        initLike(holder, story);
+    }
 
-        ((ItemViewHolder) holder).name.setText(story.getUser().getUsername());
-        ((ItemViewHolder) holder).location.setText("");
-        ((ItemViewHolder) holder).time.setText(story.getCreatedAt());
+    private void initLike(final RecyclerView.ViewHolder holder, final Story story) {
         Like like = new Like();
         like.setStory(story);
-
         DataApi.getInstance().queryLike(like, new BmobCallBack<List<Like>>(context, false) {
             @Override
             public void onSuccess(@Nullable List<Like> bmobObject) {
@@ -78,9 +96,24 @@ public class CircleAdapter extends BaseAdapter<Story> {
                     stringBuffer.append(like1.getUser().getUsername()).append(" ");
                 }
                 ((ItemViewHolder) holder).like.setText(stringBuffer.toString());
+                if (StringUtils.isEmpty(stringBuffer.toString())) {
+                    ((ItemViewHolder) holder).like.setVisibility(View.GONE);
+                } else {
+                    ((ItemViewHolder) holder).like.setVisibility(View.VISIBLE);
+                }
+                initComment(holder, story);
+            }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+                ((ItemViewHolder) holder).like.setVisibility(View.GONE);
+                initComment(holder, story);
             }
         });
+    }
 
+    private void initComment(final RecyclerView.ViewHolder holder, Story story) {
         Remark remark = new Remark();
         remark.setStory(story);
         DataApi.getInstance().queryRemark(remark, new BmobCallBack<List<Remark>>(context, false) {
@@ -106,11 +139,15 @@ public class CircleAdapter extends BaseAdapter<Story> {
                                         stringBuffer1.append(" 回复 ").append(localUser.getUsername());
                                         stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                                         ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                                     } else {
                                         stringBuffer1.append(remark1.getUser().getUsername());
                                         stringBuffer1.append(" 回复 ").append(remark1.getRemark().getUser().getUsername());
                                         stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                                         ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                                     }
                                 }
 
@@ -125,11 +162,15 @@ public class CircleAdapter extends BaseAdapter<Story> {
                                         stringBuffer1.append(" 回复 ").append(localUser.getUsername());
                                         stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                                         ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                                     } else {
                                         stringBuffer1.append(remark1.getUser().getUsername());
                                         stringBuffer1.append(" 回复 ").append(remark1.getRemark().getUser().getUsername());
                                         stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                                         ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                                     }
                                 }
                             });
@@ -142,11 +183,15 @@ public class CircleAdapter extends BaseAdapter<Story> {
                                 stringBuffer1.append(" 回复 ").append(localUser.getUsername());
                                 stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                                 ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                                setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                                setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                             } else {
                                 stringBuffer1.append(remark1.getUser().getUsername());
                                 stringBuffer1.append(" 回复 ").append(remark1.getRemark().getUser().getUsername());
                                 stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                                 ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                                setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                                setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                             }
                         }
 
@@ -154,12 +199,35 @@ public class CircleAdapter extends BaseAdapter<Story> {
                         stringBuffer1.append(remark1.getUser().getUsername());
                         stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                         ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                     }
                 }
             }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+                setConmmentVisibility("", ((ItemViewHolder) holder).comment);
+                setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
+            }
         });
+    }
 
+    private void setConmmentVisibility(String s, View view) {
+        if (StringUtils.isEmpty(s)) {
+            view.setVisibility(View.GONE);
+        } else {
+            view.setVisibility(View.VISIBLE);
+        }
+    }
 
+    private void setBackgroundVisiblity(View like, View comment, View bg) {
+        if (comment.getVisibility() == View.GONE && like.getVisibility() == View.GONE) {
+            bg.setVisibility(View.GONE);
+        } else {
+            bg.setVisibility(View.VISIBLE);
+        }
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -171,6 +239,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
         TextView time;
         TextView like;
         TextView comment;
+        ConstraintLayout constraintLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -182,6 +251,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
             time = itemView.findViewById(R.id.circle_body_time);
             like = itemView.findViewById(R.id.circle_body_like);
             comment = itemView.findViewById(R.id.circle_body_comment);
+            constraintLayout = itemView.findViewById(R.id.circle_body_bg);
         }
     }
 }
