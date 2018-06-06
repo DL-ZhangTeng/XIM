@@ -78,7 +78,7 @@
             style="@style/txt_ContextStyle1"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:text="扫一扫上面的二维码图案，加我微信"
+            android:text="扫一扫上面的二维码图案，加我XIM"
             android:textSize="14.0dip" />
     </LinearLayout>
 

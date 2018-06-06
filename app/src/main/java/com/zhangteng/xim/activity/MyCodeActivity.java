@@ -1,10 +1,13 @@
 package com.zhangteng.xim.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.entity.User;
@@ -52,5 +55,8 @@ public class MyCodeActivity extends BaseActivity {
         msg.setText(String.format("XIM号：%s", user.getObjectId()));
         sex.setImageResource(user.getSex() == 0 ? R.mipmap.ic_sex_male : R.mipmap.ic_sex_female);
         code.setImageResource(R.mipmap.default_image);
+
+        Bitmap mBitmap = CodeUtils.createImage(user.getObjectId(), 400, 400, BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+        code.setImageBitmap(mBitmap);
     }
 }

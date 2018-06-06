@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 import com.zhangteng.xim.bmob.DemoMessageHandler;
 import com.zhangteng.xim.utils.AppManager;
 
@@ -29,7 +30,7 @@ public class MyApplication extends Application {
         super.onCreate();
         instance = this;
         globalContext = this;
-
+        ZXingLibrary.initDisplayOpinion(this);
         //提供以下两种方式进行初始化操作：
 
         //第一：默认初始化
