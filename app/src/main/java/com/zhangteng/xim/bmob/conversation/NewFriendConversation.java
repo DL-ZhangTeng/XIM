@@ -58,13 +58,13 @@ public class NewFriendConversation extends Conversation {
 
     @Override
     public int getUnReadCount() {
-        return DBManager.instance().getNewInvitationCount();
+        return DBManager.instance(DBManager.USERNAME).getNewInvitationCount();
     }
 
     @Override
     public void readAllMessages() {
         //批量更新未读未认证的消息为已读状态
-        DBManager.instance().updateBatchStatus();
+        DBManager.instance(DBManager.USERNAME).updateBatchStatus();
     }
 
     @Override
@@ -76,6 +76,6 @@ public class NewFriendConversation extends Conversation {
 
     @Override
     public void onLongClick(Context context) {
-        DBManager.instance().deleteNewFriend(lastFriend);
+        DBManager.instance(DBManager.USERNAME).deleteNewFriend(lastFriend);
     }
 }

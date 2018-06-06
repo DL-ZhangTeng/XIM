@@ -57,11 +57,11 @@ public class Friend extends BmobObject implements Comparable {
             if (((Friend) o).getGroupInfo() == null) {
                 ((Friend) o).setGroupInfo(new GroupInfo());
                 ((Friend) o).getGroupInfo().setPosition(GroupInfo.totals[other - 'A']);
-                GroupInfo.totals[other - 'A']++;
                 ((Friend) o).getGroupInfo().setTitle(String.valueOf(other));
                 ((Friend) o).getGroupInfo().setGroupNum(other);
+                GroupInfo.totals[other - 'A']++;
             }
-            return self - other;
+            return self - other == 0 ? groupInfo.getPosition() - ((Friend) o).getGroupInfo().getPosition() : self - other;
         }
         throw new ClassCastException("only compare to friend");
     }

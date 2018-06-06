@@ -172,7 +172,7 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
 
     protected void initData() {
         if (StringUtils.isNotEmpty(objectId)) {
-            user = DBManager.instance().queryUser(objectId);
+            user = DBManager.instance(DBManager.USERNAME).queryUser(objectId);
             titleBar.setTitleText(user.getUsername());
         } else if (bmobIMConversation != null) {
             titleBar.setTitleText(bmobIMConversation.getConversationTitle());

@@ -24,6 +24,7 @@ import com.zhangteng.xim.bmob.entity.Remark;
 import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
+import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.StringUtils;
@@ -37,6 +38,7 @@ import cn.bmob.v3.exception.BmobException;
  */
 public class CircleAdapter extends BaseAdapter<Story> {
     private Context context;
+    private User user = UserApi.getInstance().getUserInfo();
 
     public CircleAdapter(Context context, List<Story> data) {
         super(data);
@@ -67,7 +69,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
         });
         ((ItemViewHolder) holder).recyclerView.setAdapter(new NineImageAdapter(context, story.getIconPaths()));
         if (story.getUser().getIcoPath() == null) {
-            story.setUser(User.getUser(DBManager.instance().queryUser(story.getUser().getObjectId())));
+            story.setUser(User.getUser(DBManager.instance(DBManager.USERNAME).queryUser(story.getUser().getObjectId())));
         }
         ((ItemViewHolder) holder).name.setText(story.getUser().getUsername());
         ((ItemViewHolder) holder).location.setText("");
@@ -90,7 +92,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
                 StringBuffer stringBuffer = new StringBuffer();
                 for (Like like1 : bmobObject) {
                     if (like1.getUser().getUsername() == null && like1.getUser().getObjectId() != null) {
-                        LocalUser localUser = DBManager.instance().queryUser(like1.getUser().getObjectId());
+                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(like1.getUser().getObjectId());
                         like1.setUser(User.getUser(localUser));
                     }
                     stringBuffer.append(like1.getUser().getUsername()).append(" ");
@@ -122,7 +124,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
                 final StringBuffer stringBuffer1 = new StringBuffer();
                 for (final Remark remark1 : bmobObject) {
                     if (remark1.getUser().getUsername() == null && remark1.getUser().getObjectId() != null) {
-                        LocalUser localUser = DBManager.instance().queryUser(remark1.getUser().getObjectId());
+                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getUser().getObjectId());
                         remark1.setUser(User.getUser(localUser));
                     }
                     if (remark1.getRemark() != null) {
@@ -133,7 +135,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
                                     remark1.setRemark(bmobObject);
                                     if (null == remark1.getRemark().getUser().getUsername()
                                             && remark1.getRemark().getUser().getObjectId() != null) {
-                                        LocalUser localUser = DBManager.instance().queryUser(remark1.getRemark().getUser().getObjectId());
+                                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getRemark().getUser().getObjectId());
                                         remark1.getRemark().setUser(User.getUser(localUser));
                                         stringBuffer1.append(remark1.getUser().getUsername());
                                         stringBuffer1.append(" 回复 ").append(localUser.getUsername());
@@ -156,7 +158,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
                                     super.onFailure(bmobException);
                                     if (null == remark1.getRemark().getUser().getUsername()
                                             && remark1.getRemark().getUser().getObjectId() != null) {
-                                        LocalUser localUser = DBManager.instance().queryUser(remark1.getRemark().getUser().getObjectId());
+                                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getRemark().getUser().getObjectId());
                                         remark1.getRemark().setUser(User.getUser(localUser));
                                         stringBuffer1.append(remark1.getUser().getUsername());
                                         stringBuffer1.append(" 回复 ").append(localUser.getUsername());
@@ -177,7 +179,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
                         } else {
                             if (null == remark1.getRemark().getUser().getUsername()
                                     && remark1.getRemark().getUser().getObjectId() != null) {
-                                LocalUser localUser = DBManager.instance().queryUser(remark1.getRemark().getUser().getObjectId());
+                                LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getRemark().getUser().getObjectId());
                                 remark1.getRemark().setUser(User.getUser(localUser));
                                 stringBuffer1.append(remark1.getUser().getUsername());
                                 stringBuffer1.append(" 回复 ").append(localUser.getUsername());

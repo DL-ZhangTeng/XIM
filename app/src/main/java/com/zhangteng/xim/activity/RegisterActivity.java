@@ -12,6 +12,9 @@ import android.widget.Toast;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.Friend;
+import com.zhangteng.xim.bmob.entity.User;
+import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.RegisterParams;
 import com.zhangteng.xim.utils.AppManager;
@@ -83,9 +86,18 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 RegisterParams registerParams = new RegisterParams();
                 registerParams.setName(username.getText().toString());
                 registerParams.setPassword(password.getText().toString());
-                UserApi.getInstance().register(registerParams, new BmobCallBack(this, true) {
+                UserApi.getInstance().register(registerParams, new BmobCallBack<User>(this, true) {
                     @Override
-                    public void onSuccess(@Nullable Object bmobObject) {
+                    public void onSuccess(@Nullable User bmobObject) {
+                        Friend friend = new Friend();
+                        friend.setUser(bmobObject);
+                        friend.setFriendUser(bmobObject);
+                        IMApi.FriendManager.getInstance().addFriend(friend, new BmobCallBack<String>(RegisterActivity.this, false) {
+                            @Override
+                            public void onSuccess(@Nullable String bmobObject) {
+
+                            }
+                        });
                         setResultFinish();
                     }
 

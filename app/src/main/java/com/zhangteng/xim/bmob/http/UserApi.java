@@ -51,7 +51,7 @@ public class UserApi {
      * @param params
      * @param callBack
      */
-    public void register(RegisterParams params, final BmobCallBack callBack) {
+    public void register(RegisterParams params, final BmobCallBack<User> callBack) {
         User bu = new User();
         if (StringUtils.isNotEmpty(params.getName()))
             bu.setUsername(params.getName());

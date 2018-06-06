@@ -129,9 +129,9 @@ public class DemoMessageHandler extends BmobIMMessageHandler {
         if (type.equals(AddFriendMessage.ADD)) {//接收到的添加好友的请求
             NewFriend friend = AddFriendMessage.convert(msg);
             //本地好友请求表做下校验，本地没有的才允许显示通知栏--有可能离线消息会有些重复
-            List<NewFriend> list = DBManager.instance().queryNewFriend(friend);
+            List<NewFriend> list = DBManager.instance(DBManager.USERNAME).queryNewFriend(friend);
             if (list.size() == 0) {
-                DBManager.instance().insertNewFriend(friend);
+                DBManager.instance(DBManager.USERNAME).insertNewFriend(friend);
                 showAddNotify(friend);
             }
         } else if (type.equals(AgreeAddFriendMessage.AGREE)) {//接收到的对方同意添加自己为好友,此时需要做的事情：1、添加对方为好友，2、显示通知

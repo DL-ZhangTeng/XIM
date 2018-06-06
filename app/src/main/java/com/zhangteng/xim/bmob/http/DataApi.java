@@ -51,7 +51,7 @@ public class DataApi {
     }
 
     public void queryStorys(String start, String end, final BmobCallBack<List<Story>> bmobCallBack) {
-        final List<LocalUser> list = DBManager.instance().queryUsers(0, Integer.MAX_VALUE);
+        final List<LocalUser> list = DBManager.instance(DBManager.USERNAME).queryUsers(0, Integer.MAX_VALUE);
         final List<Story> stories = new ArrayList<>();
         for (final LocalUser localUser : list) {
             Story story = new Story();

@@ -575,7 +575,7 @@ public class IMApi {
                     if (e == null) {
                         //TODO 3、修改本地的好友请求记录
                         add.setStatus(Config.STATUS_VERIFIED);
-                        DBManager.instance().updateNewFriend(add);
+                        DBManager.instance(DBManager.USERNAME).updateNewFriend(add);
                     }
                 }
             });
@@ -748,6 +748,20 @@ public class IMApi {
             });
         }
 
+        /**
+         * 添加好友
+         *
+         * @param friend
+         * @param bmobCallBack
+         */
+        public void addFriend(Friend friend, final BmobCallBack<String> bmobCallBack) {
+            friend.save(new SaveListener<String>() {
+                @Override
+                public void done(String s, BmobException e) {
+                    bmobCallBack.onResponse(s, e);
+                }
+            });
+        }
     }
 
 }

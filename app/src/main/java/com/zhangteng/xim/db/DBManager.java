@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.zhangteng.xim.bmob.config.Config;
+import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.bean.CityNo;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.db.bean.NewFriend;
@@ -30,6 +31,7 @@ public class DBManager {
     private DaoMaster.DevOpenHelper openHelper;
     public static String DBNAME = "GreenDaoModule.db";
     public static String CITYNODBNAME = "CityNo.db";
+    public static String USERNAME = UserApi.getInstance().getUserInfo().getObjectId() == null ? DBNAME : UserApi.getInstance().getUserInfo().getObjectId();
 
     private DBManager() {
     }
@@ -124,34 +126,34 @@ public class DBManager {
     }
 
     public void insertUser(LocalUser user) {
-        DBManager.instance().openWritableDb().getUserDao().insert(user);
+        DBManager.instance(USERNAME).openWritableDb().getUserDao().insert(user);
     }
 
     public void deleteUser(LocalUser user) {
-        DBManager.instance().openWritableDb().getUserDao().delete(user);
+        DBManager.instance(USERNAME).openWritableDb().getUserDao().delete(user);
     }
 
     public void updateUser(LocalUser user) {
-        UserDao userDao = DBManager.instance().openWritableDb().getUserDao();
+        UserDao userDao = DBManager.instance(USERNAME).openWritableDb().getUserDao();
         DeleteQuery<LocalUser> deleteQuery = userDao.queryBuilder().where(UserDao.Properties.ObjectId.eq(user.getObjectId())).buildDelete();
         deleteQuery.executeDeleteWithoutDetachingEntities();
         userDao.insertOrReplace(user);
     }
 
     public List<LocalUser> queryUser(LocalUser user) {
-        UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
+        UserDao userDao = DBManager.instance(USERNAME).openReadableDb().getUserDao();
         List<LocalUser> list = userDao.queryBuilder().where(UserDao.Properties.ObjectId.eq(user.getObjectId())).build().list();
         return list;
     }
 
     public LocalUser queryUser(String objectId) {
-        UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
+        UserDao userDao = DBManager.instance(USERNAME).openReadableDb().getUserDao();
         List<LocalUser> list = userDao.queryBuilder().where(UserDao.Properties.ObjectId.eq(objectId)).build().list();
         return list.isEmpty() ? null : list.get(0);
     }
 
     public List<LocalUser> queryUsers(int startId, int endId) {
-        UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
+        UserDao userDao = DBManager.instance(USERNAME).openReadableDb().getUserDao();
         QueryBuilder qb = userDao.queryBuilder();
         qb.offset(startId).limit(endId - startId);
         qb.build();
@@ -159,24 +161,24 @@ public class DBManager {
     }
 
     public long countUser() {
-        UserDao userDao = DBManager.instance().openReadableDb().getUserDao();
+        UserDao userDao = DBManager.instance(USERNAME).openReadableDb().getUserDao();
         QueryBuilder qb = userDao.queryBuilder();
         return qb.count();
     }
 
     public void insertNewFriend(NewFriend newFriend) {
-        DBManager.instance().openWritableDb().getNewFriendDao().insert(newFriend);
+        DBManager.instance(USERNAME).openWritableDb().getNewFriendDao().insert(newFriend);
     }
 
     public void updateNewFriend(NewFriend newFriend) {
-        NewFriendDao newFriendDao = DBManager.instance().openWritableDb().getNewFriendDao();
+        NewFriendDao newFriendDao = DBManager.instance(USERNAME).openWritableDb().getNewFriendDao();
         DeleteQuery<NewFriend> deleteQuery = newFriendDao.queryBuilder().where(NewFriendDao.Properties.Uid.eq(newFriend.getUid())).buildDelete();
         deleteQuery.executeDeleteWithoutDetachingEntities();
         newFriendDao.insertOrReplace(newFriend);
     }
 
     public List<NewFriend> queryNewFriend(NewFriend newFriend) {
-        NewFriendDao newFriendDao = DBManager.instance().openReadableDb().getNewFriendDao();
+        NewFriendDao newFriendDao = DBManager.instance(USERNAME).openReadableDb().getNewFriendDao();
         List<NewFriend> list = newFriendDao.queryBuilder().where(NewFriendDao.Properties.Uid.eq(newFriend.getUid())).build().list();
         return list;
     }
@@ -197,7 +199,7 @@ public class DBManager {
      * @return
      */
     public List<NewFriend> getAllNewFriend() {
-        NewFriendDao dao = openReadableDb().getNewFriendDao();
+        NewFriendDao dao = DBManager.instance(USERNAME).openReadableDb().getNewFriendDao();
         return dao.queryBuilder().orderDesc(NewFriendDao.Properties.Time).list();
     }
 
@@ -208,7 +210,7 @@ public class DBManager {
      * @return long:返回插入或修改的id
      */
     public long insertOrUpdateNewFriend(NewFriend info) {
-        NewFriendDao dao = openWritableDb().getNewFriendDao();
+        NewFriendDao dao = DBManager.instance(USERNAME).openWritableDb().getNewFriendDao();
         NewFriend local = getNewFriend(info.getUid(), info.getTime());
         if (local == null) {
             return dao.insertOrReplace(info);
@@ -225,7 +227,7 @@ public class DBManager {
      * @return
      */
     private NewFriend getNewFriend(String uid, Long time) {
-        NewFriendDao dao = openReadableDb().getNewFriendDao();
+        NewFriendDao dao = DBManager.instance(USERNAME).openReadableDb().getNewFriendDao();
         return dao.queryBuilder().where(NewFriendDao.Properties.Uid.eq(uid))
                 .where(NewFriendDao.Properties.Time.eq(time)).build().unique();
     }
@@ -264,7 +266,7 @@ public class DBManager {
      * @return
      */
     private List<NewFriend> getNoVerifyNewFriend() {
-        NewFriendDao dao = openReadableDb().getNewFriendDao();
+        NewFriendDao dao = DBManager.instance(USERNAME).openReadableDb().getNewFriendDao();
         return dao.queryBuilder().where(NewFriendDao.Properties.Status.eq(Config.STATUS_VERIFY_NONE))
                 .build().list();
     }
@@ -292,7 +294,7 @@ public class DBManager {
      * @param msgs
      */
     public void insertBatchMessages(List<NewFriend> msgs) {
-        NewFriendDao dao = openWritableDb().getNewFriendDao();
+        NewFriendDao dao = DBManager.instance(USERNAME).openWritableDb().getNewFriendDao();
         dao.insertOrReplaceInTx(msgs);
     }
 
@@ -304,7 +306,7 @@ public class DBManager {
      * @return
      */
     public long updateNewFriend(NewFriend friend, int status) {
-        NewFriendDao dao = openWritableDb().getNewFriendDao();
+        NewFriendDao dao = DBManager.instance(USERNAME).openWritableDb().getNewFriendDao();
         friend.setStatus(status);
         return dao.insertOrReplace(friend);
     }
@@ -315,7 +317,7 @@ public class DBManager {
      * @param friend
      */
     public void deleteNewFriend(NewFriend friend) {
-        NewFriendDao dao = openWritableDb().getNewFriendDao();
+        NewFriendDao dao = DBManager.instance(USERNAME).openWritableDb().getNewFriendDao();
         dao.delete(friend);
     }
 }

@@ -70,7 +70,7 @@ public class FriendInfoActivity extends BaseActivity {
         if (intent.hasExtra("objectId")) {
             objectId = getIntent().getStringExtra("objectId");
         }
-        user = DBManager.instance().queryUser(objectId);
+        user = DBManager.instance(DBManager.USERNAME).queryUser(objectId);
         realName.setText(user.getUsername());
         sex.setImageResource(user.getSex() == 0 ? R.mipmap.ic_sex_male : R.mipmap.ic_sex_female);
         username.setText(String.format("XIM账号：%s", user.getObjectId()));

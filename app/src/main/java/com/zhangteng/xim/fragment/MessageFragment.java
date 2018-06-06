@@ -139,7 +139,7 @@ public class MessageFragment extends BaseFragment {
             }
         }
         //添加新朋友会话-获取好友请求表中最新一条记录
-        List<NewFriend> friends = DBManager.instance().getAllNewFriend();
+        List<NewFriend> friends = DBManager.instance(DBManager.USERNAME).getAllNewFriend();
         if (friends != null && friends.size() > 0) {
             conversationList.add(new NewFriendConversation(friends.get(0)));
         }

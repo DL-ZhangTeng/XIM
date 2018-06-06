@@ -25,6 +25,7 @@ import com.zhangteng.imagepicker.config.ImagePickerConfig;
 import com.zhangteng.imagepicker.config.ImagePickerOpen;
 import com.zhangteng.imagepicker.imageloader.GlideImageLoader;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
+import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
@@ -126,6 +127,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        DBManager.init(MyApplication.getGlobalContext());
         //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
         String objectId = null;
         try {
@@ -212,22 +214,26 @@ public class MainActivity extends BaseActivity {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                viewPager.setCurrentItem(i - 1, false);
-                titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(i - 1)));
-                switch (i - 1) {
+                switch ((i - 1) % 3) {
                     case 0:
+                        viewPager.setCurrentItem(0, false);
                         titleBar.setRightText("");
                         titleBar.setRightIcon(R.mipmap.add);
                         titleBar.setRightShow(true);
+                        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(0)));
                         break;
                     case 1:
                         titleBar.setRightText("添加");
                         titleBar.setRightShow(false);
+                        viewPager.setCurrentItem(1, false);
+                        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(1)));
                         break;
                     case 2:
                         titleBar.setRightText("");
                         titleBar.setRightIcon(R.mipmap.takept);
                         titleBar.setRightShow(true);
+                        viewPager.setCurrentItem(2, false);
+                        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(2)));
                         titleBar.setRightClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -287,7 +293,7 @@ public class MainActivity extends BaseActivity {
 
         }
         //TODO 显示底部导航红点
-        if (DBManager.instance().hasNewFriendInvitation()) {
+        if (DBManager.instance(DBManager.USERNAME).hasNewFriendInvitation()) {
 
         } else {
 

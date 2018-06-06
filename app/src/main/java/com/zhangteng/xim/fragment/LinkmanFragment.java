@@ -26,6 +26,7 @@ import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.event.RefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
+import com.zhangteng.xim.utils.SortUtils;
 import com.zhangteng.xim.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -106,7 +107,7 @@ public class LinkmanFragment extends BaseFragment {
     @Override
     protected void initData() {
         super.initData();
-        long index = DBManager.instance().countUser();
+        long index = DBManager.instance(DBManager.USERNAME).countUser();
         if (index <= 0) {
             IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
                 @Override
@@ -115,7 +116,7 @@ public class LinkmanFragment extends BaseFragment {
                 }
             });
         } else {
-            List<LocalUser> localUsers = DBManager.instance().queryUsers(0, Integer.MAX_VALUE);
+            List<LocalUser> localUsers = DBManager.instance(DBManager.USERNAME).queryUsers(0, Integer.MAX_VALUE);
             list.clear();
             for (LocalUser user : localUsers) {
                 Friend friend = new Friend();
@@ -142,9 +143,17 @@ public class LinkmanFragment extends BaseFragment {
         Collections.sort(list);
         linkmanAdapter.notifyDataSetChanged();
         for (Friend friend : list) {
+            char other = SortUtils.getFirstC(friend.getFriendUser().getUsername());
+            if (friend.getGroupInfo() == null) {
+                friend.setGroupInfo(new GroupInfo());
+                friend.getGroupInfo().setPosition(GroupInfo.totals[other - 'A']);
+                GroupInfo.totals[other - 'A']++;
+                friend.getGroupInfo().setTitle(String.valueOf(other));
+                friend.getGroupInfo().setGroupNum(other);
+            }
             friend.getGroupInfo().setTotal(GroupInfo.totals[friend.getGroupInfo().getGroupNum() - 'A']);
             LocalUser user = LocalUser.getLocalUser(friend);
-            DBManager.instance().updateUser(user);
+            DBManager.instance(DBManager.USERNAME).updateUser(user);
         }
     }
 
