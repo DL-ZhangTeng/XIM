@@ -1,5 +1,6 @@
 package com.zhangteng.xim.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.uuzuche.lib_zxing.activity.CaptureActivity;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.zhangteng.imagepicker.callback.HandlerCallBack;
 import com.zhangteng.imagepicker.callback.IHandlerCallBack;
 import com.zhangteng.imagepicker.config.ImagePickerConfig;
@@ -37,6 +40,7 @@ import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.event.RefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.StringUtils;
+import com.zhangteng.xim.widget.DropDownMenu;
 import com.zhangteng.xim.widget.NoScrollViewPager;
 import com.zhangteng.xim.widget.TitleBar;
 
@@ -47,6 +51,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import cn.bmob.newim.bean.BmobIMMessage;
+import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.event.OfflineMessageEvent;
@@ -67,6 +73,8 @@ public class MainActivity extends BaseActivity {
     TitleBar titleBar;
 
     MainAdapter pagerAdapter;
+
+    private static int REQUEST_CODE = 200;
 
     @Override
     protected int getResourceId() {
@@ -124,6 +132,7 @@ public class MainActivity extends BaseActivity {
         }
     };
     private List<String> path = new ArrayList<>();
+    private DropDownMenu dropDownMenu;
 
     @Override
     protected void initView() {
@@ -211,6 +220,40 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+        dropDownMenu = new DropDownMenu(MainActivity.this);
+        switch (viewPager.getCurrentItem()) {
+            case 0:
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dropDownMenu.showAsDropDown(titleBar, titleBar.getWidth(), 1);
+                    }
+                });
+                break;
+            case 1:
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+                break;
+            case 2:
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
+                    }
+                });
+                break;
+        }
+        dropDownMenu.setScanOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -221,12 +264,26 @@ public class MainActivity extends BaseActivity {
                         titleBar.setRightIcon(R.mipmap.add);
                         titleBar.setRightShow(true);
                         titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(0)));
+                        titleBar.setRightClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (dropDownMenu == null)
+                                    dropDownMenu = new DropDownMenu(MainActivity.this);
+                                dropDownMenu.showAsDropDown(titleBar, titleBar.getWidth(), 1);
+                            }
+                        });
                         break;
                     case 1:
                         titleBar.setRightText("添加");
                         titleBar.setRightShow(false);
                         viewPager.setCurrentItem(1, false);
                         titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(1)));
+                        titleBar.setRightClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
                         break;
                     case 2:
                         titleBar.setRightText("");
@@ -246,6 +303,55 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /**
+         * 处理二维码扫描结果
+         */
+        if (requestCode == REQUEST_CODE) {
+            //处理扫描结果（在界面上显示）
+            if (null != data) {
+                Bundle bundle = data.getExtras();
+                if (bundle == null) {
+                    return;
+                }
+                if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
+                    String result = bundle.getString(CodeUtils.RESULT_STRING);
+                    final BmobIMUserInfo userInfo = new BmobIMUserInfo();
+                    UserApi.getInstance().queryUser(result, new BmobCallBack<User>(this, false) {
+                        @Override
+                        public void onSuccess(@Nullable User bmobObject) {
+                            userInfo.setName(bmobObject.getUsername());
+                            userInfo.setAvatar(bmobObject.getIcoPath());
+                            userInfo.setUserId(bmobObject.getObjectId());
+                            IMApi.MassageSender.getInstance().sendAddFriendMessage(userInfo, new BmobCallBack<BmobIMMessage>(MainActivity.this, false) {
+                                @Override
+                                public void onSuccess(@Nullable BmobIMMessage bmobObject) {
+                                    EventBus.getDefault().post(new RefreshEvent());
+                                }
+
+                                @Override
+                                public void onFailure(BmobException bmobException) {
+                                    super.onFailure(bmobException);
+                                    Toast.makeText(MainActivity.this, "发送请求失败", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(BmobException bmobException) {
+                            super.onFailure(bmobException);
+                            Toast.makeText(MainActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
+                    Toast.makeText(MainActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 
     /**

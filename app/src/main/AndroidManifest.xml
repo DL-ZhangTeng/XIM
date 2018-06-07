@@ -50,6 +50,7 @@
         <activity android:name=".activity.MyCodeActivity" />
         <activity android:name=".activity.ShareActivity" />
         <activity android:name=".activity.NewFriendActivity" />
+        <activity android:name="com.uuzuche.lib_zxing.activity.CaptureActivity" />
         <activity
             android:name=".activity.SendActivity"
             android:configChanges="orientation|keyboard|keyboardHidden"

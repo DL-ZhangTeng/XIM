@@ -82,8 +82,47 @@ public class MessageAdapter extends BaseAdapter<Conversation> {
                 }
             });
         } else if (data.get(position) instanceof NewFriendConversation) {
-            NewFriendConversation newFriendConversation = (NewFriendConversation) data.get(position);
+            final NewFriendConversation newFriendConversation = (NewFriendConversation) data.get(position);
             //todo 好友请求布局
+            View contentView = LayoutInflater.from(context).inflate(R.layout.content_item, ((MyViewHolder) holder).item, false);
+            //添加内容布局&菜单布局
+            ((TextView) contentView.findViewById(R.id.content_content)).setText(newFriendConversation.getLastMessageContent());
+            ((TextView) contentView.findViewById(R.id.content_title)).setText(newFriendConversation.getcName());
+            ((TextView) contentView.findViewById(R.id.content_time)).setText(DateUtils.getDay(newFriendConversation.getLastMessageTime()));
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.mipmap.app_icon)
+                    .centerCrop();
+            Glide.with(context)
+                    .load(newFriendConversation.getAvatar())
+                    .apply(requestOptions)
+                    .into((CircleImageView) contentView.findViewById(R.id.content_avatar));
+            contentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    newFriendConversation.onClick(context);
+                }
+            });
+            ((MyViewHolder) holder).item.addContentView(contentView);
+            ((MyViewHolder) holder).item.addMenuView(R.layout.menu_item);
+            ((MyViewHolder) holder).item.findViewById(R.id.menu_top).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((MyViewHolder) holder).item.reset();
+                    newFriendConversation.onTopClik(context);
+                    data.remove(newFriendConversation);
+                    data.add(0, newFriendConversation);
+                    notifyDataSetChanged();
+                }
+            });
+            ((MyViewHolder) holder).item.findViewById(R.id.menu_delete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((MyViewHolder) holder).item.reset();
+                    newFriendConversation.onDeteleClik(context);
+                    data.remove(position);
+                    notifyDataSetChanged();
+                }
+            });
         }
     }
 

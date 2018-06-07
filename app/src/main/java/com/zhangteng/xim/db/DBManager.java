@@ -31,7 +31,7 @@ public class DBManager {
     private DaoMaster.DevOpenHelper openHelper;
     public static String DBNAME = "GreenDaoModule.db";
     public static String CITYNODBNAME = "CityNo.db";
-    public static String USERNAME = UserApi.getInstance().getUserInfo().getObjectId() == null ? DBNAME : UserApi.getInstance().getUserInfo().getObjectId();
+    public static String USERNAME = UserApi.getInstance().getUserInfo().getObjectId();
 
     private DBManager() {
     }
@@ -317,7 +317,9 @@ public class DBManager {
      * @param friend
      */
     public void deleteNewFriend(NewFriend friend) {
+        NewFriend f = new NewFriend();
+        f.setUid(friend.getUid());
         NewFriendDao dao = DBManager.instance(USERNAME).openWritableDb().getNewFriendDao();
-        dao.delete(friend);
+        dao.delete(f);
     }
 }

@@ -182,7 +182,7 @@ public class DemoMessageHandler extends BmobIMMessageHandler {
         IMApi.FriendManager.getInstance().addFriend(user, new BmobCallBack<String>(context, false) {
             @Override
             public void onSuccess(@Nullable String bmobObject) {
-
+                EventBus.getDefault().post(new RefreshEvent());
             }
         });
     }

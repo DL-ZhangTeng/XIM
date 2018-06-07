@@ -10,6 +10,8 @@ import com.zhangteng.xim.bmob.config.Config;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.NewFriend;
 
+import org.greenrobot.greendao.DaoException;
+
 /**
  * 新朋友会话
  * Created by Administrator on 2016/5/25.
@@ -34,6 +36,8 @@ public class NewFriendConversation extends Conversation {
             //目前的好友请求都是别人发给我的
             if (status == null || status == Config.STATUS_VERIFY_NONE || status == Config.STATUS_VERIFY_READED) {
                 return name + "请求添加好友";
+            } else if (status == Config.STATUS_VERIFY_REFUSE) {
+                return "我已拒绝" + name;
             } else {
                 return "我已添加" + name;
             }
@@ -51,9 +55,13 @@ public class NewFriendConversation extends Conversation {
         }
     }
 
+    public NewFriend getNewFriend() {
+        return lastFriend;
+    }
+
     @Override
     public Object getAvatar() {
-        return R.mipmap.app_icon;
+        return lastFriend.getAvatar() == null ? R.mipmap.app_icon : lastFriend.getAvatar();
     }
 
     @Override
@@ -69,7 +77,11 @@ public class NewFriendConversation extends Conversation {
 
     @Override
     public void onClick(Context context) {
+        if (lastFriend.getStatus() == Config.STATUS_VERIFY_REFUSE || lastFriend.getStatus() == Config.STATUS_VERIFIED) {
+            return;
+        }
         Intent intent = new Intent();
+        intent.putExtra("conversation", this);
         intent.setClass(context, NewFriendActivity.class);
         context.startActivity(intent);
     }
@@ -77,5 +89,22 @@ public class NewFriendConversation extends Conversation {
     @Override
     public void onLongClick(Context context) {
         DBManager.instance(DBManager.USERNAME).deleteNewFriend(lastFriend);
+    }
+
+    /**
+     * 置顶
+     */
+    public void onTopClik(Context context) {
+    }
+
+    /**
+     * 删除
+     */
+    public void onDeteleClik(Context context) {
+        try {
+            DBManager.instance(DBManager.USERNAME).deleteNewFriend(lastFriend);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -527,7 +527,7 @@ public class IMApi {
          * 发送添加好友的请求
          */
         //TODO 好友管理：9.7、发送添加好友请求
-        private void sendAddFriendMessage(BmobIMUserInfo info, final BmobCallBack<BmobIMMessage> bmobCallBack) {
+        public void sendAddFriendMessage(BmobIMUserInfo info, final BmobCallBack<BmobIMMessage> bmobCallBack) {
             //TODO 会话：4.1、创建一个暂态会话入口，发送好友请求
             BmobIMConversation conversationEntrance = BmobIM.getInstance().startPrivateConversation(info, true, null);
             //TODO 消息：5.1、根据会话入口获取消息管理，发送好友请求
@@ -553,7 +553,7 @@ public class IMApi {
          * 发送同意添加好友的消息
          */
         //TODO 好友管理：9.8、发送同意添加好友
-        private void sendAgreeAddFriendMessage(final NewFriend add, final BmobCallBack<BmobIMMessage> bmobCallBack) {
+        public void sendAgreeAddFriendMessage(final NewFriend add, final BmobCallBack<BmobIMMessage> bmobCallBack) {
             BmobIMUserInfo info = new BmobIMUserInfo(add.getUid(), add.getName(), add.getAvatar());
             //TODO 会话：4.1、创建一个暂态会话入口，发送同意好友请求
             BmobIMConversation conversationEntrance = BmobIM.getInstance().startPrivateConversation(info, true, null);

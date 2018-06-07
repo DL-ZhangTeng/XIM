@@ -125,6 +125,11 @@ public class MessageFragment extends BaseFragment {
         //添加会话
         List<Conversation> conversationList = new ArrayList<>();
         conversationList.clear();
+        //添加新朋友会话-获取好友请求表中最新一条记录
+        List<NewFriend> friends = DBManager.instance(DBManager.USERNAME).getAllNewFriend();
+        if (friends != null && friends.size() > 0) {
+            conversationList.add(new NewFriendConversation(friends.get(0)));
+        }
         //TODO 会话：4.2、查询全部会话
         List<BmobIMConversation> list = BmobIM.getInstance().loadAllConversation();
         if (list != null && list.size() > 0) {
@@ -138,11 +143,7 @@ public class MessageFragment extends BaseFragment {
                 }
             }
         }
-        //添加新朋友会话-获取好友请求表中最新一条记录
-        List<NewFriend> friends = DBManager.instance(DBManager.USERNAME).getAllNewFriend();
-        if (friends != null && friends.size() > 0) {
-            conversationList.add(new NewFriendConversation(friends.get(0)));
-        }
+
         //重新排序
         Collections.sort(conversationList);
         return conversationList;

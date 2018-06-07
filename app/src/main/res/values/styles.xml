@@ -62,4 +62,10 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">16sp</item>
     </style>
+
+    <style name="showAsDropDown">
+        <item name="android:windowEnterAnimation">@anim/showasdropdown_open</item>
+        <item name="android:windowExitAnimation">@anim/showasdropdown_close</item>
+    </style>
+
 </resources>

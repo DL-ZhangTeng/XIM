@@ -322,6 +322,20 @@ public class UserApi {
     }
 
     /**
+     * 查询用户
+     */
+    public void queryUser(String objectId, final BmobCallBack<User> callBack) {
+        BmobQuery<User> query = new BmobQuery<User>();
+        query.addWhereEqualTo("objectId", objectId);
+        query.findObjects(new FindListener<User>() {
+            @Override
+            public void done(List<User> object, BmobException e) {
+                callBack.onResponse(object.isEmpty() ? null : object.get(0), e);
+            }
+        });
+    }
+
+    /**
      * 请求邮箱验证
      */
     public void requestEmailVerify(LoginParams params, final BmobCallBack callBack) {

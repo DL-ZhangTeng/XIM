@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_gravity="center_vertical"
+    android:paddingStart="16dp">
+
+    <com.zhangteng.swiperecyclerview.widget.CircleImageView
+        android:id="@+id/add_friend_avatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:civ_border_color="#ffffff"
+        app:civ_border_width="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/add_friend_title"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:gravity="left|bottom"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/add_friend_avatar" />
+
+    <TextView
+        android:id="@+id/add_friend_content"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:gravity="left|top"
+        android:maxEms="13"
+        android:maxLines="1"
+        android:textColor="#989898"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/add_friend_avatar"
+        app:layout_constraintTop_toBottomOf="@id/add_friend_title" />
+
+    <TextView
+        android:id="@+id/add_friend_agree"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="接受"
+        android:textColor="#989898"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/add_friend_refuse"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/add_friend_refuse"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="拒绝"
+        android:textColor="#989898"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>
