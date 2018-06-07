@@ -5,9 +5,13 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,7 +36,10 @@ public class TitleBar extends RelativeLayout {
     private int rightBtnWidth = DEFAULT_BTN_LENGTH;
     private int rightBtnHeight = DEFAULT_BTN_LENGTH;
     private boolean isShowDrawable = false;
-
+    private FrameLayout foundFl;
+    private EditText foundEt;
+    private ImageView foundIv;
+    private RelativeLayout titleRL;
 
     public TitleBar(Context context) {
         super(context);
@@ -50,10 +57,14 @@ public class TitleBar extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.titlebar, this, true);
         leftBtn = (ImageView) this.findViewById(R.id.titlebar_left);
         titlebarLeftBack = (RelativeLayout) this.findViewById(R.id.titlebar_left_back);
+        titleRL = this.findViewById(R.id.titlebar_title_rl);
         title = (TextView) this.findViewById(R.id.titlebar_title);
         title.setCompoundDrawables(null, null, null, null);
         rightSmall = (ImageView) this.findViewById(R.id.titlebar_right_button);
         rightBtn = (Button) this.findViewById(R.id.titlebar_right);
+        foundFl = (FrameLayout) this.findViewById(R.id.fl_titlebar_found);
+        foundEt = (EditText) this.findViewById(R.id.titlebar_found);
+        foundIv = (ImageView) this.findViewById(R.id.titlebar_found_logo);
 //        int len =  mContext.getResources().getDimensionPixelSize(R.dimen.activity_title_image_length);;
         final int indexCount = a.getIndexCount();
         for (int i = 0; i < indexCount; ++i) {
@@ -124,6 +135,19 @@ public class TitleBar extends RelativeLayout {
                 case R.styleable.MyTitleBar_titledrawableSrc:
                     boolean titledrawable = a.getBoolean(attr, false);
                     isShowDrawable = titledrawable;
+                case R.styleable.MyTitleBar_foundBarShow:
+                    boolean isFoundShow = a.getBoolean(attr, false);
+                    if (isFoundShow) {
+                        titleRL.setVisibility(GONE);
+                        foundFl.setVisibility(VISIBLE);
+                    } else {
+                        foundFl.setVisibility(GONE);
+                        titleRL.setVisibility(VISIBLE);
+                    }
+                    break;
+                case R.styleable.MyTitleBar_foundHint:
+                    String hint = a.getString(attr);
+                    foundEt.setHint(hint);
             }
         }
         a.recycle();
@@ -196,5 +220,24 @@ public class TitleBar extends RelativeLayout {
         }
     }
 
+    public void setFoundClickListener(final OnClickListener onClickListener) {
+        foundIv.setOnClickListener(onClickListener);
+        foundEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    onClickListener.onClick(v);
+                }
+                return false;
+            }
+        });
+    }
 
+    public String getFoundText() {
+        return foundEt.getText().toString();
+    }
+
+    public void setFoundText(String text) {
+        foundEt.setText(text);
+    }
 }

@@ -234,7 +234,7 @@ public class MainActivity extends BaseActivity {
                 titleBar.setRightClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        ActivityHelper.jumpToActivity(MainActivity.this, FindUserActivity.class, 1);
                     }
                 });
                 break;
@@ -281,7 +281,7 @@ public class MainActivity extends BaseActivity {
                         titleBar.setRightClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-
+                                ActivityHelper.jumpToActivity(MainActivity.this, FindUserActivity.class, 1);
                             }
                         });
                         break;

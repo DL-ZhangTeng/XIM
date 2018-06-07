@@ -15,6 +15,9 @@
         <attr name="rightButtonWidth" format="dimension" />
         <attr name="rightButtonHeight" format="dimension" />
         <attr name="titledrawableSrc" format="boolean" />
+        <attr name="titlelogoSrc" format="reference" />
+        <attr name="foundBarShow" format="boolean" />
+        <attr name="foundHint" format="string" />
     </declare-styleable>
     <declare-styleable name="NoDataView">
         <attr name="nodatatext" format="string" />

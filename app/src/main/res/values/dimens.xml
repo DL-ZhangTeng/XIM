@@ -19,4 +19,15 @@
     <dimen name="common_leftorright_padding">16dp</dimen>
     <dimen name="sticky_text_size">16sp</dimen>
     <dimen name="sticky_height">32dp</dimen>
+    <dimen name="headline_title_textsize">18sp</dimen>
+    <dimen name="headline_right_textsize">15sp</dimen>
+    <dimen name="headline_hint_textsize">14sp</dimen>
+    <dimen name="headline_height">45dp</dimen>
+    <dimen name="headline_leftlogo_margin_left">10dp</dimen>
+    <dimen name="headline_rightlogo_margin_right">15dp</dimen>
+    <dimen name="headline_leftimage_widthorheight">20dp</dimen>
+    <dimen name="headline_titlelogo_drawablePadding">5dp</dimen>
+    <dimen name="headline_foundet_padding">6dp</dimen>
+    <dimen name="headline_foundlogo_widthorheight">24dp</dimen>
+    <dimen name="headline_foundlogo_drawablePadding">8dp</dimen>
 </resources>

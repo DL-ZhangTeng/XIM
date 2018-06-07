@@ -26,6 +26,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/titlebar_title_rl"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2">
@@ -36,8 +37,43 @@
             android:drawablePadding="@dimen/chat_address_item_text_margin_v"
             android:ellipsize="end"
             android:maxLines="1" />
+
     </RelativeLayout>
 
+    <FrameLayout
+        android:id="@+id/fl_titlebar_found"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="2"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/titlebar_found"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/headline_foundlogo_widthorheight"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/titlebar_found_bg"
+            android:hint="查找用户"
+            android:imeOptions="actionSearch"
+            android:maxLines="1"
+            android:paddingLeft="@dimen/headline_foundet_padding"
+            android:singleLine="true"
+            android:textSize="@dimen/headline_hint_textsize" />
+
+        <ImageButton
+            android:id="@+id/titlebar_found_logo"
+            android:layout_width="@dimen/headline_foundlogo_widthorheight"
+            android:layout_height="@dimen/headline_foundlogo_widthorheight"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="@dimen/headline_foundlogo_drawablePadding"
+            android:background="@mipmap/ic_search" />
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="0dp"
