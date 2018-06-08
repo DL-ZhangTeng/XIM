@@ -1,5 +1,6 @@
 package com.zhangteng.xim.activity;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
@@ -16,6 +17,7 @@ import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.widget.TitleBar;
 
 import java.util.ArrayList;
@@ -87,6 +89,17 @@ public class FindUserActivity extends BaseActivity {
                         refreshLayout.finishRefresh();
                     }
                 });
+            }
+        });
+
+        findUserAdapter.setOnClickListener(new FindUserAdapter.ItemOnClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                if (users.size() > position) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("user", users.get(position));
+                    ActivityHelper.jumpToActivityWithBundle(FindUserActivity.this, FriendInfoActivity.class, bundle, 1);
+                }
             }
         });
     }

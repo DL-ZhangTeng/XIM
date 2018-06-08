@@ -93,6 +93,27 @@ public class LocalUser extends User {
         return localUser;
     }
 
+    public static LocalUser getLocalUser(User user) {
+        LocalUser localUser = new LocalUser();
+        localUser.setObjectId(user.getObjectId());
+        localUser.setMobilePhoneNumber(user.getMobilePhoneNumber());
+        localUser.setEmail(user.getEmail());
+        localUser.setSex(user.getSex());
+        localUser.setAge(user.getAge());
+        localUser.setSchoolId(user.getSchoolId());
+        localUser.setRoleId(user.getRoleId());
+        localUser.setGradeId(user.getGradeId());
+        localUser.setCityId(user.getCityId());
+        localUser.setAreaId(user.getAreaId());
+        localUser.setProvinceId(user.getProvinceId());
+        localUser.setClassId(user.getClassId());
+        localUser.setRealName(user.getRealName());
+        localUser.setUsername(user.getUsername());
+        localUser.setIcoPath(user.getIcoPath());
+        localUser.setGroupInfo(null);
+        return localUser;
+    }
+
     public GroupInfo getGroupInfo() {
         return groupInfo;
     }
