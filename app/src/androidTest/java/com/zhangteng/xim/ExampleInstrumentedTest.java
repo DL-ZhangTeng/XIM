@@ -1,11 +1,16 @@
 package com.zhangteng.xim;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.Story;
+import com.zhangteng.xim.bmob.http.DataApi;
+import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.CityNo;
 import com.zhangteng.xim.utils.AssetsUtils;
@@ -70,5 +75,18 @@ public class ExampleInstrumentedTest {
                 parent = "000000";
             }
         }
+    }
+
+    @Test
+    public void queryStory() throws Exception {
+        final Story[] story = new Story[1];
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        DataApi.getInstance().queryStorys(UserApi.getInstance().getUserInfo(), 0, 1, new BmobCallBack<List<Story>>(appContext, false) {
+            @Override
+            public void onSuccess(@Nullable List<Story> bmobObject) {
+                story[0] = bmobObject.get(0);
+            }
+        });
+        assertEquals("11", story[0].getContent());
     }
 }

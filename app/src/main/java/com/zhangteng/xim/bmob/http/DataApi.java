@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.Friend;
 import com.zhangteng.xim.bmob.entity.Like;
 import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.Remark;
@@ -23,10 +24,13 @@ import java.util.List;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobDate;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobPointer;
+import cn.bmob.v3.datatype.BmobQueryResult;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DeleteBatchListener;
 import cn.bmob.v3.listener.DownloadFileListener;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SQLQueryListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadBatchListener;
@@ -50,6 +54,64 @@ public class DataApi {
         return instance;
     }
 
+    /**
+     * 查询动态默认取一百条
+     * 可以设定从第m+1个元素开始，例如从第 11 个元素（包含）开始往后取 10 个：select * from GameScore limit 10,10
+     */
+    public void queryStorys(User selfUser, final int start, final int limit, final BmobCallBack<List<Story>> bmobCallBack) {
+        final List<String> users = new ArrayList<>();
+        BmobQuery<Friend> userBmobQuery = new BmobQuery<>();
+        String userBql = "select * from Friend where user = pointer('_User', '" + selfUser.getObjectId() + "')";
+        userBmobQuery.doSQLQuery(userBql, new SQLQueryListener<Friend>() {
+            @Override
+            public void done(BmobQueryResult<Friend> bmobQueryResult, BmobException e) {
+                if (e == null) {
+                    List<Friend> list = (List<Friend>) bmobQueryResult.getResults();
+                    for (Friend friend : list) {
+                        users.add(friend.getFriendUser().getObjectId());
+                    }
+                    if (!users.isEmpty()) {
+                        BmobQuery<Story> query = new BmobQuery<>();
+                        StringBuffer buffer = new StringBuffer();
+                        buffer.append("select * from Story ")
+                                .append("limit ")
+                                .append(start)
+                                .append(",")
+                                .append(limit)
+                                .append(" where user in (");
+                        for (int i = 0; i < users.size(); i++) {
+                            buffer.append("'")
+                                    .append(users.get(i))
+                                    .append("'");
+                            if (i != users.size() - 1) {
+                                buffer.append(",");
+                            }
+                        }
+                        buffer.append(")");
+                        query.doSQLQuery(buffer.toString(), new SQLQueryListener<Story>() {
+                            @Override
+                            public void done(BmobQueryResult<Story> bmobQueryResult, BmobException e) {
+                                if (e == null) {
+                                    List<Story> list = (List<Story>) bmobQueryResult.getResults();
+                                    bmobCallBack.onResponse(list, null);
+                                } else {
+                                    bmobCallBack.onResponse(null, e);
+                                }
+                            }
+                        });
+                    } else {
+                        bmobCallBack.onResponse(null, new BmobException());
+                    }
+                } else {
+                    bmobCallBack.onResponse(null, e);
+                }
+            }
+        });
+    }
+
+    /**
+     * 按照时间查询
+     */
     public void queryStorys(String start, String end, final BmobCallBack<List<Story>> bmobCallBack) {
         final List<LocalUser> list = DBManager.instance(DBManager.USERNAME).queryUsers(0, Integer.MAX_VALUE);
         final List<Story> stories = new ArrayList<>();
@@ -85,7 +147,7 @@ public class DataApi {
      */
     public void queryStory(Story data, int limit, final BmobCallBack<List<Story>> bmobCallBack) {
         BmobQuery<Story> query = new BmobQuery<>();
-        query.addWhereEqualTo("user", data.getUser());
+        query.addWhereEqualTo("user", new BmobPointer(data.getUser()));
         query.setLimit(limit);
         if (StringUtils.isNotEmpty(data.getCreatedAt())) {
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -148,8 +210,9 @@ public class DataApi {
 
     public void queryRemark(Remark data, final BmobCallBack<List<Remark>> bmobCallBack) {
         BmobQuery<Remark> query = new BmobQuery<>();
-        query.addWhereEqualTo("story", data.getStory());
+        query.addWhereEqualTo("story", new BmobPointer(data.getStory()));
         query.order("-updatedAt");
+        query.include("user,story,remark");
         query.findObjects(new FindListener<Remark>() {
             @Override
             public void done(List<Remark> list, BmobException e) {
@@ -162,6 +225,7 @@ public class DataApi {
         BmobQuery<Remark> query = new BmobQuery<>();
         query.addWhereEqualTo("objectId", objectId);
         query.order("-updatedAt");
+        query.include("user,story,remark");
         query.findObjects(new FindListener<Remark>() {
             @Override
             public void done(List<Remark> list, BmobException e) {
@@ -176,8 +240,9 @@ public class DataApi {
 
     public void queryLike(Like data, final BmobCallBack<List<Like>> bmobCallBack) {
         BmobQuery<Like> query = new BmobQuery<>();
-        query.addWhereEqualTo("story", ((Like) data).getStory());
+        query.addWhereEqualTo("story", new BmobPointer(data.getStory()));
         query.order("-updatedAt");
+        query.include("user,story");
         query.findObjects(new FindListener<Like>() {
             @Override
             public void done(List<Like> list, BmobException e) {
@@ -190,6 +255,7 @@ public class DataApi {
         BmobQuery<Photo> query = new BmobQuery<>();
         query.addWhereEqualTo("user", data.getUser());
         query.order("-updatedAt");
+        query.include("user");
         query.findObjects(new FindListener<Photo>() {
             @Override
             public void done(List<Photo> list, BmobException e) {

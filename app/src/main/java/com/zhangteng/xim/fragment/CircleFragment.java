@@ -27,7 +27,6 @@ import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
-import com.zhangteng.xim.utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,18 +50,17 @@ public class CircleFragment extends BaseFragment {
     private CircleAdapter adapter;
     private HeaderOrFooterAdapter headerOrFooterAdapter;
 
+    private static int start = 0;
+    private static int limit = 100;
+    private static int index = 1;
+
     @Override
     protected int getResourceId() {
         return R.layout.fragment_circle;
     }
 
-    private long start;
-    private long d = 86400000;
-    private int index = 1;
-
     @Override
     protected void initView(View view) {
-        start = System.currentTimeMillis();
         user = UserApi.getInstance().getUserInfo();
         refreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
             @Override
@@ -182,11 +180,13 @@ public class CircleFragment extends BaseFragment {
      */
     private void queryStorys(final boolean isLoad) {
         if (isLoad) {
+            start = limit * index;
             index++;
         } else {
+            start = 0;
             index = 1;
         }
-        DataApi.getInstance().queryStorys(DateUtils.getDay(start - d * (index - 1)), DateUtils.getDay(start - d * index), new BmobCallBack<List<Story>>(getContext(), false) {
+        DataApi.getInstance().queryStorys(user, start, limit, new BmobCallBack<List<Story>>(getContext(), false) {
             @Override
             public void onSuccess(@Nullable List<Story> bmobObject) {
                 if (bmobObject != null && !bmobObject.isEmpty()) {
