@@ -41,6 +41,7 @@ import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
+import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
@@ -88,6 +89,7 @@ public class MainActivity extends BaseActivity {
     private List<String> path = new ArrayList<>();
     private DropDownMenu dropDownMenu;
     private ImagePickerConfig imagePickerConfig;
+    private File cameraTempFile;
     private IHandlerCallBack iHandlerCallBack = new HandlerCallBack() {
         @Override
         public void onSuccess(List<String> photoList) {
@@ -103,7 +105,7 @@ public class MainActivity extends BaseActivity {
             } else {
                 if (photoList != null && photoList.size() > 0) {
                     Uri sourceUri = FileProvider.getUriForFile(MainActivity.this, imagePickerConfig.getProvider(), new File(photoList.get(0)));
-                    File cameraTempFile = FileUtils.createTmpFile(MainActivity.this, imagePickerConfig.getFilePath() + File.separator + "crop");
+                    cameraTempFile = FileUtils.createTmpFile(MainActivity.this, imagePickerConfig.getFilePath() + File.separator + "crop");
                     bgPath = FileProvider.getUriForFile(MainActivity.this, imagePickerConfig.getProvider(), cameraTempFile);
                     Crop.of(sourceUri, bgPath).withAspect(20, 7).start(MainActivity.this);
                 }
@@ -386,18 +388,25 @@ public class MainActivity extends BaseActivity {
                 }
             }
         } else if (requestCode == Crop.REQUEST_CROP) {
-            RequestOptions requestOptions = new RequestOptions()
-                    .placeholder(R.mipmap.app_icon)
-                    .centerCrop();
-            Glide.with(this)
-                    .load(bgPath)
-                    .apply(requestOptions)
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                            headerView.setBackground(resource);
-                        }
-                    });
+            BmobCallBack<String> bmobCallBack = new BmobCallBack<String>(this, true) {
+                @Override
+                public void onSuccess(@Nullable String bmobObject) {
+                    RequestOptions requestOptions = new RequestOptions()
+                            .placeholder(R.mipmap.header_background)
+                            .centerCrop();
+                    Glide.with(MainActivity.this)
+                            .load(bgPath)
+                            .apply(requestOptions)
+                            .into(new SimpleTarget<Drawable>() {
+                                @Override
+                                public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                    headerView.setBackground(resource);
+                                }
+                            });
+                }
+            };
+            bmobCallBack.onStart();
+            DataApi.getInstance().uploadFile(cameraTempFile.getAbsolutePath(), bmobCallBack);
         }
     }
 
