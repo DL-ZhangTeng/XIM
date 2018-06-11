@@ -50,4 +50,5 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.0.0'
     implementation project(':loadingview')
     implementation 'cn.yipianfengye.android:zxing-library:2.2'
+    implementation project(':croplib')
 }

@@ -1,1 +1,1 @@
-include ':app','swiperecyclerview','imagepicker','loadingview'
+include ':app','swiperecyclerview','imagepicker','loadingview','croplib'
