@@ -1,10 +1,13 @@
 package com.zhangteng.xim.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,6 +23,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.soundcloud.android.crop.Crop;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.zhangteng.imagepicker.callback.HandlerCallBack;
@@ -27,6 +33,7 @@ import com.zhangteng.imagepicker.callback.IHandlerCallBack;
 import com.zhangteng.imagepicker.config.ImagePickerConfig;
 import com.zhangteng.imagepicker.config.ImagePickerOpen;
 import com.zhangteng.imagepicker.imageloader.GlideImageLoader;
+import com.zhangteng.imagepicker.utils.FileUtils;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
@@ -47,6 +54,7 @@ import com.zhangteng.xim.widget.TitleBar;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,19 +84,52 @@ public class MainActivity extends BaseActivity {
 
     private static int REQUEST_CODE = 200;
 
+    private Uri bgPath;
+    private List<String> path = new ArrayList<>();
+    private DropDownMenu dropDownMenu;
+    private ImagePickerConfig imagePickerConfig;
+    private IHandlerCallBack iHandlerCallBack = new HandlerCallBack() {
+        @Override
+        public void onSuccess(List<String> photoList) {
+            super.onSuccess(photoList);
+            if (imagePickerConfig.isMultiSelect()) {
+                if (photoList != null && photoList.size() > 0) {
+                    ArrayList<String> arrayList = new ArrayList<>();
+                    arrayList.addAll(photoList);
+                    Bundle bundle = new Bundle();
+                    bundle.putStringArrayList("photoList", arrayList);
+                    ActivityHelper.jumpToActivityWithBundle(MainActivity.this, ShareActivity.class, bundle, 1);
+                }
+            } else {
+                if (photoList != null && photoList.size() > 0) {
+                    Uri sourceUri = FileProvider.getUriForFile(MainActivity.this, imagePickerConfig.getProvider(), new File(photoList.get(0)));
+                    File cameraTempFile = FileUtils.createTmpFile(MainActivity.this, imagePickerConfig.getFilePath() + File.separator + "crop");
+                    bgPath = FileProvider.getUriForFile(MainActivity.this, imagePickerConfig.getProvider(), cameraTempFile);
+                    Crop.of(sourceUri, bgPath).withAspect(20, 7).start(MainActivity.this);
+                }
+            }
+        }
+    };
+    private View headerView;
+
+
     @Override
     protected int getResourceId() {
         return R.layout.activity_main;
     }
 
-    private ImagePickerConfig imagePickerConfig;
-
-
     @Override
     protected void initData() {
-        User user = UserApi.getInstance().getUserInfo();
+        final User user = UserApi.getInstance().getUserInfo();
         //获取头布局文件
-        View headerView = navigationView.getHeaderView(0);
+        headerView = navigationView.getHeaderView(0);
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initImagePicker(false);
+                ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
+            }
+        });
         ImageView code = headerView.findViewById(R.id.iv_code);
         code.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +147,14 @@ public class MainActivity extends BaseActivity {
                 .load(user.getIcoPath())
                 .apply(requestOptions)
                 .into(imageView);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String objectId = user.getObjectId();
+                ActivityHelper.jumpToActivityForParams(MainActivity.this, FriendInfoActivity.class, "objectId", objectId, 1);
+
+            }
+        });
         TextView state = (TextView) headerView.findViewById(R.id.tv_state);
         state.setText("");
 
@@ -117,22 +166,6 @@ public class MainActivity extends BaseActivity {
                 .apply(requestOptions1)
                 .into(titleBar.getLeftBtn());
     }
-
-    private IHandlerCallBack iHandlerCallBack = new HandlerCallBack() {
-        @Override
-        public void onSuccess(List<String> photoList) {
-            super.onSuccess(photoList);
-            if (photoList != null && photoList.size() > 0) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                arrayList.addAll(photoList);
-                Bundle bundle = new Bundle();
-                bundle.putStringArrayList("photoList", arrayList);
-                ActivityHelper.jumpToActivityWithBundle(MainActivity.this, ShareActivity.class, bundle, 1);
-            }
-        }
-    };
-    private List<String> path = new ArrayList<>();
-    private DropDownMenu dropDownMenu;
 
     @Override
     protected void initView() {
@@ -169,7 +202,6 @@ public class MainActivity extends BaseActivity {
             });
         }
 
-        initImagePicker();
         navigationView.setItemIconTintList(null);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -242,6 +274,7 @@ public class MainActivity extends BaseActivity {
                 titleBar.setRightClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        initImagePicker(true);
                         ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
                     }
                 });
@@ -294,6 +327,7 @@ public class MainActivity extends BaseActivity {
                         titleBar.setRightClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                initImagePicker(true);
                                 ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
                             }
                         });
@@ -351,6 +385,19 @@ public class MainActivity extends BaseActivity {
                     Toast.makeText(MainActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
                 }
             }
+        } else if (requestCode == Crop.REQUEST_CROP) {
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.mipmap.app_icon)
+                    .centerCrop();
+            Glide.with(this)
+                    .load(bgPath)
+                    .apply(requestOptions)
+                    .into(new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                            headerView.setBackground(resource);
+                        }
+                    });
         }
     }
 
@@ -418,14 +465,14 @@ public class MainActivity extends BaseActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    private void initImagePicker() {
+    private void initImagePicker(boolean isMultiSelect) {
         imagePickerConfig = new ImagePickerConfig.Builder()
                 .imageLoader(new GlideImageLoader())    // ImageLoader 加载框架（必填）,可以实现ImageLoader自定义（内置Glid实现）
                 .iHandlerCallBack(iHandlerCallBack)     // 监听接口，可以实现IHandlerCallBack自定义
                 .provider("com.zhangteng.xim.fileprovider")   // provider默认com.zhangteng.imagepicker.fileprovider
                 .pathList(path)                         // 记录已选的图片
-                .multiSelect(true, 9)                   // 配置是否多选的同时 配置多选数量   默认：false ， 9
-                .maxSize(9)                             // 配置多选时 的多选数量。    默认：9
+                .multiSelect(isMultiSelect)                   // 配置是否多选的同时 配置多选数量   默认：false ， 9
+                .maxSize(isMultiSelect ? 9 : 1)                             // 配置多选时 的多选数量。    默认：9
                 .isShowCamera(true)                     // 是否现实相机按钮  默认：false
                 .filePath("/imagePicker/ImagePickerPictures")          // 图片存放路径
                 .build();
