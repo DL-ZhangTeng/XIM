@@ -264,6 +264,19 @@ public class DataApi {
         });
     }
 
+    public void queryThemePhoto(User user, final BmobCallBack<Photo> bmobCallBack) {
+        BmobQuery<Photo> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", user);
+        query.addWhereEqualTo("mark", "theme");
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Photo>() {
+            @Override
+            public void done(List<Photo> list, BmobException e) {
+                bmobCallBack.onResponse(list.isEmpty() ? null : list.get(0), e);
+            }
+        });
+    }
+
 
     /**
      * 删除数据
@@ -383,12 +396,12 @@ public class DataApi {
      * 上传文件
      */
     public void uploadFile(String path, final BmobCallBack<String> bmobCallBack) {
-        BmobFile bmobFile = new BmobFile(new File(path));
+        final BmobFile bmobFile = new BmobFile(new File(path));
         bmobFile.uploadblock(new UploadFileListener() {
 
             @Override
             public void done(BmobException e) {
-                bmobCallBack.onResponse(null, e);
+                bmobCallBack.onResponse(bmobFile.getFileUrl(), e);
             }
 
             @Override

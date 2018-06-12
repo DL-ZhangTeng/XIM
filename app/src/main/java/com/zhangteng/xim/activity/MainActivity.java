@@ -40,6 +40,7 @@ import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.IMApi;
@@ -65,6 +66,7 @@ import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.event.OfflineMessageEvent;
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 
 public class MainActivity extends BaseActivity {
@@ -113,6 +115,7 @@ public class MainActivity extends BaseActivity {
         }
     };
     private View headerView;
+    private User user;
 
 
     @Override
@@ -122,7 +125,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        final User user = UserApi.getInstance().getUserInfo();
+        user = UserApi.getInstance().getUserInfo();
         //获取头布局文件
         headerView = navigationView.getHeaderView(0);
         headerView.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +133,25 @@ public class MainActivity extends BaseActivity {
             public void onClick(View view) {
                 initImagePicker(false);
                 ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
+            }
+        });
+        DataApi.getInstance().queryThemePhoto(user, new BmobCallBack<Photo>(this, false) {
+            @Override
+            public void onSuccess(@Nullable Photo bmobObject) {
+                if (bmobObject != null) {
+                    RequestOptions requestOptions = new RequestOptions()
+                            .placeholder(R.mipmap.header_background)
+                            .centerCrop();
+                    Glide.with(MainActivity.this)
+                            .load(bmobObject.getPhoto().getUrl())
+                            .apply(requestOptions)
+                            .into(new SimpleTarget<Drawable>() {
+                                @Override
+                                public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                    headerView.setBackground(resource);
+                                }
+                            });
+                }
             }
         });
         ImageView code = headerView.findViewById(R.id.iv_code);
@@ -391,6 +413,18 @@ public class MainActivity extends BaseActivity {
             BmobCallBack<String> bmobCallBack = new BmobCallBack<String>(this, true) {
                 @Override
                 public void onSuccess(@Nullable String bmobObject) {
+                    Photo photo = new Photo();
+                    photo.setUser(user);
+                    photo.setMark("theme");
+                    photo.setName(cameraTempFile.getName());
+                    BmobFile bmobFile = new BmobFile(cameraTempFile.getName(), null, bmobObject);
+                    photo.setPhoto(bmobFile);
+                    DataApi.getInstance().add(photo, new BmobCallBack<String>(MainActivity.this, false) {
+                        @Override
+                        public void onSuccess(@Nullable String bmobObject) {
+
+                        }
+                    });
                     RequestOptions requestOptions = new RequestOptions()
                             .placeholder(R.mipmap.header_background)
                             .centerCrop();
