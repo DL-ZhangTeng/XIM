@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.zhangteng.androidpermission.AndroidPermission;
 import com.zhangteng.androidpermission.Permission;
+import com.zhangteng.androidpermission.callback.Callback;
 import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.bmob.entity.User;
@@ -46,7 +47,17 @@ public class SplashActivity extends AppCompatActivity {
             System.arraycopy(Permission.Group.STORAGE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length, Permission.Group.STORAGE.length);
             System.arraycopy(Permission.Group.LOCATION, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length, Permission.Group.LOCATION.length);
             System.arraycopy(Permission.Group.MICROPHONE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length + Permission.Group.MICROPHONE.length, Permission.Group.MICROPHONE.length);
-            new AndroidPermission.Buidler().permission(permissions);
+            new AndroidPermission.Buidler().permission(permissions).with(this).callback(new Callback() {
+                @Override
+                public void success() {
+
+                }
+
+                @Override
+                public void failure() {
+
+                }
+            }).build();
         }
         //初始化地区数据库
         if (!AssetsUtils.isExistCityNoDb()) {
