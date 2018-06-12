@@ -57,7 +57,7 @@ public class SplashActivity extends AppCompatActivity {
                 public void failure() {
 
                 }
-            }).build();
+            }).build().excute();
         }
         //初始化地区数据库
         if (!AssetsUtils.isExistCityNoDb()) {
