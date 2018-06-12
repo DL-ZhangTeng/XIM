@@ -110,6 +110,23 @@ public class DataApi {
     }
 
     /**
+     * 查询前三条有图片的动态
+     */
+    public void queryStorys(final User user, final BmobCallBack<List<Story>> bmobCallBack) {
+        BmobQuery<Story> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", new BmobPointer(user));
+        query.setLimit(3);
+        query.addWhereExists("iconPaths");
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Story>() {
+            @Override
+            public void done(List<Story> list, BmobException e) {
+                bmobCallBack.onResponse(list, e);
+            }
+        });
+    }
+
+    /**
      * 按照时间查询
      */
     public void queryStorys(String start, String end, final BmobCallBack<List<Story>> bmobCallBack) {

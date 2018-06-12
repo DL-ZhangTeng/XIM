@@ -53,6 +53,7 @@
         <activity android:name="com.uuzuche.lib_zxing.activity.CaptureActivity" />
         <activity android:name=".activity.FindUserActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity android:name=".activity.SelfCircleActivity" />
         <activity
             android:name=".activity.SendActivity"
             android:configChanges="orientation|keyboard|keyboardHidden"

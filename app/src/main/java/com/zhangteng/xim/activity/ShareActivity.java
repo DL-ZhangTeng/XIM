@@ -19,6 +19,7 @@ import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.Story;
+import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.utils.AppManager;
@@ -71,6 +72,7 @@ public class ShareActivity extends BaseActivity {
     };
 
     private BmobCallBack bmobCallBack;
+    private User user;
 
     @Override
     protected int getResourceId() {
@@ -79,6 +81,7 @@ public class ShareActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        user = UserApi.getInstance().getUserInfo();
         Bundle bundle = getIntent().getExtras();
         if (bundle.containsKey("photoList")) {
             photoList = bundle.getStringArrayList("photoList");
@@ -128,6 +131,20 @@ public class ShareActivity extends BaseActivity {
                                 showToast(bmobException.getMessage());
                             }
                         });
+//                        for (String path : bmobObject) {
+//                            Photo photo = new Photo();
+//                            photo.setName(path);
+//                            photo.setMark("photo");
+//                            photo.setUser(user);
+//                            BmobFile bmobFile = new BmobFile(path, null, path);
+//                            photo.setPhoto(bmobFile);
+//                            DataApi.getInstance().add(photo, new BmobCallBack<String>(ShareActivity.this, false) {
+//                                @Override
+//                                public void onSuccess(@Nullable String bmobObject) {
+//
+//                                }
+//                            });
+//                        }
                     }
 
                     @Override

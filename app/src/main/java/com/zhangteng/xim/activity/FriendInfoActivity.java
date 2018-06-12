@@ -1,6 +1,7 @@
 package com.zhangteng.xim.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +15,9 @@ import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
+import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.CityNo;
@@ -24,6 +27,9 @@ import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.AppManager;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import cn.bmob.newim.bean.BmobIMMessage;
@@ -58,6 +64,7 @@ public class FriendInfoActivity extends BaseActivity {
     Button send;
     private String objectId;
     private LocalUser user;
+    private List<String> photoList;
 
     @Override
     protected int getResourceId() {
@@ -71,6 +78,7 @@ public class FriendInfoActivity extends BaseActivity {
 
     @Override
     protected void initData() {
+        photoList = new ArrayList<>();
         Intent intent = getIntent();
         if (intent.hasExtra("objectId")) {
             objectId = getIntent().getStringExtra("objectId");
@@ -130,5 +138,45 @@ public class FriendInfoActivity extends BaseActivity {
                 .load(user.getIcoPath())
                 .apply(requestOptions)
                 .into(circleImageView);
+
+        DataApi.getInstance().queryStorys(user, new BmobCallBack<List<Story>>(this, false) {
+            @Override
+            public void onSuccess(@Nullable List<Story> bmobObject) {
+                for (Story story : bmobObject) {
+                    if (photoList.size() >= 3) {
+                        break;
+                    }
+                    photoList.addAll(story.getIconPaths());
+                }
+                setPhotos();
+            }
+        });
+
+        photos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", User.getUser(user));
+                ActivityHelper.jumpToActivityWithBundle(FriendInfoActivity.this, SelfCircleActivity.class, bundle, 1);
+            }
+        });
+    }
+
+    private void setPhotos() {
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.app_icon)
+                .centerCrop();
+        Glide.with(FriendInfoActivity.this)
+                .load(photoList.get(0))
+                .apply(requestOptions)
+                .into(photo1);
+        Glide.with(FriendInfoActivity.this)
+                .load(photoList.get(1))
+                .apply(requestOptions)
+                .into(photo2);
+        Glide.with(FriendInfoActivity.this)
+                .load(photoList.get(2))
+                .apply(requestOptions)
+                .into(photo3);
     }
 }
