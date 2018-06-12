@@ -9,6 +9,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.zhangteng.androidpermission.AndroidPermission;
+import com.zhangteng.androidpermission.Permission;
 import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.bmob.entity.User;
@@ -38,7 +40,13 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_splash);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
+            String[] permissions = new String[Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length + Permission.Group.LOCATION.length + Permission.Group.MICROPHONE.length];
+            System.arraycopy(Permission.Group.PHONE, 0, permissions, 0, Permission.Group.PHONE.length);
+            System.arraycopy(Permission.Group.CAMERA, 0, permissions, Permission.Group.PHONE.length, Permission.Group.CAMERA.length);
+            System.arraycopy(Permission.Group.STORAGE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length, Permission.Group.STORAGE.length);
+            System.arraycopy(Permission.Group.LOCATION, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length, Permission.Group.LOCATION.length);
+            System.arraycopy(Permission.Group.MICROPHONE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length + Permission.Group.MICROPHONE.length, Permission.Group.MICROPHONE.length);
+            new AndroidPermission.Buidler().permission(permissions);
         }
         //初始化地区数据库
         if (!AssetsUtils.isExistCityNoDb()) {
