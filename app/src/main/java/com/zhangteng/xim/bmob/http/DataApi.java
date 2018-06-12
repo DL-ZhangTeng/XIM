@@ -278,6 +278,20 @@ public class DataApi {
     }
 
 
+    public void queryCirclePhoto(User user, final BmobCallBack<Photo> bmobCallBack) {
+        BmobQuery<Photo> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", user);
+        query.addWhereEqualTo("mark", "circle");
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Photo>() {
+            @Override
+            public void done(List<Photo> list, BmobException e) {
+                bmobCallBack.onResponse(list.isEmpty() ? null : list.get(0), e);
+            }
+        });
+    }
+
+
     /**
      * 删除数据
      *
@@ -322,7 +336,7 @@ public class DataApi {
      * @param data
      * @param bmobCallBack
      */
-    public <T> void add(T data, final BmobCallBack<String> bmobCallBack) {
+    public <T> void add(final T data, final BmobCallBack<String> bmobCallBack) {
         if (data instanceof Story) {
             ((Story) data).save(new SaveListener<String>() {
                 @Override
@@ -345,12 +359,58 @@ public class DataApi {
                 }
             });
         } else if (data instanceof Photo) {
-            ((Photo) data).save(new SaveListener<String>() {
-                @Override
-                public void done(String s, BmobException e) {
-                    bmobCallBack.onResponse(s, e);
-                }
-            });
+            if (((Photo) data).getMark().equals("circle")) {
+                queryCirclePhoto(((Photo) data).getUser(), new BmobCallBack<Photo>(bmobCallBack.getContext(), false) {
+                    @Override
+                    public void onSuccess(@Nullable Photo bmobObject) {
+                        if (bmobObject == null) {
+                            ((Photo) data).save(new SaveListener<String>() {
+                                @Override
+                                public void done(String s, BmobException e) {
+                                    bmobCallBack.onResponse(s, e);
+                                }
+                            });
+                        } else {
+                            ((Photo) data).setObjectId(bmobObject.getObjectId());
+                            ((Photo) data).update(new UpdateListener() {
+                                @Override
+                                public void done(BmobException e) {
+                                    bmobCallBack.onResponse(((Photo) data).getObjectId(), e);
+                                }
+                            });
+                        }
+                    }
+                });
+            } else if (((Photo) data).getMark().equals("theme")) {
+                queryThemePhoto(((Photo) data).getUser(), new BmobCallBack<Photo>(bmobCallBack.getContext(), false) {
+                    @Override
+                    public void onSuccess(@Nullable Photo bmobObject) {
+                        if (bmobObject == null) {
+                            ((Photo) data).save(new SaveListener<String>() {
+                                @Override
+                                public void done(String s, BmobException e) {
+                                    bmobCallBack.onResponse(s, e);
+                                }
+                            });
+                        } else {
+                            ((Photo) data).setObjectId(bmobObject.getObjectId());
+                            ((Photo) data).update(new UpdateListener() {
+                                @Override
+                                public void done(BmobException e) {
+                                    bmobCallBack.onResponse(((Photo) data).getObjectId(), e);
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                ((Photo) data).save(new SaveListener<String>() {
+                    @Override
+                    public void done(String s, BmobException e) {
+                        bmobCallBack.onResponse(s, e);
+                    }
+                });
+            }
         }
     }
 

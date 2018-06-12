@@ -46,6 +46,7 @@ import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
+import com.zhangteng.xim.event.CircleEvent;
 import com.zhangteng.xim.event.RefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.StringUtils;
@@ -441,6 +442,8 @@ public class MainActivity extends BaseActivity {
             };
             bmobCallBack.onStart();
             DataApi.getInstance().uploadFile(cameraTempFile.getAbsolutePath(), bmobCallBack);
+        } else if (requestCode == Crop.REQUEST_CROP + 1000) {
+            EventBus.getDefault().post(new CircleEvent());
         }
     }
 
