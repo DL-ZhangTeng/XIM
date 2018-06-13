@@ -71,6 +71,7 @@ public final class PermissionActivity extends Activity {
         } else {
             mcallback = null;
             finish();
+            overridePendingTransition(0, 0);
         }
     }
 
@@ -90,6 +91,7 @@ public final class PermissionActivity extends Activity {
             mcallback = null;
         }
         finish();
+        overridePendingTransition(0, 0);
     }
 
     @Override
