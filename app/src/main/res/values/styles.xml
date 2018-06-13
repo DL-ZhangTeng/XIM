@@ -69,4 +69,8 @@
         <item name="android:windowExitAnimation">@anim/showasdropdown_close</item>
     </style>
 
+    <style name="showAsDropLeft">
+        <item name="android:windowEnterAnimation">@anim/showasdropleft_open</item>
+        <item name="android:windowExitAnimation">@anim/showasdropleft_close</item>
+    </style>
 </resources>

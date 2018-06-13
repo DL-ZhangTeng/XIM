@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="140dp"
+    android:layout_height="30dp"
+    android:layout_gravity="center"
+    android:background="@color/black"
+    android:paddingEnd="10dp"
+    android:paddingStart="10dp">
+
+    <TextView
+        android:id="@+id/menu_like"
+        android:layout_width="66dp"
+        android:layout_height="30dp"
+        android:drawableLeft="@mipmap/like_"
+        android:drawablePadding="-6dp"
+        android:gravity="left|center_vertical"
+        android:text="赞"
+        android:textColor="@color/background"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/menu_comment"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/menu_comment"
+        android:layout_width="66dp"
+        android:layout_height="30dp"
+        android:drawableLeft="@mipmap/remark_"
+        android:drawablePadding="-6dp"
+        android:gravity="left|center_vertical"
+        android:text="评论"
+        android:textColor="@color/background"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/menu_like"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

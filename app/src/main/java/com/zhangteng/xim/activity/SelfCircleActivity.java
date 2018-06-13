@@ -47,7 +47,7 @@ import butterknife.BindView;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 
-public class SelfCircleActivity extends BaseActivity {
+public class SelfCircleActivity extends BaseActivity implements CircleAdapter.RefreshList {
 
 
     private static int start = 0;
@@ -105,6 +105,7 @@ public class SelfCircleActivity extends BaseActivity {
         });
         list = new ArrayList<>();
         adapter = new CircleAdapter(this, list);
+        adapter.setRefreshList(this);
         headerOrFooterAdapter = new HeaderOrFooterAdapter(adapter) {
             @Override
             public RecyclerView.ViewHolder createHeaderOrFooterViewHolder(ViewGroup parent, Integer viewInt) {
@@ -255,5 +256,13 @@ public class SelfCircleActivity extends BaseActivity {
                 refreshLayout.finishRefresh();
             }
         });
+    }
+
+    @Override
+    public void onRefreshList() {
+        if (adapter != null && headerOrFooterAdapter != null) {
+            adapter.notifyDataSetChanged();
+            headerOrFooterAdapter.notifyDataSetChanged();
+        }
     }
 }

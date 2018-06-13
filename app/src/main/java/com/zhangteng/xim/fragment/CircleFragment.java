@@ -54,7 +54,7 @@ import cn.bmob.v3.exception.BmobException;
 /**
  * Created by swing on 2018/5/17.
  */
-public class CircleFragment extends BaseFragment {
+public class CircleFragment extends BaseFragment implements CircleAdapter.RefreshList {
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.recyclerView)
@@ -107,6 +107,7 @@ public class CircleFragment extends BaseFragment {
         });
         list = new ArrayList<>();
         adapter = new CircleAdapter(getContext(), list);
+        adapter.setRefreshList(this);
         headerOrFooterAdapter = new HeaderOrFooterAdapter(adapter) {
             @Override
             public RecyclerView.ViewHolder createHeaderOrFooterViewHolder(ViewGroup parent, Integer viewInt) {
@@ -268,5 +269,13 @@ public class CircleFragment extends BaseFragment {
                 refreshLayout.finishRefresh();
             }
         });
+    }
+
+    @Override
+    public void onRefreshList() {
+        if (adapter != null && headerOrFooterAdapter != null) {
+            adapter.notifyDataSetChanged();
+            headerOrFooterAdapter.notifyDataSetChanged();
+        }
     }
 }

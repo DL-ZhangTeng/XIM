@@ -93,8 +93,59 @@ public class DataApi {
                             @Override
                             public void done(BmobQueryResult<Story> bmobQueryResult, BmobException e) {
                                 if (e == null) {
-                                    List<Story> list = (List<Story>) bmobQueryResult.getResults();
-                                    bmobCallBack.onResponse(list, null);
+                                    final List<Story> list = (List<Story>) bmobQueryResult.getResults();
+                                    //循环获取评论和点赞
+                                    if (list.isEmpty()) {
+                                        bmobCallBack.onResponse(list, null);
+                                    } else {
+                                        for (final Story story : list) {
+                                            queryRemark(story, new BmobCallBack<List<Remark>>(bmobCallBack.getContext(), false) {
+                                                @Override
+                                                public void onSuccess(@Nullable List<Remark> bmobObject) {
+                                                    story.setRemarks(bmobObject);
+                                                    queryLike(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
+                                                        @Override
+                                                        public void onSuccess(@Nullable List<Like> bmobObject) {
+                                                            story.setLikes(bmobObject);
+                                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                                bmobCallBack.onResponse(list, null);
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(BmobException bmobException) {
+                                                            super.onFailure(bmobException);
+                                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                                bmobCallBack.onResponse(list, null);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onFailure(BmobException bmobException) {
+                                                    super.onFailure(bmobException);
+                                                    queryLike(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
+                                                        @Override
+                                                        public void onSuccess(@Nullable List<Like> bmobObject) {
+                                                            story.setLikes(bmobObject);
+                                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                                bmobCallBack.onResponse(list, null);
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(BmobException bmobException) {
+                                                            super.onFailure(bmobException);
+                                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                                bmobCallBack.onResponse(list, null);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    }
                                 } else {
                                     bmobCallBack.onResponse(null, e);
                                 }
@@ -229,7 +280,20 @@ public class DataApi {
     public void queryRemark(Remark data, final BmobCallBack<List<Remark>> bmobCallBack) {
         BmobQuery<Remark> query = new BmobQuery<>();
         query.addWhereEqualTo("story", new BmobPointer(data.getStory()));
-        query.order("-updatedAt");
+        query.order("updatedAt");
+        query.include("user,story,remark");
+        query.findObjects(new FindListener<Remark>() {
+            @Override
+            public void done(List<Remark> list, BmobException e) {
+                bmobCallBack.onResponse(list, e);
+            }
+        });
+    }
+
+    public void queryRemark(Story data, final BmobCallBack<List<Remark>> bmobCallBack) {
+        BmobQuery<Remark> query = new BmobQuery<>();
+        query.addWhereEqualTo("story", new BmobPointer(data));
+        query.order("updatedAt");
         query.include("user,story,remark");
         query.findObjects(new FindListener<Remark>() {
             @Override
@@ -242,7 +306,7 @@ public class DataApi {
     public void queryRemark(String objectId, final BmobCallBack<Remark> bmobCallBack) {
         BmobQuery<Remark> query = new BmobQuery<>();
         query.addWhereEqualTo("objectId", objectId);
-        query.order("-updatedAt");
+        query.order("updatedAt");
         query.include("user,story,remark");
         query.findObjects(new FindListener<Remark>() {
             @Override
@@ -259,7 +323,20 @@ public class DataApi {
     public void queryLike(Like data, final BmobCallBack<List<Like>> bmobCallBack) {
         BmobQuery<Like> query = new BmobQuery<>();
         query.addWhereEqualTo("story", new BmobPointer(data.getStory()));
-        query.order("-updatedAt");
+        query.order("updatedAt");
+        query.include("user,story");
+        query.findObjects(new FindListener<Like>() {
+            @Override
+            public void done(List<Like> list, BmobException e) {
+                bmobCallBack.onResponse(list, e);
+            }
+        });
+    }
+
+    public void queryLike(Story data, final BmobCallBack<List<Like>> bmobCallBack) {
+        BmobQuery<Like> query = new BmobQuery<>();
+        query.addWhereEqualTo("story", new BmobPointer(data));
+        query.order("updatedAt");
         query.include("user,story");
         query.findObjects(new FindListener<Like>() {
             @Override

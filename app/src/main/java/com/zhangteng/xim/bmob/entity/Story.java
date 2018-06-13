@@ -14,6 +14,8 @@ public class Story extends BmobObject {
     private List<String> iconPaths;
     private BmobGeoPoint geoPoint;
     private String content;
+    private List<Like> likes;
+    private List<Remark> remarks;
 
     public User getUser() {
         return user;
@@ -45,5 +47,21 @@ public class Story extends BmobObject {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public List<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
+    }
+
+    public List<Remark> getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(List<Remark> remarks) {
+        this.remarks = remarks;
     }
 }

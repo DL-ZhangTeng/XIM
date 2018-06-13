@@ -92,6 +92,17 @@
         app:layout_constraintLeft_toRightOf="@id/circle_body_header"
         app:layout_constraintTop_toBottomOf="@id/circle_body_location" />
 
+    <ImageButton
+        android:id="@+id/circle_body_remark"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="@dimen/common_leftorright_padding"
+        android:layout_marginStart="12dp"
+        android:background="@mipmap/remark"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/circle_body_bg"
+        app:layout_constraintRight_toRightOf="parent" />
+
     <android.support.constraint.ConstraintLayout
         android:id="@+id/circle_body_bg"
         android:layout_width="0dp"

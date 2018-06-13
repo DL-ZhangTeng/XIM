@@ -7,9 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,8 +29,11 @@ import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
+import com.zhangteng.xim.utils.DensityUtils;
 import com.zhangteng.xim.utils.StringUtils;
+import com.zhangteng.xim.widget.RemarkMenu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.exception.BmobException;
@@ -39,6 +44,11 @@ import cn.bmob.v3.exception.BmobException;
 public class CircleAdapter extends BaseAdapter<Story> {
     private Context context;
     private User user = UserApi.getInstance().getUserInfo();
+    private RefreshList refreshList;
+
+    public void setRefreshList(RefreshList refreshList) {
+        this.refreshList = refreshList;
+    }
 
     public CircleAdapter(Context context, List<Story> data) {
         super(data);
@@ -53,7 +63,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         final Story story = data.get(position);
         ((ItemViewHolder) holder).expandableTextView.setText(story.getContent());
         ((ItemViewHolder) holder).recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
@@ -80,140 +90,112 @@ public class CircleAdapter extends BaseAdapter<Story> {
                 .load(story.getUser().getIcoPath())
                 .apply(requestOptions)
                 .into(((ItemViewHolder) holder).circleImageView);
-        initLike(holder, story);
-    }
-
-    private void initLike(final RecyclerView.ViewHolder holder, final Story story) {
-        Like like = new Like();
-        like.setStory(story);
-        DataApi.getInstance().queryLike(like, new BmobCallBack<List<Like>>(context, false) {
+        ((ItemViewHolder) holder).remark.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(@Nullable List<Like> bmobObject) {
-                StringBuffer stringBuffer = new StringBuffer();
-                for (Like like1 : bmobObject) {
-                    if (like1.getUser().getUsername() == null && like1.getUser().getObjectId() != null) {
-                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(like1.getUser().getObjectId());
-                        like1.setUser(User.getUser(localUser));
+            public void onClick(View view) {
+                int[] location = new int[2];
+                view.getLocationOnScreen(location);
+                final RemarkMenu remarkMenu = new RemarkMenu(context);
+                remarkMenu.setLikeOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final Like like = new Like();
+                        like.setUser(user);
+                        like.setStory(data.get(position));
+                        DataApi.getInstance().add(like, new BmobCallBack<String>(context, false) {
+                            @Override
+                            public void onSuccess(@Nullable String bmobObject) {
+                                if (data.get(position).getLikes() == null) {
+                                    data.get(position).setLikes(new ArrayList<Like>());
+                                }
+                                data.get(position).getLikes().add(like);
+                                if (refreshList != null) {
+                                    refreshList.onRefreshList();
+                                }
+                                remarkMenu.dismiss();
+                            }
+
+                            @Override
+                            public void onFailure(BmobException bmobException) {
+                                super.onFailure(bmobException);
+                                remarkMenu.dismiss();
+                            }
+                        });
                     }
-                    stringBuffer.append(like1.getUser().getUsername()).append(" ");
-                }
-                ((ItemViewHolder) holder).like.setText(stringBuffer.toString());
-                if (StringUtils.isEmpty(stringBuffer.toString())) {
-                    ((ItemViewHolder) holder).like.setVisibility(View.GONE);
-                } else {
-                    ((ItemViewHolder) holder).like.setVisibility(View.VISIBLE);
-                }
-                initComment(holder, story);
-            }
-
-            @Override
-            public void onFailure(BmobException bmobException) {
-                super.onFailure(bmobException);
-                ((ItemViewHolder) holder).like.setVisibility(View.GONE);
-                initComment(holder, story);
+                });
+                remarkMenu.setRemarkOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Remark remark = new Remark();
+                        remarkMenu.dismiss();
+                    }
+                });
+                remarkMenu.showAtLocation(view, Gravity.NO_GRAVITY, location[0] - DensityUtils.dp2px(context, 160), location[1]);
             }
         });
+        initLike(holder, position);
     }
 
-    private void initComment(final RecyclerView.ViewHolder holder, Story story) {
-        Remark remark = new Remark();
-        remark.setStory(story);
-        DataApi.getInstance().queryRemark(remark, new BmobCallBack<List<Remark>>(context, false) {
-            @Override
-            public void onSuccess(@Nullable List<Remark> bmobObject) {
-                final StringBuffer stringBuffer1 = new StringBuffer();
-                for (final Remark remark1 : bmobObject) {
-                    if (remark1.getUser().getUsername() == null && remark1.getUser().getObjectId() != null) {
-                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getUser().getObjectId());
-                        remark1.setUser(User.getUser(localUser));
-                    }
-                    if (remark1.getRemark() != null) {
-                        if (remark1.getRemark().getUser() == null) {
-                            DataApi.getInstance().queryRemark(remark1.getRemark().getObjectId(), new BmobCallBack<Remark>(context, false) {
-                                @Override
-                                public void onSuccess(@Nullable Remark bmobObject) {
-                                    remark1.setRemark(bmobObject);
-                                    if (null == remark1.getRemark().getUser().getUsername()
-                                            && remark1.getRemark().getUser().getObjectId() != null) {
-                                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getRemark().getUser().getObjectId());
-                                        remark1.getRemark().setUser(User.getUser(localUser));
-                                        stringBuffer1.append(remark1.getUser().getUsername());
-                                        stringBuffer1.append(" 回复 ").append(localUser.getUsername());
-                                        stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
-                                        ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
-                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
-                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
-                                    } else {
-                                        stringBuffer1.append(remark1.getUser().getUsername());
-                                        stringBuffer1.append(" 回复 ").append(remark1.getRemark().getUser().getUsername());
-                                        stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
-                                        ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
-                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
-                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
-                                    }
-                                }
+    private void initLike(final RecyclerView.ViewHolder holder, final int position) {
+        List<Like> likes = data.get(position).getLikes();
+        if (likes != null && !likes.isEmpty()) {
+            StringBuilder stringBuffer = new StringBuilder();
+            for (Like like1 : likes) {
+                if (like1.getUser().getUsername() == null && like1.getUser().getObjectId() != null) {
+                    LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(like1.getUser().getObjectId());
+                    like1.setUser(User.getUser(localUser));
+                }
+                stringBuffer.append(like1.getUser().getUsername()).append(" ");
+            }
+            ((ItemViewHolder) holder).like.setText(stringBuffer.toString());
+            if (StringUtils.isEmpty(stringBuffer.toString())) {
+                ((ItemViewHolder) holder).like.setVisibility(View.GONE);
+            } else {
+                ((ItemViewHolder) holder).like.setVisibility(View.VISIBLE);
+            }
+            initComment(holder, position);
+        }
+    }
 
-                                @Override
-                                public void onFailure(BmobException bmobException) {
-                                    super.onFailure(bmobException);
-                                    if (null == remark1.getRemark().getUser().getUsername()
-                                            && remark1.getRemark().getUser().getObjectId() != null) {
-                                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getRemark().getUser().getObjectId());
-                                        remark1.getRemark().setUser(User.getUser(localUser));
-                                        stringBuffer1.append(remark1.getUser().getUsername());
-                                        stringBuffer1.append(" 回复 ").append(localUser.getUsername());
-                                        stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
-                                        ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
-                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
-                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
-                                    } else {
-                                        stringBuffer1.append(remark1.getUser().getUsername());
-                                        stringBuffer1.append(" 回复 ").append(remark1.getRemark().getUser().getUsername());
-                                        stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
-                                        ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
-                                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
-                                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
-                                    }
-                                }
-                            });
-                        } else {
-                            if (null == remark1.getRemark().getUser().getUsername()
-                                    && remark1.getRemark().getUser().getObjectId() != null) {
-                                LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getRemark().getUser().getObjectId());
-                                remark1.getRemark().setUser(User.getUser(localUser));
-                                stringBuffer1.append(remark1.getUser().getUsername());
-                                stringBuffer1.append(" 回复 ").append(localUser.getUsername());
-                                stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
-                                ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
-                                setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
-                                setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
-                            } else {
-                                stringBuffer1.append(remark1.getUser().getUsername());
-                                stringBuffer1.append(" 回复 ").append(remark1.getRemark().getUser().getUsername());
-                                stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
-                                ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
-                                setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
-                                setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
-                            }
-                        }
-
+    private void initComment(final RecyclerView.ViewHolder holder, int position) {
+        List<Remark> remarks = data.get(position).getRemarks();
+        if (remarks != null && !remarks.isEmpty()) {
+            StringBuilder stringBuffer1 = new StringBuilder();
+            for (final Remark remark1 : remarks) {
+                if (remark1.getUser().getUsername() == null && remark1.getUser().getObjectId() != null) {
+                    LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getUser().getObjectId());
+                    remark1.setUser(User.getUser(localUser));
+                }
+                if (remark1.getRemark() != null) {
+                    if (null == remark1.getRemark().getUser().getUsername()
+                            && remark1.getRemark().getUser().getObjectId() != null) {
+                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(remark1.getRemark().getUser().getObjectId());
+                        remark1.getRemark().setUser(User.getUser(localUser));
+                        stringBuffer1.append(remark1.getUser().getUsername());
+                        stringBuffer1.append(" 回复 ").append(localUser.getUsername());
+                        stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
+                        ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                        setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                        setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                     } else {
                         stringBuffer1.append(remark1.getUser().getUsername());
+                        stringBuffer1.append(" 回复 ").append(remark1.getRemark().getUser().getUsername());
                         stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                         ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
                         setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
                         setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                     }
+                } else {
+                    stringBuffer1.append(remark1.getUser().getUsername());
+                    stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
+                    ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+                    setConmmentVisibility(stringBuffer1.toString(), ((ItemViewHolder) holder).comment);
+                    setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
                 }
             }
-
-            @Override
-            public void onFailure(BmobException bmobException) {
-                super.onFailure(bmobException);
-                setConmmentVisibility("", ((ItemViewHolder) holder).comment);
-                setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
-            }
-        });
+        } else {
+            setBackgroundVisiblity(((ItemViewHolder) holder).like, ((ItemViewHolder) holder).comment, ((ItemViewHolder) holder).constraintLayout);
+        }
     }
 
     private void setConmmentVisibility(String s, View view) {
@@ -232,6 +214,10 @@ public class CircleAdapter extends BaseAdapter<Story> {
         }
     }
 
+    public interface RefreshList {
+        void onRefreshList();
+    }
+
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         ExpandableTextView expandableTextView;
         CircleImageView circleImageView;
@@ -242,6 +228,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
         TextView like;
         TextView comment;
         ConstraintLayout constraintLayout;
+        ImageButton remark;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -254,6 +241,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
             like = itemView.findViewById(R.id.circle_body_like);
             comment = itemView.findViewById(R.id.circle_body_comment);
             constraintLayout = itemView.findViewById(R.id.circle_body_bg);
+            remark = itemView.findViewById(R.id.circle_body_remark);
         }
     }
 }
