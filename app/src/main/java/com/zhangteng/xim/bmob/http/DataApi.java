@@ -87,7 +87,8 @@ public class DataApi {
                                 buffer.append(",");
                             }
                         }
-                        buffer.append(")");
+                        buffer.append(") ");
+                        buffer.append("order by -updatedAt");
                         query.doSQLQuery(buffer.toString(), new SQLQueryListener<Story>() {
                             @Override
                             public void done(BmobQueryResult<Story> bmobQueryResult, BmobException e) {
