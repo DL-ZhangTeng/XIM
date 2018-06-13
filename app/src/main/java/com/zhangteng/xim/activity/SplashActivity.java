@@ -1,45 +1,44 @@
 package com.zhangteng.xim.activity;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.zhangteng.androidpermission.AndroidPermission;
 import com.zhangteng.androidpermission.Permission;
 import com.zhangteng.androidpermission.callback.Callback;
+import com.zhangteng.androidpermission.request.MRequest;
 import com.zhangteng.xim.MyApplication;
-import com.zhangteng.xim.R;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.event.JumpEvent;
+import com.zhangteng.xim.utils.ActivityHelper;
+import com.zhangteng.xim.utils.AppManager;
 import com.zhangteng.xim.utils.AssetsUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by swing on 2018/5/24.
  */
 public class SplashActivity extends AppCompatActivity {
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1000) {
-                SplashActivity.this.startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-            } else if (msg.what == 999) {
-                SplashActivity.this.startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            }
-            SplashActivity.this.finish();
-        }
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        super.setContentView(R.layout.activity_splash);
+//        super.setContentView(R.layout.activity_splash);
+        AppManager.addActivity(this);
+        EventBus.getDefault().register(this);
+        //初始化地区数据库
+        if (!AssetsUtils.isExistCityNoDb()) {
+            AssetsUtils.initDatabase(AssetsUtils.dbName, MyApplication.getGlobalContext());
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String[] permissions = new String[Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length + Permission.Group.LOCATION.length + Permission.Group.MICROPHONE.length];
             System.arraycopy(Permission.Group.PHONE, 0, permissions, 0, Permission.Group.PHONE.length);
@@ -47,32 +46,71 @@ public class SplashActivity extends AppCompatActivity {
             System.arraycopy(Permission.Group.STORAGE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length, Permission.Group.STORAGE.length);
             System.arraycopy(Permission.Group.LOCATION, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length, Permission.Group.LOCATION.length);
             System.arraycopy(Permission.Group.MICROPHONE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length + Permission.Group.MICROPHONE.length, Permission.Group.MICROPHONE.length);
-            new AndroidPermission.Buidler().permission(permissions).with(this).callback(new Callback() {
-                @Override
-                public void success() {
+            new AndroidPermission.Buidler()
+                    .with(this)
+                    .request(new MRequest(permissions) {
+                        @Override
+                        public void requestPermissions(Context context, int permissionCode, Callback callback) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                super.requestPermissions(context, permissionCode, callback);
+                                overridePendingTransition(0, 0);
+                            }
+                        }
+                    })
+                    .callback(new Callback() {
+                        @Override
+                        public void success() {
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    EventBus.getDefault().post(new JumpEvent(SplashActivity.this));
+                                }
+                            }, 2000);
+                        }
 
-                }
-
-                @Override
-                public void failure() {
-
-                }
-            }).build().excute();
-        }
-        //初始化地区数据库
-        if (!AssetsUtils.isExistCityNoDb()) {
-            AssetsUtils.initDatabase(AssetsUtils.dbName, MyApplication.getGlobalContext());
+                        @Override
+                        public void failure() {
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    EventBus.getDefault().post(new JumpEvent(SplashActivity.this));
+                                }
+                            }, 2000);
+                        }
+                    })
+                    .permission(permissions)
+                    .build()
+                    .excute();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        User user = UserApi.getInstance().getUserInfo();
-        if (user != null && user.getObjectId() != null) {
-            handler.sendEmptyMessageDelayed(999, 1000);
-        } else {
-            handler.sendEmptyMessageDelayed(1000, 1000);
+
+    }
+
+    @Override
+    protected void onPause() {
+        overridePendingTransition(0, 0);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void onEventMainThread(JumpEvent event) {
+        if (event.getActivity() instanceof SplashActivity) {
+            User user = UserApi.getInstance().getUserInfo();
+            if (user != null && user.getObjectId() != null) {
+                ActivityHelper.jumpActivity(SplashActivity.this, MainActivity.class, 1);
+            } else {
+                ActivityHelper.jumpActivity(SplashActivity.this, LoginActivity.class, 1);
+            }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

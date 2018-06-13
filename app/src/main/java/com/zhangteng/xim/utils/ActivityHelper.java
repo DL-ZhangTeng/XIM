@@ -35,7 +35,7 @@ public class ActivityHelper {
         intent.putExtras(bundle);
         activity.startActivity(intent);
         anim(activity, code);
-        activity.finish();
+        AppManager.finishActivity(activity);
     }
 
     public static void jumpActivity(Activity activity, Class cls, int code) {
@@ -43,7 +43,7 @@ public class ActivityHelper {
         intent.setClass(activity, cls);
         activity.startActivity(intent);
         anim(activity, code);
-        activity.finish();
+        AppManager.finishActivity(activity);
     }
 
     public static void jumpToActivityForParams(Activity activity, Class cls, String key, String value, int code) {
@@ -60,7 +60,7 @@ public class ActivityHelper {
         intent.putExtra(key, value);
         activity.startActivity(intent);
         anim(activity, code);
-        activity.finish();
+        AppManager.finishActivity(activity);
     }
 
     public static void jumpActivityResult(Activity activity, Class cls, int requestCode, int code) {
@@ -68,7 +68,7 @@ public class ActivityHelper {
         intent.setClass(activity, cls);
         activity.startActivityForResult(intent, requestCode);
         anim(activity, code);
-        activity.finish();
+        AppManager.finishActivity(activity);
     }
 
     public static void jumpToActivityResult(Activity activity, Class cls, int requestCode, int code) {

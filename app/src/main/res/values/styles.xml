@@ -10,6 +10,7 @@
 
     <style name="Full" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@drawable/guide</item>
     </style>
 
     <style name="TitleText">
