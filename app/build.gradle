@@ -26,9 +26,7 @@ android {
             signingConfig signingConfigs.config
         }
         debug {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+
         }
     }
     /**兼容Android6.0系统所需，如果这句话报错，可在dependencies标签下使用compile 'cn.bmob.android:http-legacy:1.0'**/
@@ -55,8 +53,6 @@ dependencies {
     implementation 'cn.bmob.android:bmob-push:0.8'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    //6.0+权限申请
-    implementation 'com.github.duoluo9:androidpermission:1.0.0'
     //版本更新
     implementation 'com.github.duoluo9:updateversionlibrary:1.0.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-5'
@@ -68,4 +64,5 @@ dependencies {
     implementation project(':loadingview')
     implementation 'cn.yipianfengye.android:zxing-library:2.2'
     implementation project(':croplib')
+    implementation project(':permission')
 }
