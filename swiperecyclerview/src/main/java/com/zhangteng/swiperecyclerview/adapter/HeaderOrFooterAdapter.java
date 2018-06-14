@@ -77,6 +77,10 @@ public abstract class HeaderOrFooterAdapter<T> extends BaseAdapter<T> {
         return mInnerAdapter.getItemViewType(position - getHeadersCount());
     }
 
+    public void notifyHFAdpterItemChanged(int position) {
+        notifyItemChanged(position + getHeadersCount());
+    }
+
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         mInnerAdapter.onAttachedToRecyclerView(recyclerView);

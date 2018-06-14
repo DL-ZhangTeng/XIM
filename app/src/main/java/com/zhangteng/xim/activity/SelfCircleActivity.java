@@ -259,10 +259,10 @@ public class SelfCircleActivity extends BaseActivity implements CircleAdapter.Re
     }
 
     @Override
-    public void onRefreshList() {
+    public void onRefreshList(int position) {
         if (adapter != null && headerOrFooterAdapter != null) {
-            adapter.notifyDataSetChanged();
-            headerOrFooterAdapter.notifyDataSetChanged();
+            adapter.notifyItemChanged(position);
+            headerOrFooterAdapter.notifyHFAdpterItemChanged(position);
         }
     }
 }

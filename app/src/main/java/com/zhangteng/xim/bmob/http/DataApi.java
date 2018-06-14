@@ -103,7 +103,7 @@ public class DataApi {
                                                 @Override
                                                 public void onSuccess(@Nullable List<Remark> bmobObject) {
                                                     story.setRemarks(bmobObject);
-                                                    queryLike(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
+                                                    queryLikes(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
                                                         @Override
                                                         public void onSuccess(@Nullable List<Like> bmobObject) {
                                                             story.setLikes(bmobObject);
@@ -125,7 +125,7 @@ public class DataApi {
                                                 @Override
                                                 public void onFailure(BmobException bmobException) {
                                                     super.onFailure(bmobException);
-                                                    queryLike(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
+                                                    queryLikes(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
                                                         @Override
                                                         public void onSuccess(@Nullable List<Like> bmobObject) {
                                                             story.setLikes(bmobObject);
@@ -320,7 +320,7 @@ public class DataApi {
         });
     }
 
-    public void queryLike(Like data, final BmobCallBack<List<Like>> bmobCallBack) {
+    public void queryLikes(Like data, final BmobCallBack<List<Like>> bmobCallBack) {
         BmobQuery<Like> query = new BmobQuery<>();
         query.addWhereEqualTo("story", new BmobPointer(data.getStory()));
         query.order("updatedAt");
@@ -333,7 +333,21 @@ public class DataApi {
         });
     }
 
-    public void queryLike(Story data, final BmobCallBack<List<Like>> bmobCallBack) {
+    public void queryLike(Like data, final BmobCallBack<Like> bmobCallBack) {
+        BmobQuery<Like> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", new BmobPointer(data.getUser()));
+        query.addWhereEqualTo("story", new BmobPointer(data.getStory()));
+        query.order("updatedAt");
+        query.include("user,story");
+        query.findObjects(new FindListener<Like>() {
+            @Override
+            public void done(List<Like> list, BmobException e) {
+                bmobCallBack.onResponse(list.isEmpty() ? null : list.get(0), e);
+            }
+        });
+    }
+
+    public void queryLikes(Story data, final BmobCallBack<List<Like>> bmobCallBack) {
         BmobQuery<Like> query = new BmobQuery<>();
         query.addWhereEqualTo("story", new BmobPointer(data));
         query.order("updatedAt");
@@ -447,10 +461,36 @@ public class DataApi {
                 }
             });
         } else if (data instanceof Like) {
-            ((Like) data).save(new SaveListener<String>() {
+            queryLike((Like) data, new BmobCallBack<Like>(bmobCallBack.getContext(), false) {
                 @Override
-                public void done(String s, BmobException e) {
-                    bmobCallBack.onResponse(s, e);
+                public void onSuccess(@Nullable Like bmobObject) {
+                    if (null == bmobObject) {
+                        ((Like) data).save(new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                bmobCallBack.onResponse(s, e);
+                            }
+                        });
+                    } else {
+                        delete(bmobObject, new BmobCallBack(bmobCallBack.getContext(), false) {
+                            @Override
+                            public void onSuccess(@Nullable Object bmobObject) {
+                                bmobCallBack.onResponse("delete", null);
+                            }
+
+                            @Override
+                            public void onFailure(BmobException bmobException) {
+                                super.onFailure(bmobException);
+                                bmobCallBack.onResponse("delete", bmobException);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(BmobException bmobException) {
+                    super.onFailure(bmobException);
+                    bmobCallBack.onResponse("", bmobException);
                 }
             });
         } else if (data instanceof Photo) {
