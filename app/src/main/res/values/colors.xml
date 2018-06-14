@@ -16,4 +16,5 @@
     <color name="background_black">#e8e8e8</color>
 
     <color name="circle_text">#8793ac</color>
+    <color name="translucent">#00000000</color>
 </resources>

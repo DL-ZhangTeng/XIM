@@ -59,6 +59,11 @@
             android:configChanges="orientation|keyboard|keyboardHidden"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
+            android:name=".activity.CommentActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden"
+            android:theme="@style/translucent"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/Full">
             <intent-filter>

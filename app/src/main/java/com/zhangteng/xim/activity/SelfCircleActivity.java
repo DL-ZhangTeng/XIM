@@ -2,6 +2,7 @@ package com.zhangteng.xim.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
@@ -37,6 +38,11 @@ import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.event.CircleCommentEvent;
+import com.zhangteng.xim.utils.ActivityHelper;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,7 +53,7 @@ import butterknife.BindView;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 
-public class SelfCircleActivity extends BaseActivity implements CircleAdapter.RefreshList {
+public class SelfCircleActivity extends BaseActivity implements CircleAdapter.RefreshList, CircleAdapter.CommentStory {
 
 
     private static int start = 0;
@@ -106,6 +112,7 @@ public class SelfCircleActivity extends BaseActivity implements CircleAdapter.Re
         list = new ArrayList<>();
         adapter = new CircleAdapter(this, list);
         adapter.setRefreshList(this);
+        adapter.setCommentStory(this);
         headerOrFooterAdapter = new HeaderOrFooterAdapter(adapter) {
             @Override
             public RecyclerView.ViewHolder createHeaderOrFooterViewHolder(ViewGroup parent, Integer viewInt) {
@@ -191,6 +198,24 @@ public class SelfCircleActivity extends BaseActivity implements CircleAdapter.Re
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onEventMainThread(CircleCommentEvent event) {
+        list.get(event.getPosition()).setRemarks(event.getStory().getRemarks());
+        onRefreshList(event.getPosition());
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Crop.REQUEST_CROP) {
@@ -264,5 +289,13 @@ public class SelfCircleActivity extends BaseActivity implements CircleAdapter.Re
             adapter.notifyItemChanged(position);
             headerOrFooterAdapter.notifyHFAdpterItemChanged(position);
         }
+    }
+
+    @Override
+    public void onComment(int position, Story story) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("story", story);
+        bundle.putInt("position", position);
+        ActivityHelper.jumpToActivityWithBundle(this, CommentActivity.class, bundle, 0);
     }
 }

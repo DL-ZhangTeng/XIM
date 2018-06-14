@@ -84,6 +84,10 @@ public class ActivityHelper {
             ActivityHelper.setActivityAnimShow(activity);
         } else if (code == 2) {
             ActivityHelper.setActivityAnimClose(activity);
+        } else if (code == 0) {
+            activity.overridePendingTransition(0, 0);
+        } else if (code == 3) {
+            activity.overridePendingTransition(R.anim.activity_down, R.anim.activity_down_1);
         }
     }
 

@@ -29,6 +29,7 @@ import com.zhangteng.imagepicker.utils.FileUtils;
 import com.zhangteng.swiperecyclerview.adapter.HeaderOrFooterAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
+import com.zhangteng.xim.activity.CommentActivity;
 import com.zhangteng.xim.adapter.CircleAdapter;
 import com.zhangteng.xim.base.BaseFragment;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
@@ -37,7 +38,9 @@ import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.event.CircleCommentEvent;
 import com.zhangteng.xim.event.CircleEvent;
+import com.zhangteng.xim.utils.ActivityHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -54,7 +57,7 @@ import cn.bmob.v3.exception.BmobException;
 /**
  * Created by swing on 2018/5/17.
  */
-public class CircleFragment extends BaseFragment implements CircleAdapter.RefreshList {
+public class CircleFragment extends BaseFragment implements CircleAdapter.RefreshList, CircleAdapter.CommentStory {
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.recyclerView)
@@ -108,6 +111,7 @@ public class CircleFragment extends BaseFragment implements CircleAdapter.Refres
         list = new ArrayList<>();
         adapter = new CircleAdapter(getContext(), list);
         adapter.setRefreshList(this);
+        adapter.setCommentStory(this);
         headerOrFooterAdapter = new HeaderOrFooterAdapter(adapter) {
             @Override
             public RecyclerView.ViewHolder createHeaderOrFooterViewHolder(ViewGroup parent, Integer viewInt) {
@@ -208,6 +212,12 @@ public class CircleFragment extends BaseFragment implements CircleAdapter.Refres
         onActivityResult();
     }
 
+    @Subscribe
+    public void onEventMainThread(CircleCommentEvent event) {
+        list.get(event.getPosition()).setRemarks(event.getStory().getRemarks());
+        onRefreshList(event.getPosition());
+    }
+
     private void onActivityResult() {
         BmobCallBack<String> bmobCallBack = new BmobCallBack<String>(this.getActivity(), true) {
             @Override
@@ -278,5 +288,13 @@ public class CircleFragment extends BaseFragment implements CircleAdapter.Refres
             adapter.notifyItemChanged(position);
             headerOrFooterAdapter.notifyHFAdpterItemChanged(position);
         }
+    }
+
+    @Override
+    public void onComment(int position, Story story) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("story", story);
+        bundle.putInt("position", position);
+        ActivityHelper.jumpToActivityWithBundle(getActivity(), CommentActivity.class, bundle, 0);
     }
 }

@@ -45,9 +45,14 @@ public class CircleAdapter extends BaseAdapter<Story> {
     private Context context;
     private User user = UserApi.getInstance().getUserInfo();
     private RefreshList refreshList;
+    private CommentStory commentStory;
 
     public void setRefreshList(RefreshList refreshList) {
         this.refreshList = refreshList;
+    }
+
+    public void setCommentStory(CommentStory commentStory) {
+        this.commentStory = commentStory;
     }
 
     public CircleAdapter(Context context, List<Story> data) {
@@ -136,7 +141,9 @@ public class CircleAdapter extends BaseAdapter<Story> {
                 remarkMenu.setRemarkOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Remark remark = new Remark();
+                        if (commentStory != null) {
+                            commentStory.onComment(position, data.get(position));
+                        }
                         remarkMenu.dismiss();
                     }
                 });
@@ -196,6 +203,10 @@ public class CircleAdapter extends BaseAdapter<Story> {
 
     public interface RefreshList {
         void onRefreshList(int position);
+    }
+
+    public interface CommentStory {
+        void onComment(int position, Story story);
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
