@@ -24,19 +24,21 @@
         <com.zhangteng.swiperecyclerview.widget.CircleImageView
             android:id="@+id/iv_header"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:src="@mipmap/app_icon" />
 
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/common_leftorright_padding"
             android:layout_toRightOf="@id/iv_header"
             android:gravity="center"
-            android:text="name" />
+            android:textColor="@color/white"
+            android:text="name"
+            android:textSize="20sp"/>
     </RelativeLayout>
 
     <TextView
@@ -46,5 +48,6 @@
         android:layout_centerVertical="true"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="name" />
+        android:text="name"
+        android:textColor="@color/white"/>
 </LinearLayout>
