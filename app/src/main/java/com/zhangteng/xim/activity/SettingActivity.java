@@ -47,6 +47,7 @@ public class SettingActivity extends BaseActivity {
                 AppManager.finishAllActivity();
                 break;
             case R.id.setting_about:
+                ActivityHelper.jumpToActivity(SettingActivity.this, AboutXimActivity.class, 1);
                 break;
             case R.id.setting_change:
                 break;

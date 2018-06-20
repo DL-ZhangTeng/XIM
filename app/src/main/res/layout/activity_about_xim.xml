@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_black">
+
+    <com.zhangteng.xim.widget.TitleBar
+        android:id="@+id/about_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titlebar_height"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:titleText="关于XIM"
+        app:leftButtonBg="@mipmap/back" />
+
+    <ImageView
+        android:id="@+id/about_icon"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@mipmap/app_icon"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/about_titlebar" />
+
+    <TextView
+        android:id="@+id/about_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="V 1.0.0"
+        android:textColor="@color/theme"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/about_icon" />
+
+    <TextView
+        android:id="@+id/about_version_update"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titlebar_height"
+        android:layout_marginTop="@dimen/common_leftorright_padding"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:onClick="buttonClick"
+        android:paddingEnd="@dimen/common_leftorright_padding"
+        android:paddingStart="@dimen/common_leftorright_padding"
+        android:text="版本更新"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/about_version" />
+</android.support.constraint.ConstraintLayout>

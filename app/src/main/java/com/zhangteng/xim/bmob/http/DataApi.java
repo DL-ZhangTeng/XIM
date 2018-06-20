@@ -10,6 +10,7 @@ import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.Remark;
 import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
+import com.zhangteng.xim.bmob.entity.Version;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.StringUtils;
@@ -400,6 +401,26 @@ public class DataApi {
         });
     }
 
+    public void queryVersion(final BmobCallBack<Version> bmobCallBack) {
+        BmobQuery<Version> query = new BmobQuery<>();
+        query.order("-updatedAt");
+        query.findObjects(new FindListener<Version>() {
+            @Override
+            public void done(List<Version> list, BmobException e) {
+                bmobCallBack.onResponse(list.isEmpty() ? null : list.get(0), e);
+            }
+        });
+    }
+
+    public Version queryVersion() {
+        BmobQuery<Version> query = new BmobQuery<>();
+        query.order("-updatedAt");
+        List<Version> versions = query.findObjectsSync(Version.class);
+        if (versions != null && !versions.isEmpty()) {
+            return versions.get(0);
+        }
+        return new Version();
+    }
 
     /**
      * 删除数据

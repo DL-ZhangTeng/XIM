@@ -35,6 +35,8 @@ import com.zhangteng.imagepicker.config.ImagePickerOpen;
 import com.zhangteng.imagepicker.imageloader.GlideImageLoader;
 import com.zhangteng.imagepicker.utils.FileUtils;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
+import com.zhangteng.updateversionlibrary.UpdateVersion;
+import com.zhangteng.updateversionlibrary.http.CommonHttpClient;
 import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MainAdapter;
@@ -44,6 +46,7 @@ import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.IMApi;
+import com.zhangteng.xim.bmob.http.UpdateVersionClient;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.event.CircleEvent;
@@ -126,6 +129,38 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initData() {
+        //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
+        String objectId = null;
+        try {
+            objectId = UserApi.getInstance().getUserInfo().getObjectId();
+        } catch (NullPointerException e) {
+            Log.e("MainActivity", "objectId is null");
+        }
+        if (StringUtils.isNotEmpty(objectId) &&
+                IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
+            IMApi.IMServiceManager.getInstance().connectService(new BmobCallBack<String>(MainActivity.this, false) {
+                @Override
+                public void onSuccess(@Nullable String bmobObject) {
+                    IMApi.LoacalUserManager.getInstance()
+                            .updateUserInfo(
+                                    UserApi.getInstance().getUserInfo().getObjectId()
+                                    , TextUtils.isEmpty(
+                                            UserApi.getInstance().getUserInfo().getRealName())
+                                            ? UserApi.getInstance().getUserInfo().getUsername()
+                                            : UserApi.getInstance().getUserInfo().getRealName()
+                                    , UserApi.getInstance().getUserInfo().getIcoPath()
+                            );
+                    EventBus.getDefault().post(new RefreshEvent());
+                }
+
+                @Override
+                public void onFailure(BmobException bmobException) {
+                    super.onFailure(bmobException);
+                    Toast.makeText(MainActivity.this, bmobException.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
         user = UserApi.getInstance().getUserInfo();
         //获取头布局文件
         headerView = navigationView.getHeaderView(0);
@@ -195,37 +230,24 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initView() {
         DBManager.init(MyApplication.getGlobalContext());
-        //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
-        String objectId = null;
-        try {
-            objectId = UserApi.getInstance().getUserInfo().getObjectId();
-        } catch (NullPointerException e) {
-            Log.e("MainActivity", "objectId is null");
-        }
-        if (StringUtils.isNotEmpty(objectId) &&
-                IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
-            IMApi.IMServiceManager.getInstance().connectService(new BmobCallBack<String>(MainActivity.this, false) {
-                @Override
-                public void onSuccess(@Nullable String bmobObject) {
-                    IMApi.LoacalUserManager.getInstance()
-                            .updateUserInfo(
-                                    UserApi.getInstance().getUserInfo().getObjectId()
-                                    , TextUtils.isEmpty(
-                                            UserApi.getInstance().getUserInfo().getRealName())
-                                            ? UserApi.getInstance().getUserInfo().getUsername()
-                                            : UserApi.getInstance().getUserInfo().getRealName()
-                                    , UserApi.getInstance().getUserInfo().getIcoPath()
-                            );
-                    EventBus.getDefault().post(new RefreshEvent());
-                }
-
-                @Override
-                public void onFailure(BmobException bmobException) {
-                    super.onFailure(bmobException);
-                    Toast.makeText(MainActivity.this, bmobException.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        new UpdateVersion.Builder()
+                //是否为调试模式
+                .isUpdateTest(false)
+                //通知栏显示
+                .isNotificationShow(false)
+                //是否自动安装
+                .isAutoInstall(true)
+                //获取服务器的版本信息
+                .isCheckUpdateCommonUrl("http://bmob-cdn-19421.b0.upaiyun.com/2018/06/20/c3096afd404e4cf28097a3bd68d0e03e.apk")
+                //是否提示更新信息
+                .isHintVersion(false)
+                //是否显示更新dialog
+                .isUpdateDialogShow(true)
+                //是否使用浏览器更新
+                .isUpdateDownloadWithBrowser(false)
+                .build()
+                //执行更新任务
+                .updateVersion(new UpdateVersionClient(this, this.getSupportFragmentManager()));
 
         navigationView.setItemIconTintList(null);
 
