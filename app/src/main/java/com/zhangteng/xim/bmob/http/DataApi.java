@@ -232,8 +232,63 @@ public class DataApi {
         query.order("-updatedAt");
         query.findObjects(new FindListener<Story>() {
             @Override
-            public void done(List<Story> list, BmobException e) {
-                bmobCallBack.onResponse(list, e);
+            public void done(final List<Story> list, BmobException e) {
+                if (e == null) {
+                    //循环获取评论和点赞
+                    if (list.isEmpty()) {
+                        bmobCallBack.onResponse(list, null);
+                    } else {
+                        for (final Story story : list) {
+                            queryRemark(story, new BmobCallBack<List<Remark>>(bmobCallBack.getContext(), false) {
+                                @Override
+                                public void onSuccess(@Nullable List<Remark> bmobObject) {
+                                    story.setRemarks(bmobObject);
+                                    queryLikes(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
+                                        @Override
+                                        public void onSuccess(@Nullable List<Like> bmobObject) {
+                                            story.setLikes(bmobObject);
+                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                bmobCallBack.onResponse(list, null);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(BmobException bmobException) {
+                                            super.onFailure(bmobException);
+                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                bmobCallBack.onResponse(list, null);
+                                            }
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(BmobException bmobException) {
+                                    super.onFailure(bmobException);
+                                    queryLikes(story, new BmobCallBack<List<Like>>(bmobCallBack.getContext(), false) {
+                                        @Override
+                                        public void onSuccess(@Nullable List<Like> bmobObject) {
+                                            story.setLikes(bmobObject);
+                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                bmobCallBack.onResponse(list, null);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(BmobException bmobException) {
+                                            super.onFailure(bmobException);
+                                            if (!list.isEmpty() && story == list.get(list.size() - 1)) {
+                                                bmobCallBack.onResponse(list, null);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    bmobCallBack.onResponse(null, e);
+                }
             }
         });
     }
