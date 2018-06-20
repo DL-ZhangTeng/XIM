@@ -15,7 +15,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.config
     }
@@ -53,8 +53,6 @@ dependencies {
     implementation 'cn.bmob.android:bmob-push:0.8'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    //版本更新
-    implementation 'com.github.duoluo9:updateversionlibrary:1.0.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-5'
     implementation project(':swiperecyclerview')
     implementation 'com.ms-square:expandableTextView:0.1.4'
@@ -65,4 +63,5 @@ dependencies {
     implementation 'cn.yipianfengye.android:zxing-library:2.2'
     implementation project(':croplib')
     implementation project(':permission')
+    implementation project(':updateversion')
 }
