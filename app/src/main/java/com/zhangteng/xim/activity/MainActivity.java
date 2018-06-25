@@ -48,9 +48,13 @@ import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UpdateVersionClient;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.dagger2.component.DaggerMainComponent;
+import com.zhangteng.xim.dagger2.module.MainModule;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.event.CircleEvent;
 import com.zhangteng.xim.event.RefreshEvent;
+import com.zhangteng.xim.mvp.presenter.MainPresenter;
+import com.zhangteng.xim.mvp.view.MainView;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.StringUtils;
 import com.zhangteng.xim.widget.DropDownMenu;
@@ -64,6 +68,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
@@ -73,7 +79,7 @@ import cn.bmob.newim.event.OfflineMessageEvent;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MainView, View.OnClickListener {
     @BindView(R.id.dl_drawerlayout)
     SlidingPaneLayout slidingPaneLayout;
     @BindView(R.id.ll_content)
@@ -86,7 +92,8 @@ public class MainActivity extends BaseActivity {
     RadioGroup radioGroup;
     @BindView(R.id.title_bar)
     TitleBar titleBar;
-
+    @Inject
+    MainPresenter mainPresenter;
     MainAdapter pagerAdapter;
 
     private static int REQUEST_CODE = 200;
@@ -119,7 +126,10 @@ public class MainActivity extends BaseActivity {
         }
     };
     private View headerView;
-    private User user;
+    private TextView username;
+    private CircleImageView avatar;
+    private ImageView code;
+    private String objectId;
 
 
     @Override
@@ -129,112 +139,43 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initInject() {
-
-    }
-
-    @Override
-    protected void initData() {
-        //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
-        String objectId = null;
-        try {
-            objectId = UserApi.getInstance().getUserInfo().getObjectId();
-        } catch (NullPointerException e) {
-            Log.e("MainActivity", "objectId is null");
-        }
-        if (StringUtils.isNotEmpty(objectId) &&
-                IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
-            IMApi.IMServiceManager.getInstance().connectService(new BmobCallBack<String>(MainActivity.this, false) {
-                @Override
-                public void onSuccess(@Nullable String bmobObject) {
-                    IMApi.LoacalUserManager.getInstance()
-                            .updateUserInfo(
-                                    UserApi.getInstance().getUserInfo().getObjectId()
-                                    , TextUtils.isEmpty(
-                                            UserApi.getInstance().getUserInfo().getRealName())
-                                            ? UserApi.getInstance().getUserInfo().getUsername()
-                                            : UserApi.getInstance().getUserInfo().getRealName()
-                                    , UserApi.getInstance().getUserInfo().getIcoPath()
-                            );
-                    EventBus.getDefault().post(new RefreshEvent());
-                }
-
-                @Override
-                public void onFailure(BmobException bmobException) {
-                    super.onFailure(bmobException);
-                    Toast.makeText(MainActivity.this, bmobException.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        user = UserApi.getInstance().getUserInfo();
-        //获取头布局文件
-        headerView = navigationView.getHeaderView(0);
-        headerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initImagePicker(false);
-                ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
-            }
-        });
-        DataApi.getInstance().queryThemePhoto(user, new BmobCallBack<Photo>(this, false) {
-            @Override
-            public void onSuccess(@Nullable Photo bmobObject) {
-                if (bmobObject != null) {
-                    RequestOptions requestOptions = new RequestOptions()
-                            .placeholder(R.mipmap.header_background)
-                            .centerCrop();
-                    Glide.with(MainActivity.this)
-                            .load(bmobObject.getPhoto().getUrl())
-                            .apply(requestOptions)
-                            .into(new SimpleTarget<Drawable>() {
-                                @Override
-                                public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                                    headerView.setBackground(resource);
-                                }
-                            });
-                }
-            }
-        });
-        ImageView code = headerView.findViewById(R.id.iv_code);
-        code.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityHelper.jumpToActivity(MainActivity.this, MyCodeActivity.class, 1);
-            }
-        });
-        TextView name = (TextView) headerView.findViewById(R.id.tv_name);
-        name.setText(user.getUsername());
-        CircleImageView imageView = headerView.findViewById(R.id.iv_header);
-        RequestOptions requestOptions = new RequestOptions()
-                .placeholder(R.mipmap.app_icon)
-                .centerCrop();
-        Glide.with(this)
-                .load(user.getIcoPath())
-                .apply(requestOptions)
-                .into(imageView);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String objectId = user.getObjectId();
-                ActivityHelper.jumpToActivityForParams(MainActivity.this, FriendInfoActivity.class, "objectId", objectId, 1);
-
-            }
-        });
-        TextView state = (TextView) headerView.findViewById(R.id.tv_state);
-        state.setText("");
-
-        RequestOptions requestOptions1 = new RequestOptions()
-                .placeholder(R.mipmap.app_icon)
-                .circleCrop();
-        Glide.with(this)
-                .load(user.getIcoPath())
-                .apply(requestOptions1)
-                .into(titleBar.getLeftBtn());
+        DaggerMainComponent.builder()
+                .mainModule(new MainModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
     protected void initView() {
         DBManager.init(MyApplication.getGlobalContext());
+        //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
+        objectId = null;
+        try {
+            objectId = mainPresenter.getUser().getObjectId();
+        } catch (NullPointerException e) {
+            Log.e("MainActivity", "objectId is null");
+        }
+        if (StringUtils.isNotEmpty(objectId) &&
+                IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
+            mainPresenter.connectService(this);
+        }
+        //获取头布局文件
+        headerView = navigationView.getHeaderView(0);
+        code = headerView.findViewById(R.id.iv_code);
+        username = headerView.findViewById(R.id.tv_name);
+        avatar = headerView.findViewById(R.id.iv_header);
+        TextView state = headerView.findViewById(R.id.tv_state);
+        state.setText("");
+
+        headerView.setOnClickListener(this);
+        code.setOnClickListener(this);
+        avatar.setOnClickListener(this);
+
+        mainPresenter.queryHeaderViewBg(this);
+        mainPresenter.setUsername();
+        mainPresenter.setAvatar();
+        mainPresenter.setTitleBarLeftIcon();
+
         new UpdateVersion.Builder()
                 //是否为调试模式
                 .isUpdateTest(false)
@@ -392,6 +333,11 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void initData() {
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         /**
@@ -442,7 +388,7 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onSuccess(@Nullable String bmobObject) {
                     Photo photo = new Photo();
-                    photo.setUser(user);
+                    photo.setUser(mainPresenter.getUser());
                     photo.setMark("theme");
                     photo.setName(cameraTempFile.getName());
                     BmobFile bmobFile = new BmobFile(cameraTempFile.getName(), null, bmobObject);
@@ -471,6 +417,24 @@ public class MainActivity extends BaseActivity {
             DataApi.getInstance().uploadFile(cameraTempFile.getAbsolutePath(), bmobCallBack);
         } else if (requestCode == Crop.REQUEST_CROP + 1000) {
             EventBus.getDefault().post(new CircleEvent());
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.headerView:
+                initImagePicker(false);
+                ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
+                break;
+            case R.id.iv_code:
+                ActivityHelper.jumpToActivity(MainActivity.this, MyCodeActivity.class, 1);
+                break;
+            case R.id.iv_header:
+                ActivityHelper.jumpToActivityForParams(MainActivity.this, FriendInfoActivity.class, "objectId", objectId, 1);
+                break;
+            default:
+                break;
         }
     }
 
@@ -571,5 +535,50 @@ public class MainActivity extends BaseActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void setHeaderViewBg(Photo photo) {
+        if (photo != null) {
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.mipmap.header_background)
+                    .centerCrop();
+            Glide.with(MainActivity.this)
+                    .load(photo.getPhoto().getUrl())
+                    .apply(requestOptions)
+                    .into(new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                            headerView.setBackground(resource);
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username.setText(username);
+    }
+
+    @Override
+    public void setAvatar(String iconPath) {
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.mipmap.app_icon)
+                .centerCrop();
+        Glide.with(this)
+                .load(iconPath)
+                .apply(requestOptions)
+                .into(avatar);
+    }
+
+    @Override
+    public void setTitleBarLeftIcon(String iconPath) {
+        RequestOptions requestOptions1 = new RequestOptions()
+                .placeholder(R.mipmap.app_icon)
+                .circleCrop();
+        Glide.with(this)
+                .load(iconPath)
+                .apply(requestOptions1)
+                .into(titleBar.getLeftBtn());
     }
 }
