@@ -35,6 +35,7 @@ public class SplashActivity extends AppCompatActivity {
 //        super.setContentView(R.layout.activity_splash);
         AppManager.addActivity(this);
         EventBus.getDefault().register(this);
+        initInject();
         //初始化地区数据库
         if (!AssetsUtils.isExistCityNoDb()) {
             AssetsUtils.initDatabase(AssetsUtils.dbName, MyApplication.getGlobalContext());
@@ -83,7 +84,9 @@ public class SplashActivity extends AppCompatActivity {
                     .excute();
         }
     }
+    protected void initInject() {
 
+    }
     @Override
     protected void onResume() {
         super.onResume();

@@ -40,11 +40,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         AppManager.addActivity(this);
         setContentView(getResourceId());
         ButterKnife.bind(this);
+        initInject();
         initView();
         initData();
     }
 
     protected abstract int getResourceId();
+
+    protected abstract void initInject();
 
     protected abstract void initView();
 

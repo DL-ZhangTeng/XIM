@@ -46,6 +46,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
         initClicked();
 

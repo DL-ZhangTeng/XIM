@@ -71,6 +71,7 @@ public class CommentActivity extends AppCompatActivity {
         AppManager.addActivity(this);
         setContentView(getResourceId());
         ButterKnife.bind(this);
+        initInject();
         initView();
         initData();
     }
@@ -86,6 +87,9 @@ public class CommentActivity extends AppCompatActivity {
 
     }
 
+    protected void initInject() {
+
+    }
 
     protected void initView() {
         Bundle bundle = getBundle();

@@ -128,6 +128,11 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initData() {
         //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
         String objectId = null;

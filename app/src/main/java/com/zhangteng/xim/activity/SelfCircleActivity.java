@@ -91,6 +91,11 @@ public class SelfCircleActivity extends BaseActivity implements CircleAdapter.Re
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
         Intent intent = getIntent();
         if (intent.getExtras().containsKey("user")) {

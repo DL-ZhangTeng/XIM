@@ -1,7 +1,9 @@
 package com.zhangteng.xim.activity;
 
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.TextView;
 
@@ -9,18 +11,35 @@ import com.zhangteng.updateversionlibrary.UpdateVersion;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.bmob.http.UpdateVersionClient;
+import com.zhangteng.xim.dagger2.component.DaggerAboutXimComponent;
+import com.zhangteng.xim.dagger2.component.DaggerBaseComponent;
+import com.zhangteng.xim.dagger2.module.AboutXimModule;
+import com.zhangteng.xim.mvp.presenter.AboutXimPresenter;
+import com.zhangteng.xim.mvp.view.AboutXimView;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 
-public class AboutXimActivity extends BaseActivity {
+public class AboutXimActivity extends BaseActivity implements View.OnClickListener, AboutXimView {
     @BindView(R.id.about_version)
     TextView version;
     @BindView(R.id.about_version_update)
     TextView versionUpdate;
+    @Inject
+    AboutXimPresenter presenter;
 
     @Override
     protected int getResourceId() {
         return R.layout.activity_about_xim;
+    }
+
+    @Override
+    protected void initInject() {
+        DaggerAboutXimComponent.builder()
+                .aboutXimModule(new AboutXimModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -32,33 +51,32 @@ public class AboutXimActivity extends BaseActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        versionUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new UpdateVersion.Builder()
-                        //是否为调试模式
-                        .isUpdateTest(false)
-                        //通知栏显示
-                        .isNotificationShow(false)
-                        //是否自动安装
-                        .isAutoInstall(true)
-                        //获取服务器的版本信息
-                        .isCheckUpdateCommonUrl("http://bmob-cdn-19421.b0.upaiyun.com/2018/06/20/c3096afd404e4cf28097a3bd68d0e03e.apk")
-                        //是否提示更新信息
-                        .isHintVersion(true)
-                        //是否显示更新dialog
-                        .isUpdateDialogShow(true)
-                        //是否使用浏览器更新
-                        .isUpdateDownloadWithBrowser(false)
-                        .build()
-                        //执行更新任务
-                        .updateVersion(new UpdateVersionClient(AboutXimActivity.this, AboutXimActivity.this.getSupportFragmentManager()));
-            }
-        });
+        versionUpdate.setOnClickListener(this);
     }
 
     @Override
     protected void initData() {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.about_version_update:
+                presenter.updateVersion();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public Context getViewContext() {
+        return this;
+    }
+
+    @Override
+    public FragmentManager getViewFragmentManger() {
+        return getSupportFragmentManager();
     }
 }

@@ -37,6 +37,11 @@ public class MyCodeActivity extends BaseActivity {
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
 
     }

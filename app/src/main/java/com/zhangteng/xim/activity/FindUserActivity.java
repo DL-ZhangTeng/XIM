@@ -43,6 +43,11 @@ public class FindUserActivity extends BaseActivity {
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
         users = new ArrayList<>();
         findUserAdapter = new FindUserAdapter(this, users);

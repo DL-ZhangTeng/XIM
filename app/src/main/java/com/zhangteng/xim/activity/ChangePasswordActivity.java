@@ -45,6 +45,11 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     public void initView() {
         initClicked();
     }

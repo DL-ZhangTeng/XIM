@@ -96,6 +96,7 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
         AppManager.addActivity(this);
         setContentView(getResourceId());
         ButterKnife.bind(this);
+        initInject();
         initView();
         initData();
     }
@@ -115,6 +116,9 @@ public class SendActivity extends AppCompatActivity implements MessageListHandle
         return R.layout.activity_send;
     }
 
+    protected void initInject() {
+
+    }
 
     protected void initView() {
         data = new ArrayList<>();

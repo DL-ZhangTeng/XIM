@@ -80,6 +80,11 @@ public class ShareActivity extends BaseActivity {
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
         user = UserApi.getInstance().getUserInfo();
         Bundle bundle = getIntent().getExtras();

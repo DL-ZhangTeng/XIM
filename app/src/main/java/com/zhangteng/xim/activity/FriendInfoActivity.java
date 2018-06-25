@@ -72,6 +72,11 @@ public class FriendInfoActivity extends BaseActivity {
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
 
     }

@@ -46,6 +46,11 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
         initClicked();
     }

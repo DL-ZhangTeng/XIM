@@ -46,6 +46,11 @@ public class NewFriendActivity extends BaseActivity {
     }
 
     @Override
+    protected void initInject() {
+
+    }
+
+    @Override
     protected void initView() {
         Intent intent = getIntent();
         if (intent.hasExtra("conversation")) {
