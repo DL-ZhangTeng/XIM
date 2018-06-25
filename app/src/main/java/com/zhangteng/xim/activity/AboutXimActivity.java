@@ -7,12 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zhangteng.updateversionlibrary.UpdateVersion;
-import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.R;
-import com.zhangteng.xim.bmob.http.UpdateVersionClient;
+import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.dagger2.component.DaggerAboutXimComponent;
-import com.zhangteng.xim.dagger2.component.DaggerBaseComponent;
 import com.zhangteng.xim.dagger2.module.AboutXimModule;
 import com.zhangteng.xim.mvp.presenter.AboutXimPresenter;
 import com.zhangteng.xim.mvp.view.AboutXimView;

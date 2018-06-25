@@ -1,6 +1,7 @@
 package com.zhangteng.xim.dagger2.component;
 
 import com.zhangteng.xim.activity.AboutXimActivity;
+import com.zhangteng.xim.dagger2.base.BaseComponent;
 import com.zhangteng.xim.dagger2.module.AboutXimModule;
 
 import dagger.Component;

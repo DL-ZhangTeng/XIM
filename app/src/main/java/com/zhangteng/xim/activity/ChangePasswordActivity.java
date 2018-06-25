@@ -15,12 +15,18 @@ import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.LoginParams;
+import com.zhangteng.xim.dagger2.component.DaggerChangePasswordComponent;
+import com.zhangteng.xim.dagger2.module.ChangePasswordModule;
+import com.zhangteng.xim.mvp.presenter.ChangePasswordPresenter;
+import com.zhangteng.xim.mvp.view.ChangePasswordView;
 import com.zhangteng.xim.utils.AppManager;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import cn.bmob.v3.exception.BmobException;
 
-public class ChangePasswordActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener {
+public class ChangePasswordActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener, ChangePasswordView {
 
     @BindView(R.id.my_change_pwd_username)
     EditText username;
@@ -38,6 +44,8 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     Button code_get;
     @BindView(R.id.change_pwd)
     Button change_pwd;
+    @Inject
+    ChangePasswordPresenter changePasswordPresenter;
 
     @Override
     protected int getResourceId() {
@@ -46,7 +54,10 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
 
     @Override
     protected void initInject() {
-
+        DaggerChangePasswordComponent.builder()
+                .changePasswordModule(new ChangePasswordModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -74,47 +85,20 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.my_change_pwd_username_clear) {
-            username.setText("");
+            changePasswordPresenter.clearUsername();
         } else if (i == R.id.my_change_pwd_pwd_clear) {
-            password.setText("");
+            changePasswordPresenter.clearPassword();
         } else if (i == R.id.my_change_pwd_code_clear) {
-            code.setText("");
+            changePasswordPresenter.clearCode();
         } else if (i == R.id.my_change_pwd_code_get) {
 
         } else if (i == R.id.change_pwd) {
-            if (TextUtils.isEmpty(username.getText().toString()) || TextUtils.isEmpty(password.getText().toString())) {
-                Toast.makeText(this, "username or password is null", Toast.LENGTH_SHORT).show();
-            }
-            LoginParams loginParams = new LoginParams();
-            loginParams.setName(username.getText().toString());
-            loginParams.setPassword(code.getText().toString());
-            UserApi.getInstance().login(loginParams, new BmobCallBack<User>(this, false) {
-                @Override
-                public void onSuccess(@Nullable User bmobObject) {
-                    UserApi.getInstance().resetPassword(code.getText().toString(), password.getText().toString(), new BmobCallBack(ChangePasswordActivity.this, true) {
-                        @Override
-                        public void onSuccess(@Nullable Object bmobObject) {
-                            setResultFinish();
-                        }
-
-                        @Override
-                        public void onFailure(BmobException bmobException) {
-                            super.onFailure(bmobException);
-                            Toast.makeText(ChangePasswordActivity.this, bmobException.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(BmobException bmobException) {
-                    super.onFailure(bmobException);
-                    Toast.makeText(ChangePasswordActivity.this, bmobException.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            changePasswordPresenter.changePwd(this);
         }
     }
 
-    private void setResultFinish() {
+    @Override
+    public void setResultFinish() {
         Intent intent = new Intent();
         intent.putExtra("username", username.getText().toString());
         intent.putExtra("password", password.getText().toString());
@@ -148,4 +132,36 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
 
         }
     }
+
+    @Override
+    public void setUserName(String userName) {
+        this.username.setText(userName);
+    }
+
+    @Override
+    public String getUserName() {
+        return username.getText().toString();
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.password.setText(password);
+    }
+
+    @Override
+    public String getPassword() {
+        return password.getText().toString();
+    }
+
+    @Override
+    public void setCode(String code) {
+        this.code.setText(code);
+    }
+
+    @Override
+    public String getCode() {
+        return code.getText().toString();
+    }
+
+
 }
