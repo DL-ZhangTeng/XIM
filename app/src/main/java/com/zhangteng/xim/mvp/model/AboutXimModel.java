@@ -5,11 +5,12 @@ import android.support.v4.app.FragmentManager;
 
 import com.zhangteng.updateversionlibrary.UpdateVersion;
 import com.zhangteng.xim.bmob.http.UpdateVersionClient;
+import com.zhangteng.xim.dagger2.module.BaseModule;
 
 /**
  * Created by swing on 2018/6/25.
  */
-public class AboutXimModel {
+public class AboutXimModel extends BaseModule{
 
     public void updateVersion(Context context, FragmentManager fragmentManager) {
         new UpdateVersion.Builder()
