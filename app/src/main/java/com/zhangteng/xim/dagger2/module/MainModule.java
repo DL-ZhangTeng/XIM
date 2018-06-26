@@ -1,8 +1,10 @@
 package com.zhangteng.xim.dagger2.module;
 
 import com.zhangteng.xim.activity.MainActivity;
+import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.mvp.model.MainModel;
 import com.zhangteng.xim.mvp.presenter.MainPresenter;
+import com.zhangteng.xim.widget.DropDownMenu;
 
 import dagger.Module;
 import dagger.Provides;
@@ -27,5 +29,15 @@ public class MainModule {
     @Provides
     MainModel MainModel() {
         return model;
+    }
+
+    @Provides
+    MainAdapter MainAdapter() {
+        return new MainAdapter(activity.getSupportFragmentManager());
+    }
+
+    @Provides
+    DropDownMenu DropDownMenu() {
+        return new DropDownMenu(activity);
     }
 }

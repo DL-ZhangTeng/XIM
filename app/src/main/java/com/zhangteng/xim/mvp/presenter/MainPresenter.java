@@ -1,12 +1,16 @@
 package com.zhangteng.xim.mvp.presenter;
 
 import android.content.Context;
+import android.net.Uri;
+import android.support.v4.app.FragmentManager;
 
 import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.mvp.base.BasePresenter;
-import com.zhangteng.xim.mvp.view.MainView;
 import com.zhangteng.xim.mvp.model.MainModel;
+import com.zhangteng.xim.mvp.view.MainView;
+
+import java.io.File;
 
 
 public class MainPresenter extends BasePresenter {
@@ -53,5 +57,30 @@ public class MainPresenter extends BasePresenter {
 
     public void setTitleBarLeftIcon() {
         view.setTitleBarLeftIcon(model.getUser().getIcoPath());
+    }
+
+    public void updateVersion(Context context, FragmentManager fragmentManager) {
+        model.updateVersion(context, fragmentManager);
+    }
+
+    public void sendAddFriendMessage(Context context, String result) {
+        model.sendAddFriendMessage(context, result, this);
+    }
+
+    public void uploadThemePhoto(Context context) {
+        Photo photo = new Photo();
+        photo.setUser(getUser());
+        photo.setMark("theme");
+        photo.setName(getCameraTempFile().getName());
+        model.uploadThemePhoto(context, photo, this);
+    }
+
+
+    public File getCameraTempFile() {
+        return view.getCameraTempFile();
+    }
+
+    public Uri getBgPath() {
+        return view.getBgPath();
     }
 }

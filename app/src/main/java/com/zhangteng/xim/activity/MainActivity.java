@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SlidingPaneLayout;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -35,19 +34,12 @@ import com.zhangteng.imagepicker.config.ImagePickerOpen;
 import com.zhangteng.imagepicker.imageloader.GlideImageLoader;
 import com.zhangteng.imagepicker.utils.FileUtils;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
-import com.zhangteng.updateversionlibrary.UpdateVersion;
-import com.zhangteng.updateversionlibrary.http.CommonHttpClient;
 import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
-import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.Photo;
-import com.zhangteng.xim.bmob.entity.User;
-import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.IMApi;
-import com.zhangteng.xim.bmob.http.UpdateVersionClient;
-import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.dagger2.component.DaggerMainComponent;
 import com.zhangteng.xim.dagger2.module.MainModule;
 import com.zhangteng.xim.db.DBManager;
@@ -71,15 +63,15 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import cn.bmob.newim.bean.BmobIMMessage;
-import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.event.OfflineMessageEvent;
-import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.exception.BmobException;
 
-public class MainActivity extends BaseActivity implements MainView, View.OnClickListener {
+public class MainActivity extends BaseActivity implements MainView,
+        View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener,
+        SlidingPaneLayout.PanelSlideListener,
+        RadioGroup.OnCheckedChangeListener {
     @BindView(R.id.dl_drawerlayout)
     SlidingPaneLayout slidingPaneLayout;
     @BindView(R.id.ll_content)
@@ -94,12 +86,14 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
     TitleBar titleBar;
     @Inject
     MainPresenter mainPresenter;
+    @Inject
     MainAdapter pagerAdapter;
 
     private static int REQUEST_CODE = 200;
 
     private Uri bgPath;
     private List<String> path = new ArrayList<>();
+    @Inject
     private DropDownMenu dropDownMenu;
     private ImagePickerConfig imagePickerConfig;
     private File cameraTempFile;
@@ -159,6 +153,7 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
                 IMApi.IMServiceManager.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
             mainPresenter.connectService(this);
         }
+        initTitleBar();
         //获取头布局文件
         headerView = navigationView.getHeaderView(0);
         code = headerView.findViewById(R.id.iv_code);
@@ -167,168 +162,24 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
         TextView state = headerView.findViewById(R.id.tv_state);
         state.setText("");
 
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.setCurrentItem(0, false);
+        ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
+
+        navigationView.setItemIconTintList(null);
         headerView.setOnClickListener(this);
         code.setOnClickListener(this);
         avatar.setOnClickListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
+        slidingPaneLayout.setPanelSlideListener(this);
+        dropDownMenu.setScanOnClickListener(this);
+        radioGroup.setOnCheckedChangeListener(this);
 
         mainPresenter.queryHeaderViewBg(this);
         mainPresenter.setUsername();
         mainPresenter.setAvatar();
         mainPresenter.setTitleBarLeftIcon();
-
-        new UpdateVersion.Builder()
-                //是否为调试模式
-                .isUpdateTest(false)
-                //通知栏显示
-                .isNotificationShow(false)
-                //是否自动安装
-                .isAutoInstall(true)
-                //获取服务器的版本信息
-                .isCheckUpdateCommonUrl("http://bmob-cdn-19421.b0.upaiyun.com/2018/06/20/c3096afd404e4cf28097a3bd68d0e03e.apk")
-                //是否提示更新信息
-                .isHintVersion(false)
-                //是否显示更新dialog
-                .isUpdateDialogShow(true)
-                //是否使用浏览器更新
-                .isUpdateDownloadWithBrowser(false)
-                .build()
-                //执行更新任务
-                .updateVersion(new UpdateVersionClient(this, this.getSupportFragmentManager()));
-
-        navigationView.setItemIconTintList(null);
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_item_collection:
-                        break;
-                    case R.id.navigation_item_album:
-                        break;
-                    case R.id.navigation_item_file:
-                        break;
-                    case R.id.navigation_item_setting:
-                        ActivityHelper.jumpToActivity(MainActivity.this, SettingActivity.class, 1);
-                        break;
-                }
-                return true;
-            }
-        });
-        slidingPaneLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-                int width = panel.getWidth();
-                llContent.setAlpha(1);
-                navigationView.setTranslationX((float) (-0.618 * width * (1 - slideOffset)));
-            }
-
-            @Override
-            public void onPanelOpened(View panel) {
-
-            }
-
-            @Override
-            public void onPanelClosed(View panel) {
-
-            }
-        });
-        pagerAdapter = new MainAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.setCurrentItem(0, false);
-        ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
-        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(0)));
-        titleBar.setLeftClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!slidingPaneLayout.isOpen()) {
-                    slidingPaneLayout.openPane();
-                }
-            }
-        });
-        dropDownMenu = new DropDownMenu(MainActivity.this);
-        switch (viewPager.getCurrentItem()) {
-            case 0:
-                titleBar.setRightClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dropDownMenu.showAsDropDown(titleBar, titleBar.getWidth(), 1);
-                    }
-                });
-                break;
-            case 1:
-                titleBar.setRightClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ActivityHelper.jumpToActivity(MainActivity.this, FindUserActivity.class, 1);
-                    }
-                });
-                break;
-            case 2:
-                titleBar.setRightClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        initImagePicker(true);
-                        ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
-                    }
-                });
-                break;
-        }
-        dropDownMenu.setScanOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch ((i - 1) % 3) {
-                    case 0:
-                        viewPager.setCurrentItem(0, false);
-                        titleBar.setRightText("");
-                        titleBar.setRightIcon(R.mipmap.add);
-                        titleBar.setRightShow(true);
-                        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(0)));
-                        titleBar.setRightClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (dropDownMenu == null)
-                                    dropDownMenu = new DropDownMenu(MainActivity.this);
-                                dropDownMenu.showAsDropDown(titleBar, titleBar.getWidth(), 1);
-                            }
-                        });
-                        break;
-                    case 1:
-                        titleBar.setRightText("添加");
-                        titleBar.setRightShow(false);
-                        viewPager.setCurrentItem(1, false);
-                        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(1)));
-                        titleBar.setRightClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                ActivityHelper.jumpToActivity(MainActivity.this, FindUserActivity.class, 1);
-                            }
-                        });
-                        break;
-                    case 2:
-                        titleBar.setRightText("");
-                        titleBar.setRightIcon(R.mipmap.takept);
-                        titleBar.setRightShow(true);
-                        viewPager.setCurrentItem(2, false);
-                        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(2)));
-                        titleBar.setRightClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                initImagePicker(true);
-                                ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
-                            }
-                        });
-                        break;
-                }
-
-            }
-        });
+        mainPresenter.updateVersion(this, getSupportFragmentManager());
 
     }
 
@@ -352,69 +203,13 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
                 }
                 if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
                     String result = bundle.getString(CodeUtils.RESULT_STRING);
-                    final BmobIMUserInfo userInfo = new BmobIMUserInfo();
-                    UserApi.getInstance().queryUser(result, new BmobCallBack<User>(this, false) {
-                        @Override
-                        public void onSuccess(@Nullable User bmobObject) {
-                            userInfo.setName(bmobObject.getUsername());
-                            userInfo.setAvatar(bmobObject.getIcoPath());
-                            userInfo.setUserId(bmobObject.getObjectId());
-                            IMApi.MassageSender.getInstance().sendAddFriendMessage(userInfo, new BmobCallBack<BmobIMMessage>(MainActivity.this, false) {
-                                @Override
-                                public void onSuccess(@Nullable BmobIMMessage bmobObject) {
-                                    EventBus.getDefault().post(new RefreshEvent());
-                                }
-
-                                @Override
-                                public void onFailure(BmobException bmobException) {
-                                    super.onFailure(bmobException);
-                                    Toast.makeText(MainActivity.this, "发送请求失败", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(BmobException bmobException) {
-                            super.onFailure(bmobException);
-                            Toast.makeText(MainActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    mainPresenter.sendAddFriendMessage(this, result);
                 } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
-                    Toast.makeText(MainActivity.this, "解析二维码失败", Toast.LENGTH_LONG).show();
+                    showToast("解析二维码失败");
                 }
             }
         } else if (requestCode == Crop.REQUEST_CROP) {
-            BmobCallBack<String> bmobCallBack = new BmobCallBack<String>(this, true) {
-                @Override
-                public void onSuccess(@Nullable String bmobObject) {
-                    Photo photo = new Photo();
-                    photo.setUser(mainPresenter.getUser());
-                    photo.setMark("theme");
-                    photo.setName(cameraTempFile.getName());
-                    BmobFile bmobFile = new BmobFile(cameraTempFile.getName(), null, bmobObject);
-                    photo.setPhoto(bmobFile);
-                    DataApi.getInstance().add(photo, new BmobCallBack<String>(MainActivity.this, false) {
-                        @Override
-                        public void onSuccess(@Nullable String bmobObject) {
-
-                        }
-                    });
-                    RequestOptions requestOptions = new RequestOptions()
-                            .placeholder(R.mipmap.header_background)
-                            .centerCrop();
-                    Glide.with(MainActivity.this)
-                            .load(bgPath)
-                            .apply(requestOptions)
-                            .into(new SimpleTarget<Drawable>() {
-                                @Override
-                                public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                                    headerView.setBackground(resource);
-                                }
-                            });
-                }
-            };
-            bmobCallBack.onStart();
-            DataApi.getInstance().uploadFile(cameraTempFile.getAbsolutePath(), bmobCallBack);
+            mainPresenter.uploadThemePhoto(this);
         } else if (requestCode == Crop.REQUEST_CROP + 1000) {
             EventBus.getDefault().post(new CircleEvent());
         }
@@ -423,6 +218,11 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.title_bar:
+                if (!slidingPaneLayout.isOpen()) {
+                    slidingPaneLayout.openPane();
+                }
+                break;
             case R.id.headerView:
                 initImagePicker(false);
                 ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
@@ -433,7 +233,12 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
             case R.id.iv_header:
                 ActivityHelper.jumpToActivityForParams(MainActivity.this, FriendInfoActivity.class, "objectId", objectId, 1);
                 break;
+            case R.id.menu_drop_down_scan:
+                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
+                break;
             default:
+
                 break;
         }
     }
@@ -443,7 +248,6 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
      *
      * @param event
      */
-    //TODO 消息接收：8.3、通知有在线消息接收
     @Subscribe
     public void onEventMainThread(MessageEvent event) {
         checkRedPoint();
@@ -454,7 +258,6 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
      *
      * @param event
      */
-    //TODO 消息接收：8.4、通知有离线消息接收
     @Subscribe
     public void onEventMainThread(OfflineMessageEvent event) {
         checkRedPoint();
@@ -465,15 +268,11 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
      *
      * @param event
      */
-    //TODO 消息接收：8.5、通知有自定义消息接收
     @Subscribe
     public void onEventMainThread(RefreshEvent event) {
         checkRedPoint();
     }
 
-    /**
-     *
-     */
     private void checkRedPoint() {
         //TODO
         long count = IMApi.ConversationManager.getInstance().getAllUnReadCount();
@@ -580,5 +379,127 @@ public class MainActivity extends BaseActivity implements MainView, View.OnClick
                 .load(iconPath)
                 .apply(requestOptions1)
                 .into(titleBar.getLeftBtn());
+    }
+
+    @Override
+    public File getCameraTempFile() {
+        return cameraTempFile;
+    }
+
+    @Override
+    public Uri getBgPath() {
+        return bgPath;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_item_collection:
+                break;
+            case R.id.navigation_item_album:
+                break;
+            case R.id.navigation_item_file:
+                break;
+            case R.id.navigation_item_setting:
+                ActivityHelper.jumpToActivity(MainActivity.this, SettingActivity.class, 1);
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onPanelSlide(@NonNull View panel, float slideOffset) {
+        int width = panel.getWidth();
+        llContent.setAlpha(1);
+        navigationView.setTranslationX((float) (-0.618 * width * (1 - slideOffset)));
+    }
+
+    @Override
+    public void onPanelOpened(@NonNull View panel) {
+
+    }
+
+    @Override
+    public void onPanelClosed(@NonNull View panel) {
+
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int i) {
+        switch ((i - 1) % 3) {
+            case 0:
+                viewPager.setCurrentItem(0, false);
+                titleBar.setRightText("");
+                titleBar.setRightIcon(R.mipmap.add);
+                titleBar.setRightShow(true);
+                titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(0)));
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (dropDownMenu == null)
+                            dropDownMenu = new DropDownMenu(MainActivity.this);
+                        dropDownMenu.showAsDropDown(titleBar, titleBar.getWidth(), 1);
+                    }
+                });
+                break;
+            case 1:
+                titleBar.setRightText("添加");
+                titleBar.setRightShow(false);
+                viewPager.setCurrentItem(1, false);
+                titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(1)));
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ActivityHelper.jumpToActivity(MainActivity.this, FindUserActivity.class, 1);
+                    }
+                });
+                break;
+            case 2:
+                titleBar.setRightText("");
+                titleBar.setRightIcon(R.mipmap.takept);
+                titleBar.setRightShow(true);
+                viewPager.setCurrentItem(2, false);
+                titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(2)));
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        initImagePicker(true);
+                        ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
+                    }
+                });
+                break;
+        }
+    }
+
+    private void initTitleBar() {
+        titleBar.setTitleText(String.valueOf(pagerAdapter.getPageTitle(0)));
+        titleBar.setLeftClickListener(this);
+        switch (viewPager.getCurrentItem()) {
+            case 0:
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dropDownMenu.showAsDropDown(titleBar, titleBar.getWidth(), 1);
+                    }
+                });
+                break;
+            case 1:
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ActivityHelper.jumpToActivity(MainActivity.this, FindUserActivity.class, 1);
+                    }
+                });
+                break;
+            case 2:
+                titleBar.setRightClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        initImagePicker(true);
+                        ImagePickerOpen.getInstance().setImagePickerConfig(imagePickerConfig).open(MainActivity.this);
+                    }
+                });
+                break;
+        }
     }
 }

@@ -1,7 +1,11 @@
 package com.zhangteng.xim.mvp.view;
 
+import android.net.Uri;
+
 import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.mvp.base.BaseView;
+
+import java.io.File;
 
 
 public interface MainView extends BaseView {
@@ -14,4 +18,8 @@ public interface MainView extends BaseView {
     void setAvatar(String iconPath);
 
     void setTitleBarLeftIcon(String iconPath);
+
+    File getCameraTempFile();
+
+    Uri getBgPath();
 }
