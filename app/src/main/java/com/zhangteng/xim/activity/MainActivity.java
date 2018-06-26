@@ -220,7 +220,7 @@ public class MainActivity extends BaseActivity implements MainView,
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.title_bar:
+            case R.id.titlebar_left:
                 if (!slidingPaneLayout.isOpen()) {
                     slidingPaneLayout.openPane();
                 }
