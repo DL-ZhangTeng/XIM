@@ -2,19 +2,13 @@ package com.zhangteng.xim.activity;
 
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
-import com.zhangteng.xim.bmob.callback.BmobCallBack;
-import com.zhangteng.xim.bmob.entity.User;
-import com.zhangteng.xim.bmob.http.UserApi;
-import com.zhangteng.xim.bmob.params.LoginParams;
+import com.zhangteng.xim.dagger2.base.DaggerBaseComponent;
 import com.zhangteng.xim.dagger2.component.DaggerChangePasswordComponent;
 import com.zhangteng.xim.dagger2.module.ChangePasswordModule;
 import com.zhangteng.xim.mvp.presenter.ChangePasswordPresenter;
@@ -24,7 +18,6 @@ import com.zhangteng.xim.utils.AppManager;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import cn.bmob.v3.exception.BmobException;
 
 public class ChangePasswordActivity extends BaseActivity implements View.OnClickListener, View.OnFocusChangeListener, ChangePasswordView {
 
@@ -56,6 +49,7 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     protected void initInject() {
         DaggerChangePasswordComponent.builder()
                 .changePasswordModule(new ChangePasswordModule(this))
+                .baseComponent(DaggerBaseComponent.create())
                 .build()
                 .inject(this);
     }

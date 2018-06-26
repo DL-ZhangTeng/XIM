@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
+import com.zhangteng.xim.dagger2.base.DaggerBaseComponent;
 import com.zhangteng.xim.dagger2.component.DaggerAboutXimComponent;
 import com.zhangteng.xim.dagger2.module.AboutXimModule;
 import com.zhangteng.xim.mvp.presenter.AboutXimPresenter;
@@ -35,6 +36,7 @@ public class AboutXimActivity extends BaseActivity implements View.OnClickListen
     protected void initInject() {
         DaggerAboutXimComponent.builder()
                 .aboutXimModule(new AboutXimModule(this))
+                .baseComponent(DaggerBaseComponent.create())
                 .build()
                 .inject(this);
     }

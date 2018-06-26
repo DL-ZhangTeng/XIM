@@ -40,6 +40,7 @@ import com.zhangteng.xim.adapter.MainAdapter;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.entity.Photo;
 import com.zhangteng.xim.bmob.http.IMApi;
+import com.zhangteng.xim.dagger2.base.DaggerBaseComponent;
 import com.zhangteng.xim.dagger2.component.DaggerMainComponent;
 import com.zhangteng.xim.dagger2.module.MainModule;
 import com.zhangteng.xim.db.DBManager;
@@ -94,7 +95,7 @@ public class MainActivity extends BaseActivity implements MainView,
     private Uri bgPath;
     private List<String> path = new ArrayList<>();
     @Inject
-    private DropDownMenu dropDownMenu;
+    DropDownMenu dropDownMenu;
     private ImagePickerConfig imagePickerConfig;
     private File cameraTempFile;
     private IHandlerCallBack iHandlerCallBack = new HandlerCallBack() {
@@ -135,6 +136,7 @@ public class MainActivity extends BaseActivity implements MainView,
     protected void initInject() {
         DaggerMainComponent.builder()
                 .mainModule(new MainModule(this))
+                .baseComponent(DaggerBaseComponent.create())
                 .build()
                 .inject(this);
     }
