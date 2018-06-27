@@ -31,9 +31,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bmob.v3.exception.BmobException;
 
 public class CommentActivity extends AppCompatActivity {
     @BindView(R.id.send)
@@ -118,9 +120,23 @@ public class CommentActivity extends AppCompatActivity {
                         if (story.getRemarks() == null) {
                             story.setRemarks(new ArrayList<Remark>());
                         }
-                        story.getRemarks().add(nremark);
-                        EventBus.getDefault().post(new CircleCommentEvent(story, position));
-                        goBack();
+                        DataApi.getInstance().queryRemark(story, new BmobCallBack<List<Remark>>(CommentActivity.this, false) {
+                            @Override
+                            public void onSuccess(@Nullable List<Remark> bmobObject) {
+                                story.setRemarks(bmobObject);
+                                EventBus.getDefault().post(new CircleCommentEvent(story, position));
+                                goBack();
+                            }
+
+                            @Override
+                            public void onFailure(BmobException bmobException) {
+                                super.onFailure(bmobException);
+                                story.getRemarks().add(nremark);
+                                EventBus.getDefault().post(new CircleCommentEvent(story, position));
+                                goBack();
+                            }
+                        });
+
                     }
                 });
             }
