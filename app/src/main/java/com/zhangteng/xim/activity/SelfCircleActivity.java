@@ -34,6 +34,7 @@ import com.zhangteng.xim.adapter.CircleAdapter;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.Photo;
+import com.zhangteng.xim.bmob.entity.Remark;
 import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
@@ -300,6 +301,15 @@ public class SelfCircleActivity extends BaseActivity implements CircleAdapter.Re
     public void onComment(int position, Story story) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("story", story);
+        bundle.putInt("position", position);
+        ActivityHelper.jumpToActivityWithBundle(this, CommentActivity.class, bundle, 0);
+    }
+
+    @Override
+    public void onComment(int position, Story story, Remark remark) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("story", story);
+        bundle.putSerializable("remark", remark);
         bundle.putInt("position", position);
         ActivityHelper.jumpToActivityWithBundle(this, CommentActivity.class, bundle, 0);
     }

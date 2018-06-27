@@ -7,6 +7,9 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +35,7 @@ import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.utils.DensityUtils;
 import com.zhangteng.xim.utils.StringUtils;
 import com.zhangteng.xim.widget.RemarkMenu;
+import com.zhangteng.xim.widget.UnLineClickableSpan;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,7 +157,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
         initLikeAndComment(holder, position);
     }
 
-    private void initLikeAndComment(RecyclerView.ViewHolder holder, int position) {
+    private void initLikeAndComment(RecyclerView.ViewHolder holder, final int position) {
         ((ItemViewHolder) holder).constraintLayout.setVisibility(View.GONE);
         //初始化点赞
         if (data.get(position).getLikes() != null && !data.get(position).getLikes().isEmpty()) {
@@ -174,8 +178,9 @@ public class CircleAdapter extends BaseAdapter<Story> {
         }
         //初始化评论
         if (data.get(position).getRemarks() != null && !data.get(position).getRemarks().isEmpty()) {
-            StringBuilder stringBuffer1 = new StringBuilder();
-            for (Remark remark1 : data.get(position).getRemarks()) {
+            SpannableStringBuilder stringBuffer1 = new SpannableStringBuilder();
+            for (final Remark remark1 : data.get(position).getRemarks()) {
+                int start = stringBuffer1.length();
                 if (remark1.getRemark() != null) {
                     stringBuffer1.append(remark1.getUser().getUsername());
                     if (remark1.getRemark().getUser().getObjectId() != null) {
@@ -188,8 +193,20 @@ public class CircleAdapter extends BaseAdapter<Story> {
                     stringBuffer1.append(remark1.getUser().getUsername());
                     stringBuffer1.append(" : ").append(remark1.getContent()).append("\n");
                 }
+                UnLineClickableSpan clickableSpan = new UnLineClickableSpan(context) {
+                    @Override
+                    public void onClick(View view) {
+                        if (commentStory != null) {
+                            commentStory.onComment(position, data.get(position), remark1);
+                        }
+                    }
+                };
+                int end = stringBuffer1.length();
+                stringBuffer1.setSpan(clickableSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
-            ((ItemViewHolder) holder).comment.setText(stringBuffer1.toString());
+            ((ItemViewHolder) holder).comment.setMovementMethod(LinkMovementMethod.getInstance());
+            ((ItemViewHolder) holder).comment.setText(stringBuffer1);
+            ((ItemViewHolder) holder).comment.setHighlightColor(context.getResources().getColor(android.R.color.transparent));
             if (StringUtils.isEmpty(stringBuffer1.toString())) {
                 ((ItemViewHolder) holder).comment.setVisibility(View.GONE);
             } else {
@@ -207,6 +224,8 @@ public class CircleAdapter extends BaseAdapter<Story> {
 
     public interface CommentStory {
         void onComment(int position, Story story);
+
+        void onComment(int position, Story story, Remark remark);
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
