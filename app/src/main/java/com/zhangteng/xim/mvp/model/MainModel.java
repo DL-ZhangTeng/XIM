@@ -120,12 +120,12 @@ public class MainModel extends BaseModel {
             @Override
             public void onSuccess(@Nullable String bmobObject) {
                 BmobFile bmobFile = new BmobFile(photo.getName(), null, bmobObject);
-                bmobFile.setUrl(mainPresenter.getBgPath().getPath());
+                bmobFile.setUrl(bmobObject);
                 photo.setPhoto(bmobFile);
                 DataApi.getInstance().add(photo, new BmobCallBack<String>(context, false) {
                     @Override
                     public void onSuccess(@Nullable String bmobObject) {
-
+                        int a = 0;
                     }
                 });
                 mainPresenter.setHeaderViewBg(photo);
