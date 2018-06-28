@@ -23,6 +23,7 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.zhangteng.swiperecyclerview.adapter.BaseAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
+import com.zhangteng.xim.activity.FriendInfoActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
 import com.zhangteng.xim.bmob.entity.Like;
 import com.zhangteng.xim.bmob.entity.Remark;
@@ -32,6 +33,7 @@ import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
+import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.DensityUtils;
 import com.zhangteng.xim.utils.StringUtils;
 import com.zhangteng.xim.widget.RemarkMenu;
@@ -99,6 +101,20 @@ public class CircleAdapter extends BaseAdapter<Story> {
                 .load(story.getUser().getIcoPath())
                 .apply(requestOptions)
                 .into(((ItemViewHolder) holder).circleImageView);
+        ((ItemViewHolder) holder).circleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String objectId = data.get(position).getUser().getObjectId();
+                ActivityHelper.jumpToActivityForParams(context, FriendInfoActivity.class, "objectId", objectId, 1);
+            }
+        });
+        ((ItemViewHolder) holder).name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String objectId = data.get(position).getUser().getObjectId();
+                ActivityHelper.jumpToActivityForParams(context, FriendInfoActivity.class, "objectId", objectId, 1);
+            }
+        });
         ((ItemViewHolder) holder).remark.setOnClickListener(new View.OnClickListener() {
             Like like;
 
