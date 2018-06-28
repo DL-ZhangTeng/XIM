@@ -57,6 +57,7 @@ public class SettingActivity extends BaseActivity {
             case R.id.setting_change:
                 break;
             case R.id.setting_feedback:
+                ActivityHelper.jumpToActivity(SettingActivity.this, FeedbackActivity.class, 1);
                 break;
             default:
                 break;

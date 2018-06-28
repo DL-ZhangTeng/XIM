@@ -61,6 +61,7 @@
         <activity android:name=".activity.AboutXimActivity" />
         <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.UpdateUserActivity" />
+        <activity android:name=".activity.FeedbackActivity" />
         <activity
             android:name=".activity.SendActivity"
             android:configChanges="orientation|keyboard|keyboardHidden"
