@@ -233,7 +233,7 @@ public class MainActivity extends BaseActivity implements MainView,
                 ActivityHelper.jumpToActivity(MainActivity.this, MyCodeActivity.class, 1);
                 break;
             case R.id.iv_header:
-                ActivityHelper.jumpToActivityForParams(MainActivity.this, FriendInfoActivity.class, "objectId", objectId, 1);
+                ActivityHelper.jumpToActivityForParams(MainActivity.this, UserInfoActivity.class, "objectId", objectId, 1);
                 break;
             case R.id.menu_drop_down_scan:
                 Intent intent = new Intent(MainActivity.this, CaptureActivity.class);

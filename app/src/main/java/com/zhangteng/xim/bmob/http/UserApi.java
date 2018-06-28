@@ -8,6 +8,7 @@ import com.zhangteng.xim.bmob.params.RegisterParams;
 import com.zhangteng.xim.bmob.params.UpdateUserParams;
 import com.zhangteng.xim.bmob.params.UserParams;
 import com.zhangteng.xim.bmob.tools.StringUtils;
+import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.utils.SPUtils;
 
 import java.util.List;
@@ -88,29 +89,29 @@ public class UserApi {
      */
     public void signOrLogin(UpdateUserParams params, final BmobCallBack callBack) {
         User userInfo = new User();
-        if (null != params.getAge())
+        if (-1 != params.getAge())
             userInfo.setAge(params.getAge());
         if (StringUtils.isNotEmpty(params.getPhone()))
             userInfo.setMobilePhoneNumber(params.getPhone());//设置手机号码（必填）
-        if (params.getAreaId() != null)
+        if (params.getAreaId() != -1)
             userInfo.setAreaId(params.getAreaId());
-        if (params.getCityId() != null)
+        if (params.getCityId() != -1)
             userInfo.setCityId(params.getCityId());
-        if (params.getClassId() != null)
+        if (params.getClassId() != -1)
             userInfo.setClassId(params.getClassId());
-        if (params.getGradeId() != null)
+        if (params.getGradeId() != -1)
             userInfo.setGradeId(params.getGradeId());
         if (StringUtils.isNotEmpty(params.getIcoPath()))
             userInfo.setIcoPath(params.getIcoPath());
-        if (params.getProvinceId() != null)
+        if (params.getProvinceId() != -1)
             userInfo.setProvinceId(params.getProvinceId());
         if (StringUtils.isNotEmpty(params.getRealName()))
             userInfo.setRealName(params.getRealName());
-        if (params.getRoleId() != null)
+        if (params.getRoleId() != -1)
             userInfo.setRoleId(params.getRoleId());
-        if (params.getSchoolId() != null)
+        if (params.getSchoolId() != -1)
             userInfo.setSchoolId(params.getSchoolId());
-        if (params.getSex() != null)
+        if (params.getSex() != -1)
             userInfo.setSex(params.getSex());
         if (StringUtils.isNotEmpty(params.getPassword()))//设置用户密码
             userInfo.setPassword(params.getPassword());
@@ -263,37 +264,40 @@ public class UserApi {
      * 修改用户信息
      */
     public void updateUser(UpdateUserParams params, final BmobCallBack callBack) {
-        User userInfo = new User();
+        User currentUser = getUserInfo();
+        User userInfo = DBManager.instance(DBManager.USERNAME).queryUser(currentUser.getObjectId());
         userInfo.setSessionToken((String) SPUtils.get(MyApplication.getGlobalContext(), USERSPNAME, "sessionToken", ""));
-        if (null != params.getAge())
+        if (params.getUsername() != null) {
+            userInfo.setUsername(params.getUsername());
+        }
+        if (-1 != params.getAge())
             userInfo.setAge(params.getAge());
         if (StringUtils.isNotEmpty(params.getPhone()))
             userInfo.setMobilePhoneNumber(params.getPhone());
-        if (params.getAreaId() != null)
+        if (params.getAreaId() != -1)
             userInfo.setAreaId(params.getAreaId());
-        if (params.getCityId() != null)
+        if (params.getCityId() != -1)
             userInfo.setCityId(params.getCityId());
-        if (params.getClassId() != null)
+        if (params.getClassId() != -1)
             userInfo.setClassId(params.getClassId());
-        if (params.getGradeId() != null)
+        if (params.getGradeId() != -1)
             userInfo.setGradeId(params.getGradeId());
         if (StringUtils.isNotEmpty(params.getIcoPath()))
             userInfo.setIcoPath(params.getIcoPath());
-        if (params.getProvinceId() != null)
+        if (params.getProvinceId() != -1)
             userInfo.setProvinceId(params.getProvinceId());
         if (StringUtils.isNotEmpty(params.getRealName()))
             userInfo.setRealName(params.getRealName());
-        if (params.getRoleId() != null)
+        if (params.getRoleId() != -1)
             userInfo.setRoleId(params.getRoleId());
-        if (params.getSchoolId() != null)
+        if (params.getSchoolId() != -1)
             userInfo.setSchoolId(params.getSchoolId());
-        if (params.getSex() != null)
+        if (params.getSex() != -1)
             userInfo.setSex(params.getSex());
         if (StringUtils.isNotEmpty(params.getPassword()))
             userInfo.setPassword(params.getPassword());
         if (StringUtils.isNotEmpty(params.getEmail()))
             userInfo.setEmail(params.getEmail());
-        User currentUser = getUserInfo();
         userInfo.update(currentUser.getObjectId(), new UpdateListener() {
             @Override
             public void done(BmobException e) {

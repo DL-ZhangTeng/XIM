@@ -5,18 +5,27 @@ package com.zhangteng.xim.bmob.params;
  */
 
 public class UpdateUserParams extends UserParams {
-    private Integer sex;
-    private Integer age;
-    private Integer schoolId;
-    private Integer roleId;
+    private int sex = -1;
+    private int age = -1;
+    private int schoolId = -1;
+    private int roleId = -1;
     private String realName;
     private String icoPath;
-    private Integer gradeId;
-    private Integer cityId;
-    private Integer areaId;
-    private Integer provinceId;
-    private Integer classId;
+    private int gradeId = -1;
+    private int cityId = -1;
+    private int areaId = -1;
+    private int provinceId = -1;
+    private int classId = -1;
     private String code;
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getCode() {
         return code;
@@ -26,35 +35,35 @@ public class UpdateUserParams extends UserParams {
         this.code = code;
     }
 
-    public Integer getSex() {
+    public int getSex() {
         return sex;
     }
 
-    public void setSex(Integer sex) {
+    public void setSex(int sex) {
         this.sex = sex;
     }
 
-    public Integer getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(int age) {
         this.age = age;
     }
 
-    public Integer getSchoolId() {
+    public int getSchoolId() {
         return schoolId;
     }
 
-    public void setSchoolId(Integer schoolId) {
+    public void setSchoolId(int schoolId) {
         this.schoolId = schoolId;
     }
 
-    public Integer getRoleId() {
+    public int getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Integer roleId) {
+    public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
 
@@ -74,43 +83,43 @@ public class UpdateUserParams extends UserParams {
         this.icoPath = icoPath;
     }
 
-    public Integer getGradeId() {
+    public int getGradeId() {
         return gradeId;
     }
 
-    public void setGradeId(Integer gradeId) {
+    public void setGradeId(int gradeId) {
         this.gradeId = gradeId;
     }
 
-    public Integer getCityId() {
+    public int getCityId() {
         return cityId;
     }
 
-    public void setCityId(Integer cityId) {
+    public void setCityId(int cityId) {
         this.cityId = cityId;
     }
 
-    public Integer getAreaId() {
+    public int getAreaId() {
         return areaId;
     }
 
-    public void setAreaId(Integer areaId) {
+    public void setAreaId(int areaId) {
         this.areaId = areaId;
     }
 
-    public Integer getProvinceId() {
+    public int getProvinceId() {
         return provinceId;
     }
 
-    public void setProvinceId(Integer provinceId) {
+    public void setProvinceId(int provinceId) {
         this.provinceId = provinceId;
     }
 
-    public Integer getClassId() {
+    public int getClassId() {
         return classId;
     }
 
-    public void setClassId(Integer classId) {
+    public void setClassId(int classId) {
         this.classId = classId;
     }
 }
