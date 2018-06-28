@@ -1,6 +1,6 @@
 package com.zhangteng.xim.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -46,7 +46,7 @@ import cn.bmob.v3.exception.BmobException;
  * Created by swing on 2018/5/22.
  */
 public class CircleAdapter extends BaseAdapter<Story> {
-    private Context context;
+    private Activity context;
     private User user = UserApi.getInstance().getUserInfo();
     private RefreshList refreshList;
     private CommentStory commentStory;
@@ -59,7 +59,7 @@ public class CircleAdapter extends BaseAdapter<Story> {
         this.commentStory = commentStory;
     }
 
-    public CircleAdapter(Context context, List<Story> data) {
+    public CircleAdapter(Activity context, List<Story> data) {
         super(data);
         this.context = context;
     }

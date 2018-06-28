@@ -110,7 +110,7 @@ public class CircleFragment extends BaseFragment implements CircleAdapter.Refres
             }
         });
         list = new ArrayList<>();
-        adapter = new CircleAdapter(getContext(), list);
+        adapter = new CircleAdapter(getActivity(), list);
         adapter.setRefreshList(this);
         adapter.setCommentStory(this);
         headerOrFooterAdapter = new HeaderOrFooterAdapter(adapter) {
