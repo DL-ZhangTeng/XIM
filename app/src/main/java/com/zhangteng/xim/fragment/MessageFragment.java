@@ -21,6 +21,7 @@ import com.zhangteng.xim.bmob.conversation.PrivateConversation;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.NewFriend;
 import com.zhangteng.xim.event.RefreshEvent;
+import com.zhangteng.xim.event.UserRefreshEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -113,6 +114,13 @@ public class MessageFragment extends BaseFragment {
     public void onEventMainThread(MessageEvent event) {
         //重新获取本地消息并刷新列表
         messageAdapter.setData(getConversations());
+        messageAdapter.notifyDataSetChanged();
+    }
+
+    @Subscribe
+    public void onEventMainThread(UserRefreshEvent event) {
+        data.clear();
+        data.addAll(getConversations());
         messageAdapter.notifyDataSetChanged();
     }
 

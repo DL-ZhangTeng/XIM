@@ -56,10 +56,6 @@ import cn.bmob.v3.exception.BmobException;
 
 public class SelfCircleActivity extends BaseActivity implements CircleAdapter.RefreshList, CircleAdapter.CommentStory {
 
-
-    private static int start = 0;
-    private static int limit = 100;
-    private static int index = 1;
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.recyclerView)
@@ -134,6 +130,13 @@ public class SelfCircleActivity extends BaseActivity implements CircleAdapter.Re
                         .load(user.getIcoPath())
                         .apply(requestOptions)
                         .into(((HeaderViewHolder) holder).header);
+                ((HeaderViewHolder) holder).header.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String objectId = user.getObjectId();
+                        ActivityHelper.jumpToActivityForParams(SelfCircleActivity.this, FriendInfoActivity.class, "objectId", objectId, 1);
+                    }
+                });
                 Glide.with(SelfCircleActivity.this)
                         .load(photo == null || photo.getPhoto() == null ? "" : photo.getPhoto().getUrl())
                         .apply(requestOptions)

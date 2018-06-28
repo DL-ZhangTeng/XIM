@@ -30,6 +30,7 @@ import com.zhangteng.swiperecyclerview.adapter.HeaderOrFooterAdapter;
 import com.zhangteng.swiperecyclerview.widget.CircleImageView;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.activity.CommentActivity;
+import com.zhangteng.xim.activity.SelfCircleActivity;
 import com.zhangteng.xim.adapter.CircleAdapter;
 import com.zhangteng.xim.base.BaseFragment;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
@@ -41,6 +42,7 @@ import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.event.CircleCommentEvent;
 import com.zhangteng.xim.event.CircleEvent;
+import com.zhangteng.xim.event.UserRefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -128,6 +130,14 @@ public class CircleFragment extends BaseFragment implements CircleAdapter.Refres
                         .load(user.getIcoPath())
                         .apply(requestOptions)
                         .into(((HeaderViewHolder) holder).header);
+                ((HeaderViewHolder) holder).header.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("user", user);
+                        ActivityHelper.jumpToActivityWithBundle(CircleFragment.this.getActivity(), SelfCircleActivity.class, bundle, 1);
+                    }
+                });
                 Glide.with(CircleFragment.this.getContext())
                         .load(photo == null || photo.getPhoto() == null ? "" : photo.getPhoto().getUrl())
                         .apply(requestOptions)
@@ -206,6 +216,11 @@ public class CircleFragment extends BaseFragment implements CircleAdapter.Refres
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onEventMainThread(UserRefreshEvent event) {
+        queryStorys(true);
     }
 
     @Subscribe

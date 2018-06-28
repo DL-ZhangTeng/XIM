@@ -46,6 +46,7 @@ import com.zhangteng.xim.dagger2.module.MainModule;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.event.CircleEvent;
 import com.zhangteng.xim.event.RefreshEvent;
+import com.zhangteng.xim.event.UserRefreshEvent;
 import com.zhangteng.xim.mvp.presenter.MainPresenter;
 import com.zhangteng.xim.mvp.view.MainView;
 import com.zhangteng.xim.utils.ActivityHelper;
@@ -220,7 +221,7 @@ public class MainActivity extends BaseActivity implements MainView,
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.titlebar_left:
+            case R.id.titlebar_left_back:
                 if (!slidingPaneLayout.isOpen()) {
                     slidingPaneLayout.openPane();
                 }
@@ -289,6 +290,13 @@ public class MainActivity extends BaseActivity implements MainView,
         } else {
 
         }
+    }
+
+    @Subscribe
+    public void onEventMainThread(UserRefreshEvent event) {
+        setAvatar(event.getUser().getIcoPath());
+        setUsername(event.getUser().getUsername());
+        setTitleBarLeftIcon(event.getUser().getIcoPath());
     }
 
     @Override

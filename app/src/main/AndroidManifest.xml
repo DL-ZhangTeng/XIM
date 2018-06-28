@@ -46,14 +46,18 @@
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.ChangePasswordActivity" />
         <activity android:name=".activity.SettingActivity" />
-        <activity android:name=".activity.FriendInfoActivity" />
+        <activity
+            android:name=".activity.FriendInfoActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".activity.MyCodeActivity" />
         <activity android:name=".activity.ShareActivity" />
         <activity android:name=".activity.NewFriendActivity" />
         <activity android:name="com.uuzuche.lib_zxing.activity.CaptureActivity" />
         <activity android:name=".activity.FindUserActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
-        <activity android:name=".activity.SelfCircleActivity" />
+        <activity
+            android:name=".activity.SelfCircleActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".activity.AboutXimActivity" />
         <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.UpdateUserActivity" />

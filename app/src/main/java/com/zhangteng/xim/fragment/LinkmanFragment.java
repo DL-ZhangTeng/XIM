@@ -25,6 +25,7 @@ import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.event.RefreshEvent;
+import com.zhangteng.xim.event.UserRefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.SortUtils;
 import com.zhangteng.xim.utils.StringUtils;
@@ -62,20 +63,7 @@ public class LinkmanFragment extends BaseFragment {
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull final RefreshLayout refreshLayout) {
-                IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
-                    @Override
-                    public void onSuccess(@Nullable List<Friend> bmobObject) {
-                        sortData(bmobObject);
-                        refreshLayout.finishRefresh();
-                    }
-
-                    @Override
-                    public void onFailure(BmobException bmobException) {
-                        super.onFailure(bmobException);
-                        Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_failure", Toast.LENGTH_SHORT).show();
-                        refreshLayout.finishRefresh();
-                    }
-                });
+                queryData();
             }
         });
         groupInfoInterface = new ItemStickyDecoration.GroupInfoInterface() {
@@ -173,6 +161,11 @@ public class LinkmanFragment extends BaseFragment {
         });
     }
 
+    @Subscribe
+    public void onEventMainThread(UserRefreshEvent event) {
+        queryData();
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -184,5 +177,22 @@ public class LinkmanFragment extends BaseFragment {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    private void queryData() {
+        IMApi.FriendManager.getInstance().queryFriends(new BmobCallBack<List<Friend>>(getContext(), false) {
+            @Override
+            public void onSuccess(@Nullable List<Friend> bmobObject) {
+                sortData(bmobObject);
+                refreshLayout.finishRefresh();
+            }
+
+            @Override
+            public void onFailure(BmobException bmobException) {
+                super.onFailure(bmobException);
+                Toast.makeText(LinkmanFragment.this.getContext(), "queryfriends_failure", Toast.LENGTH_SHORT).show();
+                refreshLayout.finishRefresh();
+            }
+        });
     }
 }

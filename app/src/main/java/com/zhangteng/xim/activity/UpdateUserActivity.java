@@ -8,10 +8,16 @@ import android.widget.EditText;
 import com.zhangteng.xim.R;
 import com.zhangteng.xim.base.BaseActivity;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
+import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.UpdateUserParams;
+import com.zhangteng.xim.db.DBManager;
+import com.zhangteng.xim.db.bean.LocalUser;
+import com.zhangteng.xim.event.UserRefreshEvent;
 import com.zhangteng.xim.utils.AppManager;
 import com.zhangteng.xim.widget.TitleBar;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import cn.bmob.v3.exception.BmobException;
@@ -39,11 +45,15 @@ public class UpdateUserActivity extends BaseActivity {
         titleBar.setRightClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UpdateUserParams updateUserParams = new UpdateUserParams();
+                final UpdateUserParams updateUserParams = new UpdateUserParams();
                 updateUserParams.setUsername(editText.getText().toString());
+
                 UserApi.getInstance().updateUser(updateUserParams, new BmobCallBack(UpdateUserActivity.this, false) {
                     @Override
                     public void onSuccess(@Nullable Object bmobObject) {
+                        LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(UserApi.getInstance().getUserInfo().getObjectId());
+                        localUser.setUsername(updateUserParams.getUsername());
+                        EventBus.getDefault().post(new UserRefreshEvent(User.getUser(localUser)));
                         AppManager.finishActivity(UpdateUserActivity.this);
                     }
 

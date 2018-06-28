@@ -211,7 +211,7 @@ public class TitleBar extends RelativeLayout {
     }
 
     public void setLeftClickListener(OnClickListener onClickListener) {
-        leftBtn.setOnClickListener(onClickListener);
+        titlebarLeftBack.setOnClickListener(onClickListener);
     }
 
     public void setTitleClickListener(OnClickListener ontitleClickListener) {
