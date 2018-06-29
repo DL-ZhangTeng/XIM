@@ -226,8 +226,10 @@ public class UserInfoActivity extends BaseActivity {
                 break;
             case 2001:
             case 2002:
-                User user = (User) data.getSerializableExtra("user");
-                initShow(user);
+                if (data != null && data.hasExtra("user")) {
+                    User user = (User) data.getSerializableExtra("user");
+                    initShow(user);
+                }
                 break;
             default:
                 break;
