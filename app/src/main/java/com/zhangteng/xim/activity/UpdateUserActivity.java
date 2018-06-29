@@ -53,6 +53,9 @@ public class UpdateUserActivity extends BaseActivity {
                     public void onSuccess(@Nullable Object bmobObject) {
                         LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(UserApi.getInstance().getUserInfo().getObjectId());
                         localUser.setUsername(updateUserParams.getUsername());
+                        Intent intent = new Intent();
+                        intent.putExtra("user", User.getUser(localUser));
+                        UpdateUserActivity.this.setResult(2001, intent);
                         EventBus.getDefault().post(new UserRefreshEvent(User.getUser(localUser)));
                         AppManager.finishActivity(UpdateUserActivity.this);
                     }

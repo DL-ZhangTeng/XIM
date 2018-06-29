@@ -6,4 +6,5 @@ include ':app',
         'permission',
         'updateversion',
         'logcollection',
-        'photoview'
+        'photoview',
+        'treerecyclerview'

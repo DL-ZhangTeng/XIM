@@ -1,11 +1,18 @@
 package com.zhangteng.xim.db.bean;
 
+import com.johnnygq.treerecyclerview.tree.TreeNodeChildren;
+import com.johnnygq.treerecyclerview.tree.TreeNodeId;
+import com.johnnygq.treerecyclerview.tree.TreeNodeLabel;
+import com.johnnygq.treerecyclerview.tree.TreeNodePid;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by swing on 2018/5/29.
  */
-public class CityNo {
+public class CityNo implements Serializable {
+    private static final long serialVersionUID = 4104738936409054526L;
     /**
      * code : 110000
      * region : 北京市
@@ -13,9 +20,13 @@ public class CityNo {
      */
 
     private Long id;
+    @TreeNodeId
     private String code;
+    @TreeNodeLabel
     private String region;
+    @TreeNodePid
     private String parent;
+    @TreeNodeChildren
     private List<CityNo> regionEntitys;
 
 

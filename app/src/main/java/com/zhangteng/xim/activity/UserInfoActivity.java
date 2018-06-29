@@ -67,7 +67,7 @@ public class UserInfoActivity extends BaseActivity {
                 Uri sourceUri = FileProvider.getUriForFile(Objects.requireNonNull(UserInfoActivity.this), imagePickerConfig.getProvider(), new File(photoList.get(0)));
                 cameraTempFile = FileUtils.createTmpFile(UserInfoActivity.this, imagePickerConfig.getFilePath() + File.separator + "crop");
                 bgPath = FileProvider.getUriForFile(UserInfoActivity.this, imagePickerConfig.getProvider(), cameraTempFile);
-                Crop.of(sourceUri, bgPath).withAspect(1, 1).start(UserInfoActivity.this, Crop.REQUEST_CROP + 1001);
+                Crop.of(sourceUri, bgPath).withAspect(1, 1).start(UserInfoActivity.this, Crop.REQUEST_CROP + 2000);
             }
         }
     };
@@ -95,6 +95,10 @@ public class UserInfoActivity extends BaseActivity {
         if (user == null) {
             user = UserApi.getInstance().getUserInfo();
         }
+        initShow(user);
+    }
+
+    private void initShow(User user) {
         RequestOptions requestOptions = new RequestOptions()
                 .placeholder(R.mipmap.app_icon)
                 .centerCrop();
@@ -102,11 +106,6 @@ public class UserInfoActivity extends BaseActivity {
                 .load(user.getIcoPath())
                 .apply(requestOptions)
                 .into(avatar);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         username.setText(user.getUsername());
         objectid.setText(user.getObjectId());
         sex.setText(user.getSex() == 0 ? "男" : "女");
@@ -154,7 +153,7 @@ public class UserInfoActivity extends BaseActivity {
                 break;
             case R.id.userinfo_username:
             case R.id.userinfo_tv_username:
-                ActivityHelper.jumpToActivityForParams(this, UpdateUserActivity.class, "username", user.getUsername(), 1);
+                ActivityHelper.jumpToActivityForParamsAndResult(this, UpdateUserActivity.class, "username", user.getUsername(), 2001, 1);
                 break;
             case R.id.userinfo_objectid:
             case R.id.userinfo_tv_objectid:
@@ -188,6 +187,7 @@ public class UserInfoActivity extends BaseActivity {
                 break;
             case R.id.userinfo_area:
             case R.id.userinfo_tv_area:
+                ActivityHelper.jumpToActivityResult(this, AreaSelectActivity.class, 2002, 1);
                 break;
             default:
                 break;
@@ -197,31 +197,40 @@ public class UserInfoActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Crop.REQUEST_CROP + 1001) {
-            BmobCallBack<String> bmobCallBack = new BmobCallBack<String>(this, true) {
-                @Override
-                public void onSuccess(@Nullable String bmobObject) {
-                    final UpdateUserParams updateUserParams = new UpdateUserParams();
-                    updateUserParams.setIcoPath(bmobObject);
+        switch (requestCode) {
+            case Crop.REQUEST_CROP + 2000:
+                BmobCallBack<String> bmobCallBack = new BmobCallBack<String>(this, true) {
+                    @Override
+                    public void onSuccess(@Nullable String bmobObject) {
+                        final UpdateUserParams updateUserParams = new UpdateUserParams();
+                        updateUserParams.setIcoPath(bmobObject);
 
-                    UserApi.getInstance().updateUser(updateUserParams, new BmobCallBack(UserInfoActivity.this, false) {
-                        @Override
-                        public void onSuccess(@Nullable Object bmobObject) {
-                            user.setIcoPath(updateUserParams.getIcoPath());
-                            EventBus.getDefault().post(new UserRefreshEvent(user));
-                        }
-                    });
-                    RequestOptions requestOptions = new RequestOptions()
-                            .placeholder(R.mipmap.app_icon)
-                            .centerCrop();
-                    Glide.with(UserInfoActivity.this)
-                            .load(bgPath)
-                            .apply(requestOptions)
-                            .into(avatar);
-                }
-            };
-            bmobCallBack.onStart();
-            DataApi.getInstance().uploadFile(cameraTempFile.getAbsolutePath(), bmobCallBack);
+                        UserApi.getInstance().updateUser(updateUserParams, new BmobCallBack(UserInfoActivity.this, false) {
+                            @Override
+                            public void onSuccess(@Nullable Object bmobObject) {
+                                user.setIcoPath(updateUserParams.getIcoPath());
+                                EventBus.getDefault().post(new UserRefreshEvent(user));
+                            }
+                        });
+                        RequestOptions requestOptions = new RequestOptions()
+                                .placeholder(R.mipmap.app_icon)
+                                .centerCrop();
+                        Glide.with(UserInfoActivity.this)
+                                .load(bgPath)
+                                .apply(requestOptions)
+                                .into(avatar);
+                    }
+                };
+                bmobCallBack.onStart();
+                DataApi.getInstance().uploadFile(cameraTempFile.getAbsolutePath(), bmobCallBack);
+                break;
+            case 2001:
+            case 2002:
+                User user = (User) data.getSerializableExtra("user");
+                initShow(user);
+                break;
+            default:
+                break;
         }
     }
 

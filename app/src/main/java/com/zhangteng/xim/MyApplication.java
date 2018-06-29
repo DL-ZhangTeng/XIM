@@ -38,7 +38,7 @@ public class MyApplication extends Application {
         globalContext = this;
         ZXingLibrary.initDisplayOpinion(this);
 
-        initEmailReporter();
+//        initEmailReporter();
         //提供以下两种方式进行初始化操作：
 
         //第一：默认初始化

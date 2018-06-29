@@ -437,7 +437,7 @@ public class DataApi {
         query.findObjects(new FindListener<Photo>() {
             @Override
             public void done(List<Photo> list, BmobException e) {
-                bmobCallBack.onResponse(list.isEmpty() ? null : list.get(0), e);
+                bmobCallBack.onResponse(list == null || list.isEmpty() ? null : list.get(0), e);
             }
         });
     }

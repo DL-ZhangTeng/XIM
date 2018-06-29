@@ -78,6 +78,13 @@ public class ActivityHelper {
         anim(activity, code);
     }
 
+    public static void jumpToActivityForParamsAndResult(Activity activity, Class cls, String key, String value, int requestCode, int code) {
+        Intent intent = new Intent();
+        intent.setClass(activity, cls);
+        intent.putExtra(key, value);
+        activity.startActivityForResult(intent, requestCode);
+        anim(activity, code);
+    }
 
     private static void anim(Activity activity, int code) {
         if (code == 1) {

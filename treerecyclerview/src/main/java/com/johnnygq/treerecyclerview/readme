@@ -1,0 +1,15 @@
+第一步：创建实体类并注解 CityNo.java
+           @TreeNodeId
+           private String code;
+           @TreeNodeLabel
+           private String region;
+           @TreeNodePid
+           private String parent;
+           @TreeNodeChildren
+           private List<CityNo> regionEntitys;
+
+
+第二步：搭建页面设置Myadapter适配器，添加数据List<CityNo>
+
+第三步：设置监听器TreeRecyclerViewAdapter.OnTreeNodeClickListener
+
