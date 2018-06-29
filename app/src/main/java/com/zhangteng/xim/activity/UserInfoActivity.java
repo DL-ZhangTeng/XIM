@@ -1,9 +1,11 @@
 package com.zhangteng.xim.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.UpdateUserParams;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.CityNo;
+import com.zhangteng.xim.db.bean.LocalUser;
 import com.zhangteng.xim.event.UserRefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 
@@ -38,6 +41,7 @@ import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
+import cn.bmob.v3.exception.BmobException;
 
 public class UserInfoActivity extends BaseActivity {
     private User user;
@@ -157,6 +161,30 @@ public class UserInfoActivity extends BaseActivity {
                 break;
             case R.id.userinfo_sex:
             case R.id.userinfo_tv_sex:
+                new AlertDialog.Builder(this).setTitle("性别").setSingleChoiceItems(new String[]{"男", "女"}, user.getSex(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final UpdateUserParams updateUserParams = new UpdateUserParams();
+                        updateUserParams.setSex(which);
+                        UserApi.getInstance().updateUser(updateUserParams, new BmobCallBack(UserInfoActivity.this, false) {
+                            @Override
+                            public void onSuccess(@Nullable Object bmobObject) {
+                                LocalUser localUser = DBManager.instance(DBManager.USERNAME).queryUser(UserApi.getInstance().getUserInfo().getObjectId());
+                                localUser.setSex(updateUserParams.getSex());
+                                EventBus.getDefault().post(new UserRefreshEvent(User.getUser(localUser)));
+                                user.setSex(localUser.getSex());
+                                sex.setText(user.getSex() == 0 ? "男" : "女");
+                            }
+
+                            @Override
+                            public void onFailure(BmobException bmobException) {
+                                super.onFailure(bmobException);
+                                UserInfoActivity.this.showToast("修改失败");
+                            }
+                        });
+                        dialog.dismiss();
+                    }
+                }).create().show();
                 break;
             case R.id.userinfo_area:
             case R.id.userinfo_tv_area:
