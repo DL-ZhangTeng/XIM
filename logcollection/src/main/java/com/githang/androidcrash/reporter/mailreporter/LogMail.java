@@ -9,6 +9,7 @@ import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
@@ -138,7 +139,8 @@ public class LogMail extends Authenticator {
             Log.d("SendUtil", host + "..." + port + ".." + user + "..." + pass);
 
             MimeMessage msg = new MimeMessage(session);
-
+            //抄送一份给自己（避免邮箱检查垃圾邮件发送失败，报544）
+            msg.addRecipients(Message.RecipientType.CC, InternetAddress.parse(from));
             msg.setFrom(new InternetAddress(from));
 
             InternetAddress addressTo = new InternetAddress(to);

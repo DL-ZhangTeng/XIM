@@ -137,9 +137,9 @@ public class MyApplication extends Application {
         };
         reporter.setReceiver("763263311@qq.com");
         reporter.setSender("zhangteng0633@163.com");
-        reporter.setSendPassword("zt15903000633");
+        reporter.setSendPassword("zhangteng0633");
         reporter.setSMTPHost("smtp.163.com");
-        reporter.setPort("25");//994/465
+        reporter.setPort("465");//994/465/25
         AndroidCrash.getInstance().setCrashReporter(reporter).init(this);
 
     }

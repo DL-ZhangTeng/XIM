@@ -1,10 +1,15 @@
 package com.zhangteng.xim;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.widget.Toast;
 
+import com.githang.androidcrash.reporter.mailreporter.CrashEmailReporter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhangteng.xim.bmob.callback.BmobCallBack;
@@ -13,6 +18,7 @@ import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.db.DBManager;
 import com.zhangteng.xim.db.bean.CityNo;
+import com.zhangteng.xim.utils.AppManager;
 import com.zhangteng.xim.utils.AssetsUtils;
 
 import org.junit.Test;
@@ -88,5 +94,40 @@ public class ExampleInstrumentedTest {
             }
         });
         assertEquals("11", story[0].getContent());
+    }
+
+    @Test
+    public void sendMail() throws Exception {
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        CrashEmailReporter reporter = new CrashEmailReporter(appContext) {
+            /**
+             * 重写此方法，可以弹出自定义的崩溃提示对话框，而不使用系统的崩溃处理。
+             * @param thread
+             * @param ex
+             */
+            @Override
+            public void closeApp(Thread thread, Throwable ex) {
+                final Activity activity = AppManager.currentActivity();
+                if (activity == null) {
+                    return;
+                }
+                Toast.makeText(activity, "发生异常，正在退出", Toast.LENGTH_SHORT).show();
+                // 自定义弹出对话框
+                new AlertDialog.Builder(activity).
+                        setMessage("程序发生异常，现在退出").
+                        setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AppManager.AppExit(activity);
+                            }
+                        }).create().show();
+            }
+        };
+        reporter.setReceiver("763263311@qq.com");
+        reporter.setSender("zhangteng0633@163.com");
+        reporter.setSendPassword("zhangteng0633");
+        reporter.setSMTPHost("smtp.163.com");
+        reporter.setPort("465");//994/465/25
+        reporter.sendFile(null);
     }
 }
