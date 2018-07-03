@@ -10,11 +10,6 @@ import java.util.List;
  */
 public class Node {
     private int id;
-    /**
-     * 根节点pId为0
-     */
-    private int pId = 0;
-
     private String name;
 
     /**
@@ -42,17 +37,15 @@ public class Node {
     public Node() {
     }
 
-    public Node(int id, int pId, String name) {
+    public Node(int id, String name) {
         super();
         this.id = id;
-        this.pId = pId;
         this.name = name;
     }
 
-    public Node(@NonNull String id, @NonNull String pId, String name) {
+    public Node(@NonNull String id, String name) {
         super();
         this.id = Integer.parseInt(id);
-        this.pId = Integer.parseInt(pId);
         this.name = name;
     }
 
@@ -70,14 +63,6 @@ public class Node {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getpId() {
-        return pId;
-    }
-
-    public void setpId(int pId) {
-        this.pId = pId;
     }
 
     public String getName() {

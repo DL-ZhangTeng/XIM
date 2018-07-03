@@ -92,7 +92,7 @@ public class AreaSelectActivity extends BaseActivity {
         }.getType();
         //这里的json是字符串类型 = jsonArray.toString();
         List<CityNo> list = new Gson().fromJson(json, listType);
-        forTreeList(list);
+        mData.addAll(list);
         try {
             adapter = new AreaTreeAdapter(recyclerView, this, mData, mData.size());
             recyclerView.setAdapter(adapter);
@@ -106,11 +106,4 @@ public class AreaSelectActivity extends BaseActivity {
     protected void initData() {
     }
 
-    private void forTreeList(List<CityNo> list) {
-        mData.addAll(list);
-        for (CityNo cityNo : list) {
-            if (cityNo.getRegionEntitys() != null)
-                forTreeList(cityNo.getRegionEntitys());
-        }
-    }
 }

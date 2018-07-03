@@ -3,7 +3,7 @@ package com.zhangteng.xim.db.bean;
 import com.johnnygq.treerecyclerview.tree.TreeNodeChildren;
 import com.johnnygq.treerecyclerview.tree.TreeNodeId;
 import com.johnnygq.treerecyclerview.tree.TreeNodeLabel;
-import com.johnnygq.treerecyclerview.tree.TreeNodePid;
+import com.johnnygq.treerecyclerview.tree.TreeNodeParent;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,8 +24,9 @@ public class CityNo implements Serializable {
     private String code;
     @TreeNodeLabel
     private String region;
-    @TreeNodePid
     private String parent;
+    @TreeNodeParent
+    private CityNo parentEntity;
     @TreeNodeChildren
     private List<CityNo> regionEntitys;
 
@@ -78,5 +79,9 @@ public class CityNo implements Serializable {
 
     public void setRegionEntitys(List<CityNo> regionEntitys) {
         this.regionEntitys = regionEntitys;
+    }
+
+    public void setParentEntity(CityNo parentEntity) {
+        this.parentEntity = parentEntity;
     }
 }

@@ -62,12 +62,13 @@ public class TreeHelper {
     private static <T> List<Node> convetData2Node(List<T> datas) throws IllegalArgumentException, IllegalAccessException {
         List<Node> nodes = new ArrayList<Node>();
         List<Node> nodeChildren = new ArrayList<Node>();
+        Node nodeParent = null;
         Node node = null;
 
         for (T t : datas) {
             String id = null;
-            String pId = null;
             String label = null;
+            T parent = null;
             List<T> children = new ArrayList<>();
             Class<? extends Object> clazz = t.getClass();
             Field[] declaredFields = clazz.getDeclaredFields();
@@ -76,9 +77,11 @@ public class TreeHelper {
                     f.setAccessible(true);
                     id = (String) f.get(t);
                 }
-                if (f.getAnnotation(TreeNodePid.class) != null) {
+                if (f.getAnnotation(TreeNodeParent.class) != null) {
                     f.setAccessible(true);
-                    pId = (String) f.get(t);
+                    parent = (T) f.get(t);
+                    if (parent != null)
+                        nodeParent = convetData2Node(parent);
                 }
                 if (f.getAnnotation(TreeNodeLabel.class) != null) {
                     f.setAccessible(true);
@@ -91,22 +94,27 @@ public class TreeHelper {
                         nodeChildren = convetData2Node(children);
                     }
                 }
-                if (id != null && pId != null && label != null) {
-                    break;
+            }
+            node = new Node(id, label);
+            if (nodeParent != null) {
+                if (node.getParent() == null) {
+                    node.setParent(nodeParent);
+                }
+                if (!nodeParent.getChildren().contains(node)) {
+                    nodeParent.getChildren().add(node);
                 }
             }
-            if (pId == null) {
-                pId = "0";
-            }
-            node = new Node(id, pId, label);
             for (Node child : nodeChildren) {
                 if (child.getParent() == null) {
                     child.setParent(node);
+                }
+                if (!node.getChildren().contains(child)) {
                     node.getChildren().add(child);
                 }
             }
-            nodes.addAll(nodeChildren);
-            nodes.add(node);
+            if (!nodes.contains(node)) {
+                nodes.add(node);
+            }
         }
 
         // 设置图片
@@ -114,6 +122,70 @@ public class TreeHelper {
             setNodeIcon(n);
         }
         return nodes;
+    }
+
+    /**
+     * 将单个数据转化为树的节点
+     *
+     * @param data
+     * @return
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     */
+    private static <T> Node convetData2Node(T data) throws IllegalArgumentException, IllegalAccessException {
+        List<Node> nodeChildren = new ArrayList<Node>();
+        Node nodeParent = null;
+        Node node = null;
+        String id = null;
+        String label = null;
+        T parent = null;
+        List<T> children = new ArrayList<>();
+        Class<? extends Object> clazz = data.getClass();
+        Field[] declaredFields = clazz.getDeclaredFields();
+        for (Field f : declaredFields) {
+            if (f.getAnnotation(TreeNodeId.class) != null) {
+                f.setAccessible(true);
+                id = (String) f.get(data);
+            }
+            if (f.getAnnotation(TreeNodeParent.class) != null) {
+                f.setAccessible(true);
+                parent = (T) f.get(data);
+                if (parent != null)
+                    nodeParent = convetData2Node(parent);
+            }
+            if (f.getAnnotation(TreeNodeLabel.class) != null) {
+                f.setAccessible(true);
+                label = (String) f.get(data);
+            }
+            if (f.getAnnotation(TreeNodeChildren.class) != null) {
+                f.setAccessible(true);
+                children = (List<T>) f.get(data);
+                if (children != null) {
+                    nodeChildren = convetData2Node(children);
+                }
+            }
+        }
+        node = new Node(id, label);
+        if (nodeParent != null) {
+            if (node.getParent() == null) {
+                node.setParent(nodeParent);
+            }
+            if (!nodeParent.getChildren().contains(node)) {
+                nodeParent.getChildren().add(node);
+            }
+        }
+        for (Node child : nodeChildren) {
+            if (child.getParent() == null) {
+                child.setParent(node);
+            }
+            if (!node.getChildren().contains(child)) {
+                node.getChildren().add(child);
+            }
+        }
+        // 设置图片
+        setNodeIcon(node);
+        return node;
     }
 
     private static List<Node> getRootNodes(List<Node> nodes) {
