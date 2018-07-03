@@ -113,7 +113,7 @@ public class UserInfoActivity extends BaseActivity {
             CityNo province = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getProvinceId()));
             CityNo city = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getCityId()));
             CityNo arean = DBManager.instance(DBManager.CITYNODBNAME).queryCityNo(String.valueOf(user.getAreaId()));
-            area.setText(String.format("%s  %s  %s",
+            area.setText(String.format("%s %s %s",
                     province != null ? province.getRegion() : "",
                     city != null ? city.getRegion() : "",
                     arean != null ? arean.getRegion() : ""));

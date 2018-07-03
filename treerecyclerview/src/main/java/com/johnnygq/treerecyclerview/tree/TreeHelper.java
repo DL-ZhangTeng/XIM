@@ -80,8 +80,11 @@ public class TreeHelper {
                 if (f.getAnnotation(TreeNodeParent.class) != null) {
                     f.setAccessible(true);
                     parent = (T) f.get(t);
-                    if (parent != null)
+                    if (parent != null) {
                         nodeParent = convetData2Node(parent);
+                    } else {
+                        nodeParent = null;
+                    }
                 }
                 if (f.getAnnotation(TreeNodeLabel.class) != null) {
                     f.setAccessible(true);
@@ -92,6 +95,8 @@ public class TreeHelper {
                     children = (List<T>) f.get(t);
                     if (children != null) {
                         nodeChildren = convetData2Node(children);
+                    } else {
+                        nodeChildren.clear();
                     }
                 }
             }

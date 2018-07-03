@@ -42,9 +42,16 @@ public class AreaSelectActivity extends BaseActivity {
         public void onClick(Node node, int position) {
             if (node.isLeaf()) {//最后一层
                 final UpdateUserParams updateUserParams = new UpdateUserParams();
-                updateUserParams.setAreaId(node.getId());
-                updateUserParams.setCityId(node.getParent().getId());
-                updateUserParams.setProvinceId(node.getParent().getParent().getId());
+                if (node.getChildren().isEmpty() && node.getParent() == null) {
+                    updateUserParams.setProvinceId(node.getId());
+                    updateUserParams.setCityId(000000);
+                    updateUserParams.setAreaId(000000);
+                } else {
+                    updateUserParams.setProvinceId(node.getParent().getParent().getId());
+                    updateUserParams.setCityId(node.getParent().getId());
+                    updateUserParams.setAreaId(node.getId());
+                }
+
                 UserApi.getInstance().updateUser(updateUserParams, new BmobCallBack(AreaSelectActivity.this, false) {
                     @Override
                     public void onSuccess(@Nullable Object bmobObject) {

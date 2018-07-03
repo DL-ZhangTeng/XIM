@@ -173,6 +173,7 @@ public class MainActivity extends BaseActivity implements MainView,
         headerView.setOnClickListener(this);
         code.setOnClickListener(this);
         avatar.setOnClickListener(this);
+        username.setOnClickListener(this);
         navigationView.setNavigationItemSelectedListener(this);
         slidingPaneLayout.setPanelSlideListener(this);
         dropDownMenu.setScanOnClickListener(this);
@@ -233,6 +234,7 @@ public class MainActivity extends BaseActivity implements MainView,
             case R.id.iv_code:
                 ActivityHelper.jumpToActivity(MainActivity.this, MyCodeActivity.class, 1);
                 break;
+            case R.id.tv_name:
             case R.id.iv_header:
                 ActivityHelper.jumpToActivityForParams(MainActivity.this, UserInfoActivity.class, "objectId", objectId, 1);
                 break;
