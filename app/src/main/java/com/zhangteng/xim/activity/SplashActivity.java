@@ -82,6 +82,8 @@ public class SplashActivity extends AppCompatActivity {
                     .permission(permissions)
                     .build()
                     .excute();
+        } else {
+            EventBus.getDefault().post(new JumpEvent(SplashActivity.this));
         }
     }
     protected void initInject() {
