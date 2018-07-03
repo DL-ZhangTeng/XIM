@@ -18,6 +18,7 @@ import com.zhangteng.xim.bmob.http.IMApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.bmob.params.RegisterParams;
 import com.zhangteng.xim.utils.AppManager;
+import com.zhangteng.xim.utils.RegexUtil;
 
 import butterknife.BindView;
 import cn.bmob.v3.exception.BmobException;
@@ -83,8 +84,10 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         } else if (i == R.id.my_register_code_get) {
 
         } else if (i == R.id.register) {
-            if (TextUtils.isEmpty(username.getText().toString()) || TextUtils.isEmpty(password.getText().toString())) {
-                Toast.makeText(this, "username or password is null", Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(username.getText().toString())
+                    || TextUtils.isEmpty(password.getText().toString())
+                    || !RegexUtil.checkNickname(username.getText().toString())) {
+                Toast.makeText(this, "username or password is null or anomaly", Toast.LENGTH_SHORT).show();
             } else if (!password.getText().toString().equals(code.getText().toString())) {
                 Toast.makeText(this, "Verify password failed", Toast.LENGTH_SHORT).show();
             } else {

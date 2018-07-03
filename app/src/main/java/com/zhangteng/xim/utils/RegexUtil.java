@@ -167,8 +167,11 @@ public final class RegexUtil {
         return Pattern.matches(regex, ipAddress);
     }
 
+    /**
+     * 以英文字母开头，只能包含英文字母、数字、下划线
+     */
     public static boolean checkNickname(String nickname) {
-        String regex = "^[a-zA-Z0-9\u4E00-\u9FA5_]+$";
+        String regex = "^[a-zA-Z][a-zA-Z0-9_]*$";
         return Pattern.matches(regex, nickname);
     }
 
@@ -183,6 +186,4 @@ public final class RegexUtil {
         }
         return false;
     }
-
-
 }
