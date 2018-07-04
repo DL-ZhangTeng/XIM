@@ -74,6 +74,7 @@ public class PullDownLoadingRecyclerView extends RecyclerView {
             case MotionEvent.ACTION_UP:
                 if ((((LinearLayoutManager) getLayoutManager()).findFirstCompletelyVisibleItemPosition() == 0
                         || ((LinearLayoutManager) getLayoutManager()).findFirstCompletelyVisibleItemPosition() == 1)
+                        && header != null
                         && header.getHeight() >= getResources().getDimensionPixelSize(R.dimen.loading_height)) {
                     header.startAnimation();
                     if (listener != null && !isLoading) {
@@ -90,8 +91,10 @@ public class PullDownLoadingRecyclerView extends RecyclerView {
     @Override
     public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
-        if (adapter instanceof HeaderOrFooterAdapter)
+        if (adapter instanceof HeaderOrFooterAdapter) {
             this.headerOrFooterAdapter = (HeaderOrFooterAdapter) adapter;
+            this.header = (LoadingView) headerOrFooterAdapter.getHeaderViewByType(HeaderOrFooterAdapter.BASE_ITEM_TYPE_HEADER);
+        }
     }
 
     /**
