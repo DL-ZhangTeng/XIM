@@ -41,12 +41,12 @@ public class SplashActivity extends AppCompatActivity {
             AssetsUtils.initDatabase(AssetsUtils.dbName, MyApplication.getGlobalContext());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            String[] permissions = new String[Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length + Permission.Group.LOCATION.length + Permission.Group.MICROPHONE.length];
-            System.arraycopy(Permission.Group.PHONE, 0, permissions, 0, Permission.Group.PHONE.length);
-            System.arraycopy(Permission.Group.CAMERA, 0, permissions, Permission.Group.PHONE.length, Permission.Group.CAMERA.length);
-            System.arraycopy(Permission.Group.STORAGE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length, Permission.Group.STORAGE.length);
-            System.arraycopy(Permission.Group.LOCATION, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length, Permission.Group.LOCATION.length);
-            System.arraycopy(Permission.Group.MICROPHONE, 0, permissions, Permission.Group.PHONE.length + Permission.Group.CAMERA.length + Permission.Group.STORAGE.length + Permission.Group.MICROPHONE.length, Permission.Group.MICROPHONE.length);
+            String[] permissions = new String[]{
+                    Permission.READ_PHONE_STATE,
+                    Permission.WRITE_EXTERNAL_STORAGE,
+                    Permission.READ_EXTERNAL_STORAGE,
+                    Permission.CAMERA,
+                    Permission.RECORD_AUDIO};
             new AndroidPermission.Buidler()
                     .with(this)
                     .request(new MRequest(permissions) {
@@ -86,9 +86,11 @@ public class SplashActivity extends AppCompatActivity {
             EventBus.getDefault().post(new JumpEvent(SplashActivity.this));
         }
     }
+
     protected void initInject() {
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
