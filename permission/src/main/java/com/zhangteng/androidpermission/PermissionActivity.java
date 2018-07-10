@@ -86,7 +86,7 @@ public final class PermissionActivity extends Activity {
                     mcallback.failure();
                 }
             } else {
-
+                mcallback.nonExecution();
             }
             mcallback = null;
         }

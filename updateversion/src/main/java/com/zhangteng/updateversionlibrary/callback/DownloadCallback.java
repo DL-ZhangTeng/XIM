@@ -16,7 +16,6 @@ import android.util.Log;
 import com.zhangteng.updateversionlibrary.UpdateVersion;
 import com.zhangteng.updateversionlibrary.config.Constant;
 import com.zhangteng.updateversionlibrary.dialog.CommonProgressDialog;
-import com.zhangteng.updateversionlibrary.entity.VersionEntity;
 
 import java.io.File;
 
@@ -55,7 +54,7 @@ public class DownloadCallback {
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         //判断是否是AndroidN以及更高的版本
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             Uri uri = FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", apkFile);
                             intent.setDataAndType(uri, "application/vnd.android.package-archive");
                         } else {
@@ -174,7 +173,7 @@ public class DownloadCallback {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             //判断是否是AndroidN以及更高的版本
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 Uri uri = FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".fileprovider", apkFile);
                 intent.setDataAndType(uri, "application/vnd.android.package-archive");
             } else {

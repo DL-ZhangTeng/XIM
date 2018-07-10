@@ -54,7 +54,9 @@ public class AndroidPermission {
         if (!sourse.checkSelfPermission(checker)) {
             sourse.requestPermissions(request, PERMISSION_CODE, callback);
         } else {
-            return;
+            if (callback != null) {
+                callback.nonExecution();
+            }
         }
     }
 
@@ -64,6 +66,10 @@ public class AndroidPermission {
                 sourse.requestPermissions(request, PERMISSION_CODE, callback);
             } else {
                 sourse.toSetting(settingService, requestCode);
+            }
+        } else {
+            if (callback != null) {
+                callback.nonExecution();
             }
         }
     }

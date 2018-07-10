@@ -10,13 +10,11 @@ import com.zhangteng.androidpermission.AndroidPermission;
 import com.zhangteng.androidpermission.Permission;
 import com.zhangteng.androidpermission.callback.Callback;
 import com.zhangteng.androidpermission.request.MRequest;
-import com.zhangteng.xim.MyApplication;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.event.JumpEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 import com.zhangteng.xim.utils.AppManager;
-import com.zhangteng.xim.utils.AssetsUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -32,14 +30,9 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        super.setContentView(R.layout.activity_splash);
         AppManager.addActivity(this);
         EventBus.getDefault().register(this);
         initInject();
-        //初始化地区数据库
-        if (!AssetsUtils.isExistCityNoDb()) {
-            AssetsUtils.initDatabase(AssetsUtils.dbName, MyApplication.getGlobalContext());
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String[] permissions = new String[]{
                     Permission.READ_PHONE_STATE,
@@ -78,12 +71,27 @@ public class SplashActivity extends AppCompatActivity {
                                 }
                             }, 2000);
                         }
+
+                        @Override
+                        public void nonExecution() {
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    EventBus.getDefault().post(new JumpEvent(SplashActivity.this));
+                                }
+                            }, 2000);
+                        }
                     })
                     .permission(permissions)
                     .build()
                     .excute();
         } else {
-            EventBus.getDefault().post(new JumpEvent(SplashActivity.this));
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    EventBus.getDefault().post(new JumpEvent(SplashActivity.this));
+                }
+            }, 2000);
         }
     }
 

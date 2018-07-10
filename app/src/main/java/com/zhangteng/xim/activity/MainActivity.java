@@ -50,6 +50,7 @@ import com.zhangteng.xim.event.UserRefreshEvent;
 import com.zhangteng.xim.mvp.presenter.MainPresenter;
 import com.zhangteng.xim.mvp.view.MainView;
 import com.zhangteng.xim.utils.ActivityHelper;
+import com.zhangteng.xim.utils.AssetsUtils;
 import com.zhangteng.xim.utils.StringUtils;
 import com.zhangteng.xim.widget.DropDownMenu;
 import com.zhangteng.xim.widget.NoScrollViewPager;
@@ -189,7 +190,10 @@ public class MainActivity extends BaseActivity implements MainView,
 
     @Override
     protected void initData() {
-
+        //初始化地区数据库
+        if (!AssetsUtils.isExistCityNoDb()) {
+            AssetsUtils.initDatabase(AssetsUtils.dbName, MyApplication.getGlobalContext());
+        }
     }
 
     @Override
