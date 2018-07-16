@@ -87,9 +87,9 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             if (TextUtils.isEmpty(username.getText().toString())
                     || TextUtils.isEmpty(password.getText().toString())
                     || !RegexUtil.checkNickname(username.getText().toString())) {
-                Toast.makeText(this, "username or password is null or anomaly", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "用户名或密码为空或不符合规则（请以字母开头）", Toast.LENGTH_SHORT).show();
             } else if (!password.getText().toString().equals(code.getText().toString())) {
-                Toast.makeText(this, "Verify password failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "密码验证失败", Toast.LENGTH_SHORT).show();
             } else {
                 RegisterParams registerParams = new RegisterParams();
                 registerParams.setName(username.getText().toString());

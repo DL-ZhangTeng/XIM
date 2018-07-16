@@ -82,7 +82,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         } else if (i == R.id.login) {
             LoginParams loginParams = new LoginParams();
             if (TextUtils.isEmpty(username.getText().toString()) || TextUtils.isEmpty(password.getText().toString())) {
-                Toast.makeText(this, "username or password is null", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "用户名或密码为空", Toast.LENGTH_SHORT).show();
             } else {
                 loginParams.setName(username.getText().toString());
                 loginParams.setPassword(password.getText().toString());
