@@ -5,14 +5,17 @@
         <item
             android:id="@+id/navigation_item_collection"
             android:icon="@mipmap/collection"
+            android:visible="false"
             android:title="我的收藏" />
         <item
             android:id="@+id/navigation_item_album"
             android:icon="@mipmap/photos"
+            android:visible="false"
             android:title="我的相册" />
         <item
             android:id="@+id/navigation_item_file"
             android:icon="@mipmap/files"
+            android:visible="false"
             android:title="我的文件" />
         <item
             android:id="@+id/navigation_item_setting"
