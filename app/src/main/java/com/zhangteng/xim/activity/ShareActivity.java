@@ -22,8 +22,11 @@ import com.zhangteng.xim.bmob.entity.Story;
 import com.zhangteng.xim.bmob.entity.User;
 import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
+import com.zhangteng.xim.event.CircleRefreshEvent;
 import com.zhangteng.xim.utils.AppManager;
 import com.zhangteng.xim.widget.TitleBar;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,6 +131,7 @@ public class ShareActivity extends BaseActivity {
                             @Override
                             public void onSuccess(@Nullable String bmobObject) {
                                 AppManager.finishActivity(ShareActivity.this);
+                                EventBus.getDefault().post(new CircleRefreshEvent());
                             }
 
                             @Override
@@ -155,7 +159,9 @@ public class ShareActivity extends BaseActivity {
                     @Override
                     public void onFailure(BmobException bmobException) {
                         super.onFailure(bmobException);
-                        showToast(bmobException.getMessage());
+                        if (!bmobException.getMessage().equals("未完全上传")) {
+                            showToast(bmobException.getMessage());
+                        }
                     }
                 };
                 bmobCallBack.onStart();

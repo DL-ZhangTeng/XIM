@@ -42,6 +42,7 @@ import com.zhangteng.xim.bmob.http.DataApi;
 import com.zhangteng.xim.bmob.http.UserApi;
 import com.zhangteng.xim.event.CircleCommentEvent;
 import com.zhangteng.xim.event.CircleEvent;
+import com.zhangteng.xim.event.CircleRefreshEvent;
 import com.zhangteng.xim.event.UserRefreshEvent;
 import com.zhangteng.xim.utils.ActivityHelper;
 
@@ -232,6 +233,11 @@ public class CircleFragment extends BaseFragment implements CircleAdapter.Refres
     public void onEventMainThread(CircleCommentEvent event) {
         list.get(event.getPosition()).setRemarks(event.getStory().getRemarks());
         onRefreshList(event.getPosition());
+    }
+
+    @Subscribe
+    public void onEventMainThread(CircleRefreshEvent event) {
+        queryStorys(false);
     }
 
     private void onActivityResult() {

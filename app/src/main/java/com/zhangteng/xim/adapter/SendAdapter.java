@@ -62,6 +62,11 @@ public class SendAdapter extends BaseAdapter<BmobIMMessage> {
     @Override
     public int getItemViewType(int position) {
         if (data.get(position).getFromId().equals(UserApi.getInstance().getUserInfo().getObjectId())) {
+            if (position > 0
+                    && data.get(position).getContent().equals(data.get(position - 1).getContent())
+                    && data.get(position).getToId().equals(UserApi.getInstance().getUserInfo().getObjectId())) {
+                return LEFT;
+            }
             return RIGHT;
         } else {
             return LEFT;
